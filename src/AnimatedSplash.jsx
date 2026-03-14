@@ -104,12 +104,8 @@ export default function AnimatedSplash({ onFinish }) {
   const [stage, setStage] = useState("idle")
   const anchorRef = useRef(null)   // ref do elementu SVG – do pomiaru pozycji na ekranie
 
-  const dustActive = stage === "dissolve"
-  const canvasRef  = useDustCanvas(dustActive, anchorRef, () => {
-    setStage("bean")
-    setTimeout(() => setStage("fadeBean"), 1800)
-    setTimeout(() => onFinish(), 2500)
-  })
+  const dustActive = stage === "dissolve" || stage === "bean"
+  const canvasRef  = useDustCanvas(dustActive, anchorRef, null)
 
   const handleTap = () => {
     if (stage !== "idle") return
@@ -117,13 +113,17 @@ export default function AnimatedSplash({ onFinish }) {
     setStage("press")
     setTimeout(() => setStage("burst"),    220)
     setTimeout(() => setStage("dissolve"), 480)
+    // ziarno startuje w połowie animacji pyłu – nie czeka na jej koniec
+    setTimeout(() => setStage("bean"),     900)
+    setTimeout(() => setStage("fadeBean"), 2700)
+    setTimeout(() => onFinish(),           3400)
   }
 
   return (
     <div className="w-screen h-screen bg-white flex items-center justify-center">
 
       {/* ── Fullscreen dust canvas – poza drzewem AnimatePresence ── */}
-      {stage === "dissolve" && (
+      {(stage === "dissolve" || stage === "bean") && (
         <canvas
           ref={canvasRef}
           style={{
