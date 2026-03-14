@@ -154,14 +154,14 @@ export default function AnimatedSplash({ onFinish }) {
             initial={{ opacity: 0, scale: 0.8 }}
 
             animate={
-              stage === "idle"     ? { opacity: 1, scale: [1, 1.05, 1] } :
+              stage === "idle"     ? { opacity: 1, scale: 1 } :
               stage === "press"    ? { scale: 0.85, opacity: 1 }         :
               stage === "burst"    ? { scale: 0.75, opacity: 1 }         :
               /* dissolve */         { scale: 1,    opacity: 0 }          // SVG znika, canvas przejmuje
             }
 
             transition={
-              stage === "idle"     ? { duration: 2.2, repeat: Infinity, ease: "easeInOut" } :
+              stage === "idle"     ? { duration: 1.8, ease: "easeOut" } :
               stage === "press"    ? { duration: 0.2,  ease: "easeOut"  } :
               stage === "burst"    ? { duration: 0.25, ease: "easeOut"  } :
               /* dissolve */         { duration: 0.15, ease: "easeOut"  }
@@ -193,14 +193,14 @@ export default function AnimatedSplash({ onFinish }) {
             transition={
               stage === "bean"
                 ? {
-                    opacity: { duration: 1.2, ease: "easeOut" },
-                    scale:   { type: "spring", stiffness: 60, damping: 14 },
+                    opacity: { duration: 1.4, ease: "easeOut" },
+                    scale:   { type: "spring", stiffness: 20, damping: 14 },
                     rotate:  { duration: 1.4, ease: "easeOut" },
                     filter:  { duration: 1.1 },
                   }
                 : {
-                    opacity: { duration: 0.6, ease: "easeInOut" },
-                    scale:   { duration: 0.6 },
+                    opacity: { duration: 1.4, ease: "easeInOut" },
+                    scale:   { duration: 1.4 },
                   }
             }
           >
