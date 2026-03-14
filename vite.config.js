@@ -1,8 +1,10 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from "vite"
+import react from "@vitejs/plugin-react"
+import svgr from "vite-plugin-svgr"
 
-// Konfiguracja zoptymalizowana pod Vite 8.0+
 export default defineConfig({
-  plugins: [react()],
-  // Usuwamy ręczne definicje esbuild/jsx, pozwalając wtyczce na automatyzację
+  plugins: [
+    react(),
+    svgr()
+  ]
 })

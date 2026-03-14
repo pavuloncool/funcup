@@ -1,122 +1,164 @@
-import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from "framer-motion"
+import { useState } from "react"
+import confetti from "canvas-confetti"
 
-const generateParticles = () =>
-  Array.from({ length: 84 }).map((_, i) => ({
-    id: i,
-    angle: (i * 360) / 84 + Math.random() * 20,
-    distance: 100 + Math.random() * 80,
-    size: Math.random() * 5 + 1,
-    duration: 2.025 + Math.random() * 0.75,
-  }));
+import Fingerprint from "./assets/home-print.svg?react"
+import Bean from "./assets/home-bean.svg?react"
 
-const BurstEffect = ({ particles }) => (
-  <div className="absolute inset-0 pointer-events-none">
-    {particles.map((p) => {
-      const x = Math.cos((p.angle * Math.PI) / 180) * p.distance;
-      const y = Math.sin((p.angle * Math.PI) / 180) * p.distance;
+export default function AnimatedSplash({ onFinish }) {
 
-      return (
-        <motion.div
-          key={p.id}
-          initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-          animate={{ x, y, opacity: 0, scale: 0 }}
-          transition={{ duration: p.duration, ease: [0.22, 1, 0.36, 1] }}
-          className="absolute left-1/2 top-1/2 bg-black rounded-full"
-          style={{
-            width: p.size,
-            height: p.size,
-            marginLeft: -p.size / 2,
-            marginTop: -p.size / 2,
-          }}
-        />
-      );
-    })}
-  </div>
-);
+  const [stage, setStage] = useState("idle")
 
-export default function AnimatedSplash() {
-  const [isPressed, setIsPressed] = useState(false);
-  const [burstKey, setBurstKey] = useState(0);
-  const particles = useMemo(generateParticles, [burstKey]);
+  const triggerBurst = () => {
 
-  const handlePress = () => {
-    if (isPressed) {
-      setIsPressed(false);
-    } else {
-      setBurstKey((k) => k + 1);
-      setIsPressed(true);
-    }
-  };
+    confetti({
+      particleCount: 90,
+      spread: 90,
+      startVelocity: 35,
+      gravity: 0.9,
+      ticks: 120,
+      origin: { y: 0.5 }
+    })
+
+    confetti({
+      particleCount: 50,
+      spread: 140,
+      startVelocity: 25,
+      scalar: 0.7,
+      origin: { y: 0.5 }
+    })
+  }
+
+  const handleTap = () => {
+
+    if (stage !== "idle") return
+
+    navigator.vibrate?.(14)
+
+    setStage("press")
+
+    // burst po kompresji
+    setTimeout(() => {
+      triggerBurst()
+      setStage("burst")
+    }, 220)
+
+    // fingerprint zaczyna znikać
+    setTimeout(() => {
+      setStage("dissolve")
+    }, 520)
+
+    // pauza przed pojawieniem się bean
+    setTimeout(() => {
+      setStage("bean")
+    }, 1100)
+
+    // bean fade-out
+    setTimeout(() => {
+      setStage("fadeBean")
+    }, 2600)
+
+    // wejście aplikacji
+    setTimeout(() => {
+      onFinish()
+    }, 3200)
+  }
 
   return (
-    <div
-      className="fixed inset-0 flex items-center justify-center bg-white cursor-pointer touch-none select-none"
-      onPointerDown={handlePress}
-    >
-      <div className="flex flex-col items-center">
-        <div className="relative w-64 h-64 md:w-80 md:h-80 flex items-center justify-center">
-          <AnimatePresence mode="wait">
-            {!isPressed ? (
-              <motion.img
-                key="bean"
-                src="/bean-transparent.png"
-                alt="Ziarno kawy"
-                initial={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1 }}
-                transition={{ duration: 0.3, delay: 0.4 }}
-                className="w-40 h-40 object-contain"
-              />
-            ) : (
-              <motion.div 
-                key="result" 
-                className="relative w-full h-full flex items-center justify-center"
-              >
-                <BurstEffect particles={particles} />
-                <motion.img
-                  src="/fprint-transparent.png"
-                  alt="Odcisk palca"
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ 
-                    delay: 1.2, 
-                    duration: 1.2,
-                    opacity: { duration: 1.2, ease: "easeIn" },
-                    scale: { duration: 1.2, ease: [0.22, 1, 0.36, 1] }
-                  }}
-                  className="w-40 h-40 object-contain"
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
 
-        <div className="mt-4 h-12 flex flex-col items-center">
-          <AnimatePresence mode="wait">
-            {!isPressed ? (
-              <motion.span
-                key="p"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.3 }}
-                exit={{ opacity: 0 }}
-                className="text-black font-sans text-[10px] tracking-[0.5em] uppercase"
-              >
-                naciśnij
-              </motion.span>
-            ) : (
-              <motion.span
-                key="f"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.8, duration: 1 }}
-                className="text-black font-sans text-4xl font-extralight lowercase tracking-tighter"
-              >
-                funcup
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
+    <div className="w-screen h-screen bg-white flex items-center justify-center will-change-transform">
+
+      <AnimatePresence mode="wait">
+
+        {(stage === "idle" || stage === "press" || stage === "burst" || stage === "dissolve") && (
+
+          <motion.div
+            key="fingerprint"
+            onClick={handleTap}
+
+            initial={{ opacity: 0, scale: 0.8 }}
+
+            animate={
+              stage === "idle"
+                ? { opacity: 1, scale: [1, 1.05, 1] }
+
+                : stage === "press"
+                ? { scale: 0.85 }
+
+                : stage === "burst"
+                ? { scale: 0.75 }
+
+                : { scale: 0.1, opacity: 0 }
+            }
+
+            transition={
+              stage === "idle"
+                ? { duration: 2.2, repeat: Infinity, ease: "easeInOut" }
+
+                : stage === "press"
+                ? { duration: 0.2, ease: "easeOut" }
+
+                : stage === "burst"
+                ? { duration: 0.3, ease: "easeOut" }
+
+                : { duration: 0.5, ease: "easeOut" }
+            }
+
+            className="cursor-pointer w-32 h-32 flex items-center justify-center"
+          >
+            <Fingerprint />
+          </motion.div>
+        )}
+
+        {(stage === "bean" || stage === "fadeBean") && (
+
+          <motion.div
+            key="bean"
+
+            initial={{
+              opacity: 0,
+              scale: 0.55,
+              rotate: -10,
+              filter: "blur(8px)"
+            }}
+
+            animate={
+              stage === "bean"
+                ? {
+                    opacity: 1,
+                    scale: 1,
+                    rotate: 0,
+                    filter: "blur(0px)"
+                  }
+                : {
+                    opacity: 0,
+                    scale: 0.9
+                  }
+            }
+
+            transition={
+              stage === "bean"
+                ? {
+                    opacity: { duration: 1.8, ease: "easeOut" },
+                    scale: { type: "spring", stiffness: 55, damping: 16 },
+                    rotate: { duration: 1.6, ease: "easeOut" },
+                    filter: { duration: 1.4 }
+                  }
+                : {
+                    opacity: { duration: 0.6, ease: "easeInOut" },
+                    scale: { duration: 0.6 }
+                  }
+            }
+
+            className="w-32 h-32 flex items-center justify-center"
+          >
+            <Bean />
+          </motion.div>
+
+        )}
+
+      </AnimatePresence>
+
     </div>
-  );
+  )
 }
