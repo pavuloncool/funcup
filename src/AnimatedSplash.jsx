@@ -2,8 +2,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useState } from "react"
 import confetti from "canvas-confetti"
 
-import Fingerprint from "./assets/home-print.svg?react"
-import Bean from "./assets/home-bean.svg?react"
+const fingerprintSvg = "/assets/home-print.svg"
+const beanSvg = "/assets/home-bean.svg"
 
 export default function AnimatedSplash({ onFinish }) {
 
@@ -37,28 +37,23 @@ export default function AnimatedSplash({ onFinish }) {
 
     setStage("press")
 
-    // burst po kompresji
     setTimeout(() => {
       triggerBurst()
       setStage("burst")
     }, 220)
 
-    // fingerprint zaczyna znikać
     setTimeout(() => {
       setStage("dissolve")
     }, 520)
 
-    // pauza przed pojawieniem się bean
     setTimeout(() => {
       setStage("bean")
     }, 1100)
 
-    // bean fade-out
     setTimeout(() => {
       setStage("fadeBean")
     }, 2600)
 
-    // wejście aplikacji
     setTimeout(() => {
       onFinish()
     }, 3200)
@@ -106,7 +101,7 @@ export default function AnimatedSplash({ onFinish }) {
 
             className="cursor-pointer w-32 h-32 flex items-center justify-center"
           >
-            <Fingerprint />
+            <img src={fingerprintSvg} alt="Fingerprint" className="w-full h-full" />
           </motion.div>
         )}
 
@@ -152,7 +147,7 @@ export default function AnimatedSplash({ onFinish }) {
 
             className="w-32 h-32 flex items-center justify-center"
           >
-            <Bean />
+            <img src={beanSvg} alt="Coffee Bean" className="w-full h-full" />
           </motion.div>
 
         )}
