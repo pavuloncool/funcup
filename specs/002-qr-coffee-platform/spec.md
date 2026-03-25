@@ -1,6 +1,6 @@
 # Feature Specification: funcup — QR-Driven Specialty Coffee Discovery Platform
 
-**Feature Branch**: `002-qr-coffee-platform`
+**Feature Branch**: `001-platform-mvp`
 **Created**: 2026-03-25
 **Status**: Draft
 **Input**: User description: "funcup — QR-driven specialty coffee discovery platform. Core interaction: scan QR → identify batch → coffee as digital object → rate, log, discover."
@@ -134,7 +134,7 @@ A verified roaster views aggregated consumer feedback for their coffees. For eac
 - **FR-003**: The Coffee Page MUST contain four sections: Product (origin, variety, process, altitude, roast date, batch), Brewing (roaster's brewing guides), Story (roaster narrative), and Community (consumer tastings, sorted by sensory reputation level).
 - **FR-004**: Consumers MUST be able to log a tasting entry containing: rating (1–5 scale), flavor notes (predefined tags and free-text), brew method, brew time (optional), and a written review (optional).
 - **FR-005**: The app MUST store all consumer tasting entries in a personal journal, accessible chronologically with filtering by rating and brew method.
-- **FR-006**: Coffee Hub MUST provide three browseable sections: Discover Coffees, Discover Roasters, and Learn Coffee.
+- **FR-006**: Coffee Hub MUST provide four sections: Scan Coffee (primary CTA — opens QR scanner directly), Discover Coffees (curated and trending), Discover Roasters (verified roasters), and Learn Coffee (educational content). Scan Coffee MUST be the visually dominant element on the Hub screen.
 - **FR-007**: Consumers MUST be able to follow roasters; followed roasters' new batches MUST surface in the consumer's discovery feed.
 - **FR-008**: The sensory reputation system MUST silently advance a consumer's level (Beginner → Advanced → Expert) based on tasting volume and note quality, with no visible progress bar or score.
 - **FR-009**: The app MUST operate offline for previously cached coffee pages; tasting entries MUST be queued locally when offline and synced automatically on reconnect.
