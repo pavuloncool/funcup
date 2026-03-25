@@ -150,19 +150,22 @@ zaufanie do obu.
 
 ### IX. Entry Interaction — Tap to Bean
 
-Pierwsze wejście do aplikacji mobilnej jest zaprojektowane jako charakterystyczny gest
-wizualny definiujący tożsamość marki:
+Interakcja wejścia do aplikacji mobilnej jest zaprojektowana jako charakterystyczny gest
+wizualny definiujący tożsamość marki. Składa się z dwóch etapów:
 
-- Użytkownik widzi ziarno kawy na ekranie.
-- Dotknięcie ziarna uruchamia animację: ziarno przechodzi w odcisk palca, z punktu
-  dotyku wyrastają gałęzie drzewa kawowego, każda gałąź odsłania jeden obszar aplikacji.
+**MVP (zaimplementowane — NIE modyfikować):**
+Biały ekran → pojawia się czarny odcisk palca → dotknięcie → konfetti → spod spodu
+wyjeżdża ziarno kawy → ziarno rozpuszcza się w blur → wjeżdża główna strona aplikacji.
+Ta animacja jest gotowa, zatwierdzona i stanowi obowiązujący splash screen MVP. Żaden
+etap implementacji nie może jej modyfikować bez formalnej poprawki do constitution.
 
-Ta interakcja jest symboliczną bramą do świata kawy i MUSI być zachowana w każdej
-iteracji onboardingu. Żadna redesign sesja nie może jej usunąć bez formalnej poprawki
-do constitution.
+**Docelowa wizja (post-MVP):**
+Użytkownik widzi ziarno kawy → dotknięcie → ziarno animuje się w odcisk palca → z punktu
+dotyku wyrastają gałęzie drzewa kawowego → każda gałąź odsłania jeden obszar aplikacji.
+Ta wersja zastąpi MVP po osiągnięciu stabilności produktu.
 
-**Rationale**: Marka funcup definiuje się przez tę interakcję. Jest to punkt styku
-tożsamości wizualnej z użytkownikiem i nie podlega negocjacji.
+**Rationale**: Marka funcup definiuje się przez tę interakcję. Wersja MVP jest chroniona
+przed przypadkowym nadpisaniem. Wersja docelowa jest kierunkiem rozwoju.
 
 ## Tech Stack & Platform Constraints
 
@@ -218,4 +221,4 @@ conflicting guidance in individual spec or plan files.
 recent merged PRs adhered to all six principles. Violations MUST be logged as tech-debt
 issues and addressed within two sprints.
 
-**Version**: 1.2.0 | **Ratified**: 2026-03-25 | **Last Amended**: 2026-03-25
+**Version**: 1.3.0 | **Ratified**: 2026-03-25 | **Last Amended**: 2026-03-25
