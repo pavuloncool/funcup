@@ -173,6 +173,18 @@ export default function AnimatedSplash({ onFinish }) {
               alt="Fingerprint"
               style={{ width: "100%", height: "100%" }}
             />
+            <p style={{
+              margin: "16px 0 0",
+              textAlign: "center",
+              fontSize: "2.5rem",
+              letterSpacing: "0.04em",
+              lineHeight: "1.55",
+              color: "#1a1a1a",
+              fontFamily: "'Cal Sans', sans-serif",
+              fontWeight: 400,
+            }}>
+              funcup
+            </p>
           </motion.div>
         )}
 
