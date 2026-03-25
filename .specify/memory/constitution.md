@@ -25,8 +25,10 @@ Deferred TODOs: none
 ### I. Mobile-First, Coffee-First
 
 Every screen and interaction MUST be designed for a 375 px mobile viewport before
-adapting to larger breakpoints. React Native (Expo) is the primary delivery target;
-Next.js is a parallel surface, not an afterthought.
+adapting to larger breakpoints. React Native (Expo) is the consumer product — used in coffee shops, stores, and homes.
+Next.js is the roaster product — used by verified coffee roasters to manage product data
+and read consumer feedback. Both share the same Supabase backend but serve entirely
+different users.
 
 Coffee domain language (origin, roast, tasting notes, brew method, rating) MUST be
 consistent across all surfaces and components. No generic CRUD labels ("item", "entry",
@@ -50,18 +52,27 @@ and Next.js web — MUST consume the same Supabase REST and Realtime APIs.
 **Rationale**: Divergent data models between mobile and web create sync bugs that are
 expensive to diagnose. One schema, one type source, two UIs.
 
-### III. Platform Parity
+### III. Dual-Product Architecture
 
-The three core verbs — **Discover, Rate, Share** — MUST be fully functional on both
-mobile (Expo) and web (Next.js). A feature MUST NOT ship to production on one platform
-without the other platform having a shipped or scheduled equivalent.
+funcup to dwa osobne produkty obsługiwane przez jeden backend:
+
+- **iOS/Android (Expo)** — produkt konsumencki: skanowanie QR, ocenianie, odkrywanie
+  kaw, historia tasting experience. Użytkownik korzysta wyłącznie na telefonie —
+  w sklepie, w domu, w kawiarni.
+- **Next.js web** — produkt dla palarni (roasters): zarządzanie danymi kaw,
+  publikowanie produktów, odczyt feedbacku konsumentów. Roasters nigdy nie używają
+  aplikacji mobilnej do zarządzania.
+
+Obie powierzchnie współdzielą backend Supabase, ale ich UX, nawigacja i funkcje są
+projektowane niezależnie. "Platform Parity" nie obowiązuje — funkcje nie muszą istnieć
+na obu platformach jednocześnie.
 
 Platform-specific code MUST be isolated: use `.native.tsx` / `.web.tsx` file extensions
 or explicit `Platform.select()` calls. Shared business logic MUST live in
 platform-agnostic modules (`/lib`, `/hooks`, `/services`).
 
-**Rationale**: Users move between phone and browser. Parity prevents "it works on app
-only" support burden and keeps the codebase coherent.
+**Rationale**: Rozdzielenie odbiorców na poziomie produktu eliminuje konflikty UX
+i pozwala optymalizować każdą powierzchnię pod jej rzeczywistego użytkownika.
 
 ### IV. Offline-Aware UX
 
@@ -105,6 +116,53 @@ that touches them is merged.
 
 **Rationale**: A cross-platform project with shared data models collapses quickly under
 runtime type mismatches. TypeScript strictness is cheap insurance.
+
+### VII. QR-First Interaction
+
+Główna interakcja całej platformy to skanowanie QR kodu na opakowaniu kawy przez
+aplikację mobilną. QR kod identyfikuje konkretną partię palenia (batch/lot)
+i transformuje fizyczny produkt w cyfrowy obiekt w funcup.
+
+Każda funkcja aplikacji mobilnej powinna być projektowana z perspektywy: "co dzieje
+się przed, w trakcie i po skanowaniu?". Funkcje niezwiązane ze skanowaniem są
+drugorzędne.
+
+**Rationale**: QR scan to moment, w którym świat fizyczny łączy się z cyfrowym.
+Ta interakcja definiuje markę i musi być traktowana jako punkt odniesienia dla
+każdej decyzji projektowej w aplikacji mobilnej.
+
+### VIII. Separation of Roles
+
+Dane w systemie mają ściśle określone źródła:
+
+- **Palarnie (roasters)** dostarczają dane produktowe: origin, farm, variety,
+  processing, roast date, batch. Tylko zweryfikowane palarnie mogą tworzyć i edytować
+  te pola.
+- **Konsumenci** dostarczają dane sensoryczne: rating, tasting notes, brewing method,
+  review. Konsumenci nie mogą modyfikować danych produktowych.
+- **Platforma** agreguje i analizuje oba strumienie danych.
+
+To rozdzielenie gwarantuje wiarygodność danych i jest nienaruszalne.
+
+**Rationale**: Wiarygodność platformy opiera się na tym, że dane o kawie pochodzą od
+jej twórcy, a dane smakowe — od rzeczywistych konsumentów. Mieszanie ról zniszczyłoby
+zaufanie do obu.
+
+### IX. Entry Interaction — Tap to Bean
+
+Pierwsze wejście do aplikacji mobilnej jest zaprojektowane jako charakterystyczny gest
+wizualny definiujący tożsamość marki:
+
+- Użytkownik widzi ziarno kawy na ekranie.
+- Dotknięcie ziarna uruchamia animację: ziarno przechodzi w odcisk palca, z punktu
+  dotyku wyrastają gałęzie drzewa kawowego, każda gałąź odsłania jeden obszar aplikacji.
+
+Ta interakcja jest symboliczną bramą do świata kawy i MUSI być zachowana w każdej
+iteracji onboardingu. Żadna redesign sesja nie może jej usunąć bez formalnej poprawki
+do constitution.
+
+**Rationale**: Marka funcup definiuje się przez tę interakcję. Jest to punkt styku
+tożsamości wizualnej z użytkownikiem i nie podlega negocjacji.
 
 ## Tech Stack & Platform Constraints
 
@@ -160,4 +218,4 @@ conflicting guidance in individual spec or plan files.
 recent merged PRs adhered to all six principles. Violations MUST be logged as tech-debt
 issues and addressed within two sprints.
 
-**Version**: 1.0.0 | **Ratified**: 2026-03-25 | **Last Amended**: 2026-03-25
+**Version**: 1.2.0 | **Ratified**: 2026-03-25 | **Last Amended**: 2026-03-25
