@@ -20,6 +20,17 @@ Deferred TODOs: none
 
 # funcup Constitution
 
+## Founding Philosophy
+
+> **Scan Coffee** is the core of funcup — its symbol and the essence of the experience it enables.
+>
+> It is visualised as a transformation: a fingerprint — something completely unique to a human being, and therefore to each user — transforms into a coffee bean, which is equally unique and unrepeatable.
+>
+> Every feature, every screen, every interaction in funcup exists to serve one purpose:
+> **to log an unrepeatable coffee experience.**
+>
+> This philosophy is the lens through which all product decisions must be made.
+
 ## Core Principles
 
 ### I. Mobile-First, Coffee-First
@@ -221,4 +232,4 @@ conflicting guidance in individual spec or plan files.
 recent merged PRs adhered to all six principles. Violations MUST be logged as tech-debt
 issues and addressed within two sprints.
 
-**Version**: 1.3.0 | **Ratified**: 2026-03-25 | **Last Amended**: 2026-03-25
+**Version**: 1.4.0 | **Ratified**: 2026-03-25 | **Last Amended**: 2026-03-25
