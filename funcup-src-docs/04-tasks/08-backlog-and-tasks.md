@@ -1,0 +1,111 @@
+---
+# yaml-language-server: $schema=schemas/collection.schema.json
+Object type:
+    - Collection
+Backlinks:
+    - funcup-the-first-structured-feedback-loop-4-co.md
+Creation date: "2026-03-14T22:56:00Z"
+Created by:
+    - Pa Koolig
+Links:
+    - design-tap-to-bean-entry-interaction.md
+    - create-postgresql-schema-for-all-core-tables.md
+    - define-product-category-and-positioning-statem.md
+    - create-roaster-dashboard-api-endpoints.md
+    - document-core-idea-and-ecosystem-connections.md
+    - design-progressive-sensory-reputation-system.md
+    - create-aggregation-tables-coffee_stats.md
+    - create-review-endpoints-create-get.md
+    - design-coffee-page-structure-product-brewing-s.md
+    - create-qr-code-generation-system.md
+    - implement-coffee-hub-feed-endpoint.md
+    - set-up-database-relationships-and-foreign-keys.md
+    - configure-supabase-authentication.md
+    - implement-discovery-engine-with-stats-aggregat.md
+    - implement-core-qr-scan-endpoint.md
+    - map-information-relationships-and-data-flows.md
+    - implement-edge-functions-for-scan-and-stats.md
+    - document-core-entities-and-their-attributes.md
+    - implement-verified-roasters-system.md
+    - establish-product-philosophy-and-guiding-princ.md
+    - set-up-supabase-storage-buckets.md
+    - define-target-user-personas.md
+    - configure-analytics-layer.md
+    - implement-rate-limiting.md
+    - create-roaster-endpoints.md
+    - implement-row-level-security-rls-policies.md
+    - conduct-competitive-landscape-analysis.md
+    - define-core-information-domains-products-peopl.md
+    - design-discovery-layer-and-aggregation-patterns.md
+    - set-up-ci-cd-pipeline.md
+    - structure-coffee-hub-main-screen.md
+    - set-up-react-native-mobile-app-project.md
+    - document-core-product-loop-and-network-effects.md
+    - define-vision-statement-and-long-term-goals.md
+    - implement-coffee-logging-endpoint.md
+    - define-core-product-interaction-flow.md
+    - create-coffee-endpoints-get-discover-trending.md
+    - implement-experience-tables-logs-reviews-tasti.md
+    - set-up-supabase-project-and-postgresql-database.md
+    - create-sensory-system-tables-flavor-notes-brew.md
+    - implement-authentication-endpoints-register-lo.md
+    - document-problem-statement-and-market-gap-anal.md
+    - create-review-voting-endpoint.md
+    - set-up-next-js-roaster-dashboard-project.md
+    - implement-flavor-notes-and-brew-methods-list-e.md
+    - implement-reputation-system-tables.md
+    - establish-north-star-metric-tracking.md
+    - animated-splash-screen-fingerprint-coffee-bean.md
+Collection:
+    - design-tap-to-bean-entry-interaction.md
+    - create-postgresql-schema-for-all-core-tables.md
+    - define-product-category-and-positioning-statem.md
+    - create-roaster-dashboard-api-endpoints.md
+    - document-core-idea-and-ecosystem-connections.md
+    - design-progressive-sensory-reputation-system.md
+    - create-aggregation-tables-coffee_stats.md
+    - create-review-endpoints-create-get.md
+    - design-coffee-page-structure-product-brewing-s.md
+    - create-qr-code-generation-system.md
+    - implement-coffee-hub-feed-endpoint.md
+    - set-up-database-relationships-and-foreign-keys.md
+    - configure-supabase-authentication.md
+    - implement-discovery-engine-with-stats-aggregat.md
+    - implement-core-qr-scan-endpoint.md
+    - map-information-relationships-and-data-flows.md
+    - implement-edge-functions-for-scan-and-stats.md
+    - document-core-entities-and-their-attributes.md
+    - implement-verified-roasters-system.md
+    - establish-product-philosophy-and-guiding-princ.md
+    - set-up-supabase-storage-buckets.md
+    - define-target-user-personas.md
+    - configure-analytics-layer.md
+    - implement-rate-limiting.md
+    - create-roaster-endpoints.md
+    - implement-row-level-security-rls-policies.md
+    - conduct-competitive-landscape-analysis.md
+    - define-core-information-domains-products-peopl.md
+    - design-discovery-layer-and-aggregation-patterns.md
+    - set-up-ci-cd-pipeline.md
+    - structure-coffee-hub-main-screen.md
+    - set-up-react-native-mobile-app-project.md
+    - document-core-product-loop-and-network-effects.md
+    - define-vision-statement-and-long-term-goals.md
+    - implement-coffee-logging-endpoint.md
+    - define-core-product-interaction-flow.md
+    - create-coffee-endpoints-get-discover-trending.md
+    - implement-experience-tables-logs-reviews-tasti.md
+    - set-up-supabase-project-and-postgresql-database.md
+    - create-sensory-system-tables-flavor-notes-brew.md
+    - implement-authentication-endpoints-register-lo.md
+    - document-problem-statement-and-market-gap-anal.md
+    - create-review-voting-endpoint.md
+    - set-up-next-js-roaster-dashboard-project.md
+    - implement-flavor-notes-and-brew-methods-list-e.md
+    - implement-reputation-system-tables.md
+    - establish-north-star-metric-tracking.md
+    - animated-splash-screen-fingerprint-coffee-bean.md
+id: bafyreif5ifxmeqalbkd3yxqqznrr5kwrmibzcykqkdg4yurq4paqjfw34e
+---
+# 08 Backlog & Tasks   
+Backlog wszystkich tasków MVP funcup — fazy, priorytety, obszary, statusy.   

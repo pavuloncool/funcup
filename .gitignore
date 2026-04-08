@@ -21,7 +21,12 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
 .env*.local
+
+# turbo
+.turbo
+node_modules/.cache
 
 # vercel
 .vercel
@@ -33,3 +38,6 @@ yarn-error.log*
 # Temporary generated images
 Gemini_Generated_Image_hrysexhrysexhrys.png
 Gemini_Generated_Image_yxgopbyxgopbyxgo.png
+
+*storybook.log
+storybook-static

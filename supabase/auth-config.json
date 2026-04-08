@@ -1,0 +1,13 @@
+{
+  "supabaseUrl": "https://funcup.supabase.co",
+  "projectId": "funcup",
+  "auth": {
+    "redirectTo": "http://localhost:5173/auth/callback",
+    "emailRedirectTo": "http://localhost:5173/auth/verify",
+    "providers": ["email", "google", "apple"],
+    "passwordMinLength": 8
+  },
+  "storage": {
+    "bucket": "public"
+  }
+}

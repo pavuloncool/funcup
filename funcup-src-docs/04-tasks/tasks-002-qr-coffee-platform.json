@@ -1,0 +1,194 @@
+{
+  "id": "bafyreigiwlf3jaba2v6dg3szq45tqbmfad756kzb3ck2dhw4hx5l2sgazu",
+  "name": "13 Tasks — 002-qr-coffee-platform (88 tasks)",
+  "status": {
+    "generated": "2026-03-25",
+    "branch": "main",
+    "constitutionCheck": "9/9 PASS"
+  },
+  "source": ".specify/features/002-qr-coffee-platform/tasks.md",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Setup (Monorepo)",
+      "userStory": "Setup",
+      "tasks": ["T001", "T002", "T003", "T004", "T005", "T006", "T007", "T008", "T009", "T010", "T011", "T012"],
+      "count": 12
+    },
+    {
+      "phase": 2,
+      "name": "Foundational",
+      "userStory": "Foundational",
+      "tasks": ["T013", "T014", "T015", "T016", "T017", "T018", "T019", "T020", "T021", "T022", "T023", "T024"],
+      "count": 12
+    },
+    {
+      "phase": 3,
+      "name": "QR Scan + Log",
+      "userStory": "US1 — QR Scan + Log 🎯",
+      "tasks": ["T025", "T026", "T027", "T028", "T029", "T030", "T031", "T032", "T033", "T034", "T035", "T036", "T037", "T038", "T039", "T040", "T041", "T042"],
+      "count": 18
+    },
+    {
+      "phase": 4,
+      "name": "Coffee Hub",
+      "userStory": "US2 — Coffee Hub 🔍",
+      "tasks": ["T043", "T044", "T045", "T046", "T047", "T048", "T049", "T050", "T051", "T052", "T053", "T054", "T055", "T056", "T057", "T058", "T059", "T060"],
+      "count": 18
+    },
+    {
+      "phase": 5,
+      "name": "Reputation System",
+      "userStory": "US3 — Reputation System ⭐",
+      "tasks": ["T061", "T062", "T063", "T064", "T065", "T066", "T067", "T068", "T069", "T070", "T071", "T072", "T073", "T074", "T075", "T076", "T077", "T078", "T079", "T080"],
+      "count": 20
+    }
+  ],
+  "totalTasks": 88,
+  "implementedTasks": [
+    {
+      "name": "Create PostgreSQL schema for all core tables",
+      "id": "core-schema",
+      "status": "implemented",
+      "category": "database"
+    },
+    {
+      "name": "Implement Row-Level Security (RLS) policies",
+      "id": "rls-policies",
+      "status": "implemented",
+      "category": "database"
+    },
+    {
+      "name": "Create QR code generation system",
+      "id": "qr-generation",
+      "status": "implemented",
+      "category": "backend"
+    },
+    {
+      "name": "Implement core QR scan endpoint",
+      "id": "qr-scan-endpoint",
+      "status": "implemented",
+      "category": "backend"
+    },
+    {
+      "name": "Design Coffee Page structure (Product/Brewing/Story/Community)",
+      "id": "coffee-page-structure",
+      "status": "implemented",
+      "category": "design"
+    },
+    {
+      "name": "Create coffee endpoints (get, discover, trending)",
+      "id": "coffee-endpoints",
+      "status": "implemented",
+      "category": "backend"
+    },
+    {
+      "name": "Implement Coffee Hub feed endpoint",
+      "id": "coffee-hub-feed",
+      "status": "implemented",
+      "category": "backend"
+    },
+    {
+      "name": "Implement coffee logging endpoint",
+      "id": "coffee-logging",
+      "status": "implemented",
+      "category": "backend"
+    },
+    {
+      "name": "Design discovery layer and aggregation patterns",
+      "id": "discovery-layer",
+      "status": "implemented",
+      "category": "architecture"
+    },
+    {
+      "name": "Implement discovery engine with stats aggregation",
+      "id": "discovery-engine",
+      "status": "implemented",
+      "category": "backend"
+    },
+    {
+      "name": "Create aggregation tables (coffee_stats)",
+      "id": "coffee-stats-tables",
+      "status": "implemented",
+      "category": "database"
+    },
+    {
+      "name": "Create roaster endpoints",
+      "id": "roaster-endpoints",
+      "status": "implemented",
+      "category": "backend"
+    },
+    {
+      "name": "Implement verified roasters system",
+      "id": "verified-roasters",
+      "status": "implemented",
+      "category": "feature"
+    },
+    {
+      "name": "Create roaster dashboard API endpoints",
+      "id": "roaster-dashboard",
+      "status": "implemented",
+      "category": "backend"
+    },
+    {
+      "name": "Create sensory system tables (flavor notes, brew methods)",
+      "id": "sensory-tables",
+      "status": "implemented",
+      "category": "database"
+    },
+    {
+      "name": "Implement flavor notes and brew methods list endpoints",
+      "id": "sensory-endpoints",
+      "status": "implemented",
+      "category": "backend"
+    },
+    {
+      "name": "Design progressive sensory reputation system",
+      "id": "reputation-design",
+      "status": "implemented",
+      "category": "architecture"
+    },
+    {
+      "name": "Implement experience tables (logs, reviews, tasting notes)",
+      "id": "experience-tables",
+      "status": "implemented",
+      "category": "database"
+    },
+    {
+      "name": "Create review endpoints (create, get)",
+      "id": "review-endpoints",
+      "status": "implemented",
+      "category": "backend"
+    },
+    {
+      "name": "Create review voting endpoint",
+      "id": "review-voting",
+      "status": "implemented",
+      "category": "backend"
+    },
+    {
+      "name": "Implement reputation system tables",
+      "id": "reputation-tables",
+      "status": "implemented",
+      "category": "database"
+    },
+    {
+      "name": "Implement Edge Functions for scan and stats",
+      "id": "edge-functions",
+      "status": "implemented",
+      "category": "backend"
+    },
+    {
+      "name": "Implement authentication endpoints (register/login/logout)",
+      "id": "auth-endpoints",
+      "status": "implemented",
+      "category": "backend"
+    },
+    {
+      "name": "Design Tap to Bean entry interaction",
+      "id": "tap-to-bean",
+      "status": "implemented",
+      "category": "ux"
+    }
+  ]
+}
