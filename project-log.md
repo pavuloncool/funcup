@@ -12,8 +12,9 @@ Ten log opisuje wykonane prace i status delivery w repozytorium `funcup`, z odni
 - Phase 004 (US2, T043-T053): SIGN-OFF PASS.
 - Phase 005 (US3, T054-T063): SIGN-OFF PASS.
 - Phase 006 (US4, T064-T068): SIGN-OFF PASS.
+- Phase 007 (US5, T069-T074): SIGN-OFF PASS.
 
-## 2) Najwazniejsze rezultaty do konca Phase 006
+## 2) Najwazniejsze rezultaty do konca Phase 007
 
 - Mobile Hub (US3):
   - `apps/mobile/(tabs)/hub/index.tsx` z dominant scan CTA (min 40% wysokosci),
@@ -33,6 +34,14 @@ Ten log opisuje wykonane prace i status delivery w repozytorium `funcup`, z odni
   - `apps/mobile/coffee/[id]/CoffeePageCommunity.tsx` (subtle expert label),
   - `packages/shared/src/constants/reputation.ts` (single source of truth),
   - `packages/shared/src/hooks/reputation.integration.test.ts` (integration + guardy anty-gamification).
+- Offline tasting (US5):
+  - `packages/shared/src/services/offlineTastingQueue.ts` (kolejka offline + LWW),
+  - `packages/shared/src/services/offlineTastingQueue.test.ts` (testy enqueue/flush/cap),
+  - `packages/shared/src/services/offlineTasting.integration.test.ts` (airplane mode -> sync <= 30s),
+  - `apps/mobile/src/hooks/useOfflineTastingSync.ts` (NetInfo + auto-flush reconnect),
+  - `apps/mobile/src/services/offlineQueueStorage.ts` (MMKV storage adapter),
+  - `packages/shared/src/hooks/useCoffeePage.ts` (`staleTime: Infinity`),
+  - `apps/mobile/coffee/[id]/log.tsx` (online/offline submit + queue state).
 
 ## 3) Jakosc i testy (evidence)
 
@@ -50,6 +59,13 @@ Ten log opisuje wykonane prace i status delivery w repozytorium `funcup`, z odni
 - US2 regression gate po zmianach US4:
   - `pnpm -C apps/web test:generate-qr` -> PASS
   - `pnpm -C apps/web test:e2e` -> PASS
+- US5 quality gate:
+  - `pnpm -C packages/shared test` -> PASS
+  - `pnpm -C packages/shared typecheck` -> PASS
+  - `pnpm -C apps/mobile typecheck` -> PASS
+- US2 regression gate po zmianach US5:
+  - `pnpm -C apps/web test:generate-qr` -> PASS
+  - `pnpm -C apps/web test:e2e` -> PASS
 - US3 integration smoke flow:
   - `packages/shared/src/hooks/us3IntegrationSmoke.test.ts`
   - scenariusz: Hub -> RoasterProfile -> Follow (happy path + error path).
@@ -62,17 +78,19 @@ Ten log opisuje wykonane prace i status delivery w repozytorium `funcup`, z odni
 - `DEFINITION_OF_READY_PHASE006_NEXT_SPRINT.md`
 - `PHASE007_HANDOFF.md`
 - `DEFINTION_OF_READY_PHASE007.md`
+- `PHASE008_HANDOFF.md`
+- `DEFINTION_OF_READY_PHASE008.md`
 - `funcup-src-docs/04-tasks/13-tasks-002-qr-coffee-platform-88-tasks.md`
 
 ## 5) Status techniczny repo
 
-- Repo jest gotowe do wejscia w Phase 007 (US5 - Offline Tasting).
+- Repo jest gotowe do wejscia w Phase 008 (US6 - Roaster Analytics).
 - Aplikacja web jest uruchamialna lokalnie (localhost) i przetestowana regresyjnie.
 - Nadal wystepuja artefakty developerskie w `.next` po lokalnych runach test/dev (normalne dla pracy lokalnej).
 
 ## 6) Nastepne kroki
 
-1. Wejscie w Phase 007 (T069-T074) zgodnie z backlogiem.
-2. Utrzymanie zasady no-regression dla US2/US3/US4 przy kazdym wiekszym PR.
-3. Aktualizacja checklist i logu po kazdym domknietym tasku Phase 007.
+1. Wejscie w Phase 008 (T075-T080) zgodnie z backlogiem.
+2. Utrzymanie zasady no-regression dla US2/US3/US4/US5 przy kazdym wiekszym PR.
+3. Aktualizacja checklist i logu po kazdym domknietym tasku Phase 008.
 

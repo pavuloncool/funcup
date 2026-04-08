@@ -9,6 +9,7 @@ export function useCoffeePage(params: {
   return useQuery({
     queryKey: ['coffeePage', params.hash],
     enabled: Boolean(params.hash),
+    staleTime: Number.POSITIVE_INFINITY,
     queryFn: async () => {
       if (!params.hash) throw new Error('hash is required');
       const { data, error } = await params.supabase.functions.invoke('scan_qr', {

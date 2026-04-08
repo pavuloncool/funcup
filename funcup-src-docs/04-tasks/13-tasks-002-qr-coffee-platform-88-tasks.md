@@ -22,6 +22,9 @@ Source of truth: `.specify/features/002-qr-coffee-platform/tasks.md`
 - Phase 006 (US4, T064–T068) **SIGN-OFF: PASS** (2026-04-08)  
 - Evidence: `pnpm -C packages/shared test && pnpm -C packages/shared typecheck && pnpm -C apps/mobile typecheck` -> PASS (reputation progression integration + anti-gamification guards)  
 - Evidence: `pnpm -C apps/web test:generate-qr && pnpm -C apps/web test:e2e` -> PASS (US2 regression gate green after US4 changes)  
+- Phase 007 (US5, T069–T074) **SIGN-OFF: PASS** (2026-04-08)  
+- Evidence: `pnpm -C packages/shared test && pnpm -C packages/shared typecheck && pnpm -C apps/mobile typecheck` -> PASS (offline queue + reconnect sync + conflict resolution coverage)  
+- Evidence: `pnpm -C apps/web test:generate-qr && pnpm -C apps/web test:e2e` -> PASS (US2 regression gate green after US5 changes + hardening rerun)  
  --- 
 ## Podsumowanie   
 |      Faza |                     User Story |            Taski |
@@ -127,12 +130,12 @@ Demonstratable bez roaster web app (seed data wystarczy).
 - [x] T068 Guard: no progress bar, no unlock message, no notification   
  --- 
 ## Phase 7: US5 — Offline Tasting (T069–T074)   
-- [ ] T069 MMKV offline queue implementation   
-- [ ] T070 NetInfo connectivity listener   
-- [ ] T071 Offline-aware useCoffeePage (staleTime: Infinity)   
-- [ ] T072 Sync on reconnect — flush queue to tastingService   
-- [ ] T073 Conflict resolution (last-write-wins for ratings)   
-- [ ] T074 Integration test: airplane mode → queue → sync within 30s   
+- [x] T069 MMKV offline queue implementation   
+- [x] T070 NetInfo connectivity listener   
+- [x] T071 Offline-aware useCoffeePage (staleTime: Infinity)   
+- [x] T072 Sync on reconnect — flush queue to tastingService   
+- [x] T073 Conflict resolution (last-write-wins for ratings)   
+- [x] T074 Integration test: airplane mode → queue → sync within 30s   
  --- 
 ## Phase 8: US6 — Roaster Analytics (T075–T080)   
 - [ ] T075 `apps/web/dashboard/analytics/[batchId]/page.tsx`   

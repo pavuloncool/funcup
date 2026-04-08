@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:e2e": "playwright test",
-    "test:generate-qr": "playwright test tests/generate-qr.spec.ts"
+    "test:e2e": "env -u FORCE_COLOR -u NO_COLOR playwright test",
+    "test:generate-qr": "env -u FORCE_COLOR -u NO_COLOR playwright test tests/generate-qr.spec.ts"
   },
   "dependencies": {
     "@funcup/shared": "workspace:*",

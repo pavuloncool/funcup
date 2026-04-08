@@ -7,6 +7,7 @@ export * from './constants/reputationThresholds';
 export * from './constants/reputation';
 export * from './services/supabaseClientFactory';
 export * from './services/tastingService';
+export * from './services/offlineTastingQueue';
 export * from './hooks/useCoffeePage';
 export * from './hooks/useJournal';
 export * from './hooks/useDiscoverCoffees';
