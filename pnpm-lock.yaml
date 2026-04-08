@@ -205,12 +205,15 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.49.1
         version: 2.102.1
+      '@tanstack/react-query':
+        specifier: ^5.80.0
+        version: 5.96.2(react@19.2.4)
       framer-motion:
         specifier: ^11.0.0
         version: 11.18.2(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       next:
         specifier: 15.2.0
-        version: 15.2.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+        version: 15.2.0(@playwright/test@1.59.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       react:
         specifier: ^19.0.0
         version: 19.2.4
@@ -218,6 +221,9 @@ importers:
         specifier: ^19.0.0
         version: 19.2.4(react@19.2.4)
     devDependencies:
+      '@playwright/test':
+        specifier: ^1.54.2
+        version: 1.59.1
       '@types/node':
         specifier: ^22.10.0
         version: 22.19.17
@@ -1811,6 +1817,11 @@ packages:
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
+
+  '@playwright/test@1.59.1':
+    resolution: {integrity: sha512-PG6q63nQg5c9rIi4/Z5lR5IVF7yU5MqmKaPOe0HSc0O2cX1fPi96sUQu5j7eo4gKCkB2AnNGoWt7y4/Xx3Kcqg==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   '@polka/url@1.0.0-next.29':
     resolution: {integrity: sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww==}
@@ -8749,6 +8760,10 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
+  '@playwright/test@1.59.1':
+    dependencies:
+      playwright: 1.59.1
+
   '@polka/url@1.0.0-next.29': {}
 
   '@radix-ui/react-compose-refs@1.0.0(react@18.3.1)':
@@ -9461,6 +9476,11 @@ snapshots:
     dependencies:
       '@tanstack/query-core': 5.96.2
       react: 18.3.1
+
+  '@tanstack/react-query@5.96.2(react@19.2.4)':
+    dependencies:
+      '@tanstack/query-core': 5.96.2
+      react: 19.2.4
 
   '@testing-library/dom@10.4.1':
     dependencies:
@@ -12796,7 +12816,7 @@ snapshots:
 
   nested-error-stacks@2.0.1: {}
 
-  next@15.2.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+  next@15.2.0(@playwright/test@1.59.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       '@next/env': 15.2.0
       '@swc/counter': 0.1.3
@@ -12816,6 +12836,7 @@ snapshots:
       '@next/swc-linux-x64-musl': 15.2.0
       '@next/swc-win32-arm64-msvc': 15.2.0
       '@next/swc-win32-x64-msvc': 15.2.0
+      '@playwright/test': 1.59.1
       sharp: 0.33.5
     transitivePeerDependencies:
       - '@babel/core'

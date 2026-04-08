@@ -3,57 +3,33 @@
 import { useRouter, useParams } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 
-import { supabaseBrowser } from '@/src/lib/supabase/browserClient';
+import { useCreateBatch } from '@/src/hooks/useCreateBatch';
 
 export default function NewBatchPage() {
   const router = useRouter();
   const params = useParams<{ id: string }>();
+  const createBatch = useCreateBatch();
   const [lotNumber, setLotNumber] = useState('');
   const [roastDate, setRoastDate] = useState(new Date().toISOString().slice(0, 10));
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setLoading(true);
     setError(null);
 
-    const {
-      data: { session },
-    } = await supabaseBrowser.auth.getSession();
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    if (!session?.access_token || !supabaseUrl || !anonKey) {
-      setError('Missing auth session or Supabase env.');
-      setLoading(false);
+    try {
+      const created = await createBatch.mutateAsync({
+        coffeeId: params.id,
+        lotNumber,
+        roastDate,
+      });
+      router.push(`/dashboard/coffees/${params.id}/batches/${created.id}`);
+    } catch (submitError) {
+      const message =
+        submitError instanceof Error ? submitError.message : 'Unable to create batch.';
+      setError(message);
       return;
     }
-
-    const createResponse = await fetch(`${supabaseUrl}/rest/v1/roast_batches?select=id`, {
-      method: 'POST',
-      headers: {
-        apikey: anonKey,
-        Authorization: `Bearer ${session.access_token}`,
-        'Content-Type': 'application/json',
-        Prefer: 'return=representation',
-      },
-      body: JSON.stringify({
-        coffee_id: params.id,
-        lot_number: lotNumber,
-        roast_date: roastDate,
-        status: 'active',
-      }),
-    });
-    const rows = (await createResponse.json()) as Array<{ id: string }>;
-    const batchId = rows[0]?.id;
-
-    setLoading(false);
-    if (!createResponse.ok || !batchId) {
-      setError('Unable to create batch.');
-      return;
-    }
-
-    router.push(`/dashboard/coffees/${params.id}/batches/${batchId}`);
   }
 
   return (
@@ -72,8 +48,8 @@ export default function NewBatchPage() {
           onChange={event => setRoastDate(event.target.value)}
           required
         />
-        <button type="submit" disabled={loading}>
-          {loading ? 'Creating...' : 'Create batch'}
+        <button type="submit" disabled={createBatch.isPending}>
+          {createBatch.isPending ? 'Creating...' : 'Create batch'}
         </button>
       </form>
       {error ? <p style={{ color: 'crimson' }}>{error}</p> : null}
