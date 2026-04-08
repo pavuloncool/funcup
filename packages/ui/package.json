@@ -11,16 +11,17 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest",
-    "test:run": "vitest run"
+    "test": "vitest run --passWithNoTests",
+    "test:run": "vitest run --passWithNoTests"
   },
   "peerDependencies": {
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
   "devDependencies": {
-    "@funcup/tsconfig": "*",
+    "@funcup/tsconfig": "workspace:*",
     "@types/react": "^18.3.3",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^4.1.3"
   }
 }

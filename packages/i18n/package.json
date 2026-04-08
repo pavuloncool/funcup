@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@funcup/tsconfig": "*",
+    "@funcup/tsconfig": "workspace:*",
     "typescript": "^5.0.0"
   }
 }

@@ -1,19 +1,29 @@
 {
   "name": "funcup",
   "private": true,
-  "packageManager": "npm@10.9.2",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "packageManager": "pnpm@10.12.4",
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
+    "phase4:readiness": "bash scripts/phase4-readiness-check.sh",
+    "supabase:types": "echo \"Generate types via Supabase CLI: supabase gen types typescript --project-id <id> --schema public > supabase/types/database.ts\"",
     "test": "turbo run test",
+    "postinstall": "node scripts/patch-metro-cache-exports.js",
     "prepare": "husky"
+  },
+  "pnpm": {
+    "overrides": {
+      "xmlbuilder": "15.0.0",
+      "resolve": "1.22.10",
+      "metro": "0.81.5",
+      "metro-cache": "0.81.5",
+      "metro-config": "0.81.5",
+      "metro-core": "0.81.5",
+      "metro-transform-worker": "0.81.5"
+    }
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",

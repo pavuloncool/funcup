@@ -87,14 +87,14 @@ Demonstratable bez roaster web app (seed data wystarczy).
  --- 
 ## Phase 4: US2 — Roaster Publishes QR (T043–T053)   
 - [ ] T043 Implement `supabase/functions/generate\_qr/index.ts`   
-- [ ] T044 [P] `apps/web/(auth)/login/page.tsx`   
-- [ ] T045 [P] `apps/web/(auth)/register/page.tsx`   
-- [ ] T046 [P] `apps/web/(auth)/pending/page.tsx`   
-- [ ] T047 `apps/web/dashboard/coffees/new/page.tsx`   
-- [ ] T048 `apps/web/dashboard/coffees/[id]/page.tsx`   
-- [ ] T049 `apps/web/dashboard/coffees/[id]/batches/new/page.tsx`   
-- [ ] T050 `apps/web/dashboard/coffees/[id]/batches/[batchId]/page.tsx`   
-- [ ] T051 `apps/web/dashboard/coffees/page.tsx` (coffee list)   
+- [ ] T044 [P] `apps/web/app/(auth)/login/page.tsx`   
+- [ ] T045 [P] `apps/web/app/(auth)/register/page.tsx`   
+- [ ] T046 [P] `apps/web/app/(auth)/pending/page.tsx`   
+- [ ] T047 `apps/web/app/dashboard/coffees/new/page.tsx`   
+- [ ] T048 `apps/web/app/dashboard/coffees/[id]/page.tsx`   
+- [ ] T049 `apps/web/app/dashboard/coffees/[id]/batches/new/page.tsx`   
+- [ ] T050 `apps/web/app/dashboard/coffees/[id]/batches/[batchId]/page.tsx`   
+- [ ] T051 `apps/web/app/dashboard/coffees/page.tsx` (coffee list)   
 - [ ] T052 [P] QRDownloadButton component (PNG + SVG)   
 - [ ] T053 [P] useRoasterCoffees + useCreateBatch hooks   
  --- 

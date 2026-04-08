@@ -1,0 +1,13 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/dashboard/coffees/[id]/batches/[batchId]/page": "app/dashboard/coffees/[id]/batches/[batchId]/page.js",
+  "/dashboard/coffees/new/page": "app/dashboard/coffees/new/page.js",
+  "/page": "app/page.js",
+  "/dashboard/coffees/[id]/page": "app/dashboard/coffees/[id]/page.js",
+  "/dashboard/coffees/page": "app/dashboard/coffees/page.js",
+  "/q/[hash]/page": "app/q/[hash]/page.js",
+  "/dashboard/coffees/[id]/batches/new/page": "app/dashboard/coffees/[id]/batches/new/page.js",
+  "/(auth)/register/page": "app/(auth)/register/page.js",
+  "/(auth)/login/page": "app/(auth)/login/page.js",
+  "/(auth)/pending/page": "app/(auth)/pending/page.js"
+}

@@ -20,6 +20,8 @@ funcup is a platform connecting coffee roasters and drinkers through QR codes an
   - Spec Kit: Plan & Artifacts
   - Constitution v1.4.0
 - **Integration Docs:** [docs/anytype-integration.md](docs/anytype-integration.md)
+- **Sprint Readiness (DoR):** [DEFINITION_OF_READY_NEXT_SPRINT.md](DEFINITION_OF_READY_NEXT_SPRINT.md)
+- **Project Log (timeline):** [project-log.md](project-log.md)
 
 ## Tech Stack
 
