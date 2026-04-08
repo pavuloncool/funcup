@@ -2,7 +2,7 @@
 
 **Function**: `update_coffee_stats`
 **Runtime**: Supabase Edge Function (Deno)
-**Invoked by**: PostgreSQL trigger on `coffee_logs` INSERT (via `pg_net.http_post`)
+**Invoked by**: PostgreSQL trigger on `coffee_logs` INSERT (via `pg_net.http_post`) or called directly from `log_tasting`
 
 ---
 
@@ -36,7 +36,7 @@ Authorization: Bearer {service_role_key}   # internal — never exposed to clien
 
 ```typescript
 {
-  updated: true;
+  updated: boolean;
   batch_id: string;
   stats: {
     total_count: number;
@@ -74,91 +74,26 @@ On failure, the trigger retries via `pg_net` up to 3 times (exponential backoff)
 
 ### 1. Recalculate `coffee_stats`
 
-```sql
--- Executed as a parameterised query inside the Edge Function
-INSERT INTO coffee_stats (batch_id, total_count, avg_rating, rating_distribution, top_flavor_notes, updated_at)
-SELECT
-  $1 AS batch_id,
-  COUNT(*) AS total_count,
-  ROUND(AVG(rating)::numeric, 2) AS avg_rating,
-  jsonb_build_object(
-    '1', COUNT(*) FILTER (WHERE rating = 1),
-    '2', COUNT(*) FILTER (WHERE rating = 2),
-    '3', COUNT(*) FILTER (WHERE rating = 3),
-    '4', COUNT(*) FILTER (WHERE rating = 4),
-    '5', COUNT(*) FILTER (WHERE rating = 5)
-  ) AS rating_distribution,
-  (
-    SELECT jsonb_agg(row_to_json(t))
-    FROM (
-      SELECT fn.id, fn.name, fn.label, fn.category, COUNT(*) AS count
-      FROM tasting_notes tn
-      JOIN flavor_notes fn ON fn.id = tn.flavor_note_id
-      JOIN coffee_logs cl ON cl.id = tn.coffee_log_id
-      WHERE cl.batch_id = $1
-      GROUP BY fn.id, fn.name, fn.label, fn.category
-      ORDER BY count DESC
-      LIMIT 10
-    ) t
-  ) AS top_flavor_notes,
-  now() AS updated_at
-FROM coffee_logs
-WHERE batch_id = $1
-ON CONFLICT (batch_id) DO UPDATE SET
-  total_count = EXCLUDED.total_count,
-  avg_rating = EXCLUDED.avg_rating,
-  rating_distribution = EXCLUDED.rating_distribution,
-  top_flavor_notes = EXCLUDED.top_flavor_notes,
-  updated_at = EXCLUDED.updated_at;
-```
+- Count all coffee_logs for the batch
+- Calculate average rating
+- Build rating distribution (count per 1-5)
+- Aggregate top 10 flavor notes from tasting_notes join
+- Upsert into coffee_stats table
 
 ### 2. Recalculate user sensory reputation
 
-Calls PostgreSQL function `recalculate_user_reputation(user_id uuid)`:
+Simple threshold-based algorithm:
+- 20+ tastings: beginner → advanced
+- 50+ tastings: advanced/expert → expert
+- Updates `users.sensory_level` if threshold met
 
-```sql
--- Scoring rules (see research.md §4)
--- Returns new sensory_level if it changed, else NULL
-SELECT recalculate_user_reputation($1);
-```
-
-The DB function computes the point score, determines the new level, and UPDATEs `users.sensory_level` if it changed. No notification is sent to the user (spec FR-008, US-4 AC-2).
-
----
-
-## Trigger Definition
-
-```sql
--- In supabase/migrations/0002_rls_policies.sql (or a dedicated migration)
-CREATE OR REPLACE FUNCTION notify_update_coffee_stats()
-RETURNS trigger LANGUAGE plpgsql AS $$
-BEGIN
-  PERFORM pg_net.http_post(
-    url := current_setting('app.edge_function_base_url') || '/update_coffee_stats',
-    headers := jsonb_build_object(
-      'Content-Type', 'application/json',
-      'Authorization', 'Bearer ' || current_setting('app.service_role_key')
-    ),
-    body := jsonb_build_object(
-      'batch_id', NEW.batch_id::text,
-      'user_id', NEW.user_id::text
-    )
-  );
-  RETURN NEW;
-END;
-$$;
-
-CREATE TRIGGER after_coffee_log_insert
-AFTER INSERT ON coffee_logs
-FOR EACH ROW EXECUTE FUNCTION notify_update_coffee_stats();
-```
-
-**Prerequisite**: `pg_net` extension must be enabled in the Supabase project.
+No notification is sent to the user (spec FR-008, US-4 AC-2).
 
 ---
 
 ## Implementation Notes
 
 - Function runs with `service_role` JWT — bypasses RLS for aggregate reads.
-- `app.edge_function_base_url` and `app.service_role_key` are set via Supabase project settings (database config), not embedded in migration SQL.
+- Uses Supabase client queries instead of raw SQL (no exec_sql RPC required)
 - Idempotent: calling multiple times with the same `batch_id` simply recalculates from current data — no double-counting.
+- Flavor notes counted via join: tasting_notes → flavor_notes → coffee_logs WHERE batch_id

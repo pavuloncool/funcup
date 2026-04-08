@@ -1,0 +1,22 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "contextPaths": [
+    "README.md",
+    "CLAUDE.md",
+    "tasks/TASKS.md",
+    ".specify/features/002-qr-coffee-platform",
+    "docs/anytype-integration.md"
+  ],
+  "agents": {
+    "coder": {
+      "model": "claude-4-sonnet"
+    }
+  },
+  "mcp": {
+    "anytype": {
+      "type": "local",
+      "command": ["bash", "./scripts/anytype-mcp.sh"],
+      "enabled": true
+    }
+  }
+}
