@@ -8,7 +8,7 @@
     "lint": "turbo run lint",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "phase4:readiness": "bash scripts/phase4-readiness-check.sh",
+    "phase004:readiness": "bash scripts/phase004-readiness-check.sh",
     "supabase:types": "echo \"Generate types via Supabase CLI: supabase gen types typescript --project-id <id> --schema public > supabase/types/database.ts\"",
     "test": "turbo run test",
     "postinstall": "node scripts/patch-metro-cache-exports.js",

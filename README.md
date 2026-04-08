@@ -22,9 +22,12 @@ funcup is a platform connecting coffee roasters and drinkers through QR codes an
 - **Integration Docs:** [docs/anytype-integration.md](docs/anytype-integration.md)
 - **Sprint Readiness (DoR):** [DEFINITION_OF_READY_NEXT_SPRINT.md](DEFINITION_OF_READY_NEXT_SPRINT.md)
 - **Sprint Readiness (DoR, Phase 005):** [DEFINITION_OF_READY_PHASE005_NEXT_SPRINT.md](DEFINITION_OF_READY_PHASE005_NEXT_SPRINT.md)
-- **Phase 004 Handoff:** [PHASE4_HANDOFF.md](PHASE4_HANDOFF.md)
-- **Phase 004 Hardening Tests:** [PHASE4_HARDENING_TESTS.md](PHASE4_HARDENING_TESTS.md)
-- **Phase 005 Handoff:** [PHASE5_HANDOFF.md](PHASE5_HANDOFF.md)
+- **Sprint Readiness (DoR, Phase 006):** [DEFINITION_OF_READY_PHASE006_NEXT_SPRINT.md](DEFINITION_OF_READY_PHASE006_NEXT_SPRINT.md)
+- **Phase 004 Handoff:** [PHASE004_HANDOFF.md](PHASE004_HANDOFF.md)
+- **Phase 004 Hardening Tests:** [PHASE004_HARDENING_TESTS.md](PHASE004_HARDENING_TESTS.md)
+- **Phase 005 Handoff:** [PHASE005_HANDOFF.md](PHASE005_HANDOFF.md)
+- **Phase 006 Handoff:** [PHASE006_HANDOFF.md](PHASE006_HANDOFF.md)
+- **Phase 006 DoR (requested alias):** [DEFINTION_OF_READY_PHASE006.md](DEFINTION_OF_READY_PHASE006.md)
 - **Project Log (timeline):** [project-log.md](project-log.md)
 
 ## Core Documents Rule

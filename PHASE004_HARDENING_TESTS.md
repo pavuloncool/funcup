@@ -1,4 +1,4 @@
-# Phase 4 Hardening Tests (US2)
+# Phase 004 Hardening Tests (US2)
 
 Ten dokument opisuje automatyczne testy hardeningu dla US2 (Phase 004), zgodnie z handoffem:
 

@@ -92,7 +92,7 @@ pnpm -C apps/web dev
 ## 9) Sugerowany pierwszy prompt do nowego czatu
 
 ```text
-Przeczytaj PHASE5_HANDOFF.md i rozpocznij implementacje Phase 005 (US3, T054-T063).
+Przeczytaj PHASE005_HANDOFF.md i rozpocznij implementacje Phase 005 (US3, T054-T063).
 Priorytet: T054/T054b (Hub + dominant scan CTA), potem hooki discovery (T058/T059)
 i komponenty tabs (T055/T056), bez regresji US2.
 Pamietaj o testach hookow/smoke UI i o aktualizacji checklisty taskow po kazdym domknietym tasku.

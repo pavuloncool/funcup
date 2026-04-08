@@ -63,10 +63,10 @@ Ten dokument definiuje warunki wejscia do sprintu implementujacego Coffee Hub + 
 
 - [x] Dla US2 istnieja testy automatyczne i sa zielone.
 - [ ] Dla US3 zaplanowano minimum testowe:
-  - [ ] `T058/T059` hook tests (success/error/empty)
-  - [ ] `T060` follow action test (state update + rollback on error)
-  - [ ] smoke UI dla `T054/T055/T056/T061`
-  - [ ] co najmniej 1 integration flow: Hub -> discover -> roaster profile
+  - [x] `T058/T059` hook tests (success/error/empty)
+  - [x] `T060` follow action test (state update + rollback on error)
+  - [x] smoke UI dla `T054/T055/T056/T061`
+  - [x] co najmniej 1 integration flow: Hub -> discover -> roaster profile
 - [ ] Definition of Done dla T054-T063 jest wpisane przy kazdym tasku (owner, estymacja, zaleznosci, testy).
 
 ## 7) Ryzyka i decyzje przed startem

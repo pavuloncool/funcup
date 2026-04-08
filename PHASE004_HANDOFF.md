@@ -105,9 +105,8 @@ supabase stop
 ## 6) Sugerowany pierwszy prompt do nowego czatu
 
 ```text
-Przeczytaj PHASE4_HANDOFF.md i kontynuuj hardening US2 (Phase 004).
+Przeczytaj PHASE004_HANDOFF.md i kontynuuj hardening US2 (Phase 004).
 Priorytet: testy automatyczne dla generate_qr + E2E happy path dashboard->QR->hash resolve,
 bez zmiany kontraktu API i bez regresji ścieżek apps/web/app/... .
 Pamiętaj: każdy nowy core-document ma mieć link w README.md.
 ```
-

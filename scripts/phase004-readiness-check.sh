@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-echo "== Phase 4 Readiness Check =="
+echo "== Phase 004 Readiness Check =="
 echo
 
 echo "[1/7] Toolchain baseline"

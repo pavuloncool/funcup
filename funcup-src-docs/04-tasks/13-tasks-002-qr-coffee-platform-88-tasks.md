@@ -16,6 +16,9 @@ Wygenerowane: 2026-03-25 \| Branch: `main` \| Constitution Check: **9/9 PASS**
 Source of truth: `.specify/features/002-qr-coffee-platform/tasks.md`   
 - Phase 004 (US2, T043–T053) **SIGN-OFF: PASS** (2026-04-08)  
 - Evidence: `pnpm -C apps/web test:generate-qr && pnpm -C apps/web test:e2e` -> PASS (generate_qr + E2E happy path dashboard -> QR -> hash resolve)  
+- Phase 005 (US3, T054–T063) **SIGN-OFF: PASS** (2026-04-08)  
+- Evidence: `pnpm -C packages/shared test && pnpm -C packages/shared typecheck && pnpm -C apps/mobile typecheck` -> PASS (discovery/follow hooks + US3 integration smoke)  
+- Evidence: `pnpm -C apps/web test:generate-qr && pnpm -C apps/web test:e2e` -> PASS (US2 regression gate green after US3 changes)  
  --- 
 ## Podsumowanie   
 |      Faza |                     User Story |            Taski |
@@ -101,17 +104,17 @@ Demonstratable bez roaster web app (seed data wystarczy).
 - [x] T053 [P] useRoasterCoffees + useCreateBatch hooks   
  --- 
 ## Phase 5: US3 — Coffee Hub + Discovery (T054–T063)   
-- [ ] T054 `apps/mobile/(tabs)/hub/index.tsx` (Coffee Hub — 4 sections)   
-- [ ] T054b [P] Scan Coffee visually dominant (min 40% screen, primary CTA per Founding Philosophy)   
-- [ ] T055 [P] DiscoverCoffees tab component   
-- [ ] T056 [P] DiscoverRoasters tab component   
-- [ ] T057 RoasterProfile screen   
-- [ ] T058 [P] useDiscoverCoffees hook   
-- [ ] T059 [P] useDiscoverRoasters hook   
-- [ ] T060 useFollowRoaster hook + follow action   
-- [ ] T061 [P] LearnCoffee tab component   
-- [ ] T062 LearnArticle screen   
-- [ ] T063 MDX article content (3 seed articles)   
+- [x] T054 `apps/mobile/(tabs)/hub/index.tsx` (Coffee Hub — 4 sections)   
+- [x] T054b [P] Scan Coffee visually dominant (min 40% screen, primary CTA per Founding Philosophy)   
+- [x] T055 [P] DiscoverCoffees tab component   
+- [x] T056 [P] DiscoverRoasters tab component   
+- [x] T057 RoasterProfile screen   
+- [x] T058 [P] useDiscoverCoffees hook   
+- [x] T059 [P] useDiscoverRoasters hook   
+- [x] T060 useFollowRoaster hook + follow action   
+- [x] T061 [P] LearnCoffee tab component   
+- [x] T062 LearnArticle screen   
+- [x] T063 MDX article content (3 seed articles)   
  --- 
 ## Phase 6: US4 — Sensory Reputation (T064–T068)   
 - [ ] T064 Expose reputation level in user profile screen   

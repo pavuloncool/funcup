@@ -1,111 +1,60 @@
-# funcup — Project Log
+# funcup - Project Log
 
 Data aktualizacji: 2026-04-08
 
 ## Cel dokumentu
 
-Ten log opisuje wykonane prace w repozytorium `funcup` od momentu startu projektu do obecnego stanu, z naciskiem na zgodność z roadmapą `13-tasks-002-qr-coffee-platform-88-tasks.md`.
+Ten log opisuje wykonane prace i status delivery w repozytorium `funcup`, z odniesieniem do roadmapy `funcup-src-docs/04-tasks/13-tasks-002-qr-coffee-platform-88-tasks.md`.
 
-## 1) Start projektu i baza architektoniczna
+## 1) Fazy zakonczone i status
 
-- Utworzono monorepo z podziałem na `apps/*` oraz `packages/*`.
-- Utrzymano konfigurację Turborepo (`turbo.json`) jako mechanizm orkiestracji tasków.
-- Zorganizowano strukturę dokumentacji produktowo-technicznej w `funcup-src-docs` oraz `specs`.
+- Phase 001-003 (T001-T042): wykonane i zsynchronizowane z backlogiem.
+- Phase 004 (US2, T043-T053): SIGN-OFF PASS.
+- Phase 005 (US3, T054-T063): SIGN-OFF PASS.
 
-## 2) Audyt zgodności z source of truth (Phase 1–3)
+## 2) Najwazniejsze rezultaty do konca Phase 005
 
-- Przeprowadzono audyt stanu repo względem dokumentu:
-  `funcup-src-docs/04-tasks/13-tasks-002-qr-coffee-platform-88-tasks.md`.
-- Zweryfikowano rozbieżności dla zakresu MVP (T001–T042), z trybem oceny strict-paths.
-- Potwierdzono, że część implementacji istniała funkcjonalnie, ale nie w ścieżkach wymaganych przez tasks.
+- Mobile Hub (US3):
+  - `apps/mobile/(tabs)/hub/index.tsx` z dominant scan CTA (min 40% wysokosci),
+  - discovery tabs: coffees / roasters / learn.
+- Discovery i follow:
+  - `packages/shared/src/hooks/useDiscoverCoffees.ts`,
+  - `packages/shared/src/hooks/useDiscoverRoasters.ts`,
+  - `packages/shared/src/hooks/useFollowRoaster.ts`,
+  - ekran profilu: `apps/mobile/roaster/[id]/index.tsx`.
+- Learn vertical:
+  - `apps/mobile/src/components/hub/LearnCoffeeTab.tsx`,
+  - `apps/mobile/learn/[slug].tsx`,
+  - seed article content: `apps/mobile/src/content/learn/articles.ts`.
 
-## 3) Prace wyrównujące Phase 1 (T001–T012)
+## 3) Jakosc i testy (evidence)
 
-- Dodano `pnpm-workspace.yaml` i przełączono root `packageManager` na pnpm.
-- Dostosowano reguły jakości:
-  - uzupełniono ESLint o `@typescript-eslint/no-explicit-any: "error"`.
-- Odtworzono wymagane aplikacje:
-  - `apps/mobile` (Expo 52 + Expo Router),
-  - `apps/web` (Next.js 15 App Router).
-- Dodano konfiguracje stylowania:
-  - mobile: NativeWind + Tailwind,
-  - web: Tailwind + PostCSS + Framer Motion dependency.
-- Dodano per-app `.env.example` dla mobile i web.
+- US3 quality gate:
+  - `pnpm -C packages/shared test` -> PASS
+  - `pnpm -C packages/shared typecheck` -> PASS
+  - `pnpm -C apps/mobile typecheck` -> PASS
+- US2 regression gate po zmianach US3:
+  - `pnpm -C apps/web test:generate-qr` -> PASS
+  - `pnpm -C apps/web test:e2e` -> PASS
+- US3 integration smoke flow:
+  - `packages/shared/src/hooks/us3IntegrationSmoke.test.ts`
+  - scenariusz: Hub -> RoasterProfile -> Follow (happy path + error path).
 
-## 4) Prace wyrównujące Phase 2 (T013–T024)
+## 4) Artefakty zarzadcze zaktualizowane w tej fazie
 
-- Uzupełniono brakujące migracje i seed:
-  - `supabase/migrations/0003_functions_triggers.sql`,
-  - `supabase/migrations/0004_pg_net_and_storage.sql`,
-  - `supabase/seed.sql`.
-- Dodano artefakt typów DB:
-  - `supabase/types/database.ts`.
-- Dodano warstwę shared:
-  - `packages/shared/src/services/supabaseClientFactory.ts`,
-  - constants: flavor notes, brew methods, reputation thresholds.
-- Dodano klientów Supabase:
-  - mobile: `apps/mobile/src/services/supabaseClient.ts`,
-  - web: browser + server clients w `apps/web/src/lib/supabase/*`.
-- Uzupełniono brakujące layouty wymagane przez zadania.
+- `PHASE005_HANDOFF.md`
+- `DEFINITION_OF_READY_PHASE005_NEXT_SPRINT.md`
+- `funcup-src-docs/04-tasks/13-tasks-002-qr-coffee-platform-88-tasks.md`
 
-## 5) Prace wyrównujące Phase 3 (T025–T042)
+## 5) Status techniczny repo
 
-- Dodano wymagane ścieżki edge functions:
-  - `supabase/functions/scan_qr/index.ts`,
-  - `supabase/functions/update_coffee_stats/index.ts`.
-- Dodano shared hooks/services:
-  - `packages/shared/src/hooks/useCoffeePage.ts`,
-  - `packages/shared/src/hooks/useJournal.ts`,
-  - `packages/shared/src/services/tastingService.ts`.
-- Odtworzono wymagane ekrany i komponenty mobile zgodne z tasks paths:
-  - auth (`login`, `register`),
-  - scan,
-  - coffee page + sekcje + komponenty logowania tastingu,
-  - journal entry screen.
+- Repo jest gotowe do wejscia w Phase 006 (US4 - Sensory Reputation).
+- Aplikacja web jest uruchamialna lokalnie (localhost) i przetestowana regresyjnie.
+- Nadal wystepuja artefakty developerskie w `.next` po lokalnych runach test/dev (normalne dla pracy lokalnej).
 
-## 6) Stabilizacja instalacji zależności (pnpm)
+## 6) Nastepne kroki
 
-### Problem
-
-`pnpm install` kończył się błędami `EPERM` podczas wypakowywania paczek zawierających ukryte katalogi/plikowe artefakty (`.vscode`, `.claude`) w `node_modules`.
-
-### Diagnoza i działania
-
-- Potwierdzono, że środowisko miało restrykcje operacji na części ukrytych ścieżek.
-- Zidentyfikowano problematyczne paczki tranzytywne:
-  - `xmlbuilder@15.1.x` (zawiera `package/.vscode/launch.json`),
-  - `resolve@2.0.0-next.6` (zawiera `package/.claude/settings.local.json`).
-- Dodano obejścia w `package.json` (pnpm overrides):
-  - `xmlbuilder` przypięty do `15.0.0`,
-  - `resolve` przypięty do `1.22.10`.
-- Utrzymano `.npmrc` z `package-import-method=copy` dla stabilniejszego importu pakietów.
-
-### Efekt
-
-- `pnpm install` kończy się sukcesem (exit code 0).
-- Repo ma działający punkt wejścia do dalszego developmentu.
-
-## 7) Artefakty zarządcze i jakościowe
-
-- Dodano checklistę audytową:
-  - `AUDIT_PHASE1_3_CHECKLIST.md` (PASS/FAIL per T001–T042, strict-paths).
-- Dodano checklistę gotowości sprintu:
-  - `DEFINITION_OF_READY_NEXT_SPRINT.md`.
-
-## 8) Aktualny status projektu (na dziś)
-
-- Projekt jest development-ready (możliwa kontynuacja prac sprintowych).
-- Projekt nie jest jeszcze production-ready:
-  - część ekranów/komponentów to placeholdery pod dalszą implementację,
-  - wymagane są kolejne fazy (Phase 4+), testy integracyjne i hardening.
-
-## 9) Rekomendowane kolejne kroki
-
-1. Wejście w backlog Phase 4 (US2 — Roaster Publishes QR).
-2. Domknięcie jakości:
-   - `pnpm lint`,
-   - `pnpm test`,
-   - smoke test mobile + web.
-3. Aktualizacja statusów w dokumentach tasks i audit checklist po każdym zamkniętym tasku.
-4. Stopniowe zastępowanie placeholderów pełną logiką biznesową.
+1. Wejscie w Phase 006 (T064-T068) zgodnie z backlogiem.
+2. Utrzymanie zasady no-regression dla US2 i US3 przy kazdym wiekszym PR.
+3. Aktualizacja checklist i logu po kazdym domknietym tasku Phase 006.
 

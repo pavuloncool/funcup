@@ -8,3 +8,6 @@ export * from './services/supabaseClientFactory';
 export * from './services/tastingService';
 export * from './hooks/useCoffeePage';
 export * from './hooks/useJournal';
+export * from './hooks/useDiscoverCoffees';
+export * from './hooks/useDiscoverRoasters';
+export * from './hooks/useFollowRoaster';
