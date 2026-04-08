@@ -9,6 +9,7 @@ export default function Home() {
       <Link href="/(auth)/login">Go to login</Link>
       <Link href="/(tabs)/hub/scan">Go to scan</Link>
       <Link href="/(tabs)/journal">Go to journal</Link>
+      <Link href="/(tabs)/profile">Go to profile</Link>
     </View>
   );
 }

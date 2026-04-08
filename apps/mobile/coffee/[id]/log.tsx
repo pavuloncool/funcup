@@ -7,6 +7,7 @@ import { RatingInput } from './components/RatingInput';
 
 export default function TastingLogScreen() {
   const params = useLocalSearchParams<{ id?: string }>();
+  const demoReputationScore = 24;
 
   return (
     <View style={{ flex: 1, padding: 24, gap: 12 }}>
@@ -15,7 +16,7 @@ export default function TastingLogScreen() {
 
       <RatingInput />
       <BrewMethodPicker />
-      <FlavorNoteSelector />
+      <FlavorNoteSelector reputationScore={demoReputationScore} />
     </View>
   );
 }

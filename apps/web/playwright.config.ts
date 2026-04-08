@@ -1,4 +1,8 @@
 import { defineConfig } from '@playwright/test';
+// @ts-ignore - module is provided by Next.js runtime dependency
+import { loadEnvConfig } from '@next/env';
+
+loadEnvConfig(process.cwd());
 
 const baseURL = process.env.WEB_BASE_URL ?? 'http://127.0.0.1:3000';
 

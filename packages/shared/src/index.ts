@@ -4,6 +4,7 @@ export const VERSION = '0.1.0';
 export * from './constants/flavorNotes';
 export * from './constants/brewMethods';
 export * from './constants/reputationThresholds';
+export * from './constants/reputation';
 export * from './services/supabaseClientFactory';
 export * from './services/tastingService';
 export * from './hooks/useCoffeePage';

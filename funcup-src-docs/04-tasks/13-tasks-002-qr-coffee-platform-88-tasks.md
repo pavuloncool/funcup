@@ -19,6 +19,9 @@ Source of truth: `.specify/features/002-qr-coffee-platform/tasks.md`
 - Phase 005 (US3, T054–T063) **SIGN-OFF: PASS** (2026-04-08)  
 - Evidence: `pnpm -C packages/shared test && pnpm -C packages/shared typecheck && pnpm -C apps/mobile typecheck` -> PASS (discovery/follow hooks + US3 integration smoke)  
 - Evidence: `pnpm -C apps/web test:generate-qr && pnpm -C apps/web test:e2e` -> PASS (US2 regression gate green after US3 changes)  
+- Phase 006 (US4, T064–T068) **SIGN-OFF: PASS** (2026-04-08)  
+- Evidence: `pnpm -C packages/shared test && pnpm -C packages/shared typecheck && pnpm -C apps/mobile typecheck` -> PASS (reputation progression integration + anti-gamification guards)  
+- Evidence: `pnpm -C apps/web test:generate-qr && pnpm -C apps/web test:e2e` -> PASS (US2 regression gate green after US4 changes)  
  --- 
 ## Podsumowanie   
 |      Faza |                     User Story |            Taski |
@@ -117,11 +120,11 @@ Demonstratable bez roaster web app (seed data wystarczy).
 - [x] T063 MDX article content (3 seed articles)   
  --- 
 ## Phase 6: US4 — Sensory Reputation (T064–T068)   
-- [ ] T064 Expose reputation level in user profile screen   
-- [ ] T065 Expand flavor note selector per reputation level (silent)   
-- [ ] T066 Expert label in Community section (subtle)   
-- [ ] T067 Integration test: reputation advances silently   
-- [ ] T068 Guard: no progress bar, no unlock message, no notification   
+- [x] T064 Expose reputation level in user profile screen   
+- [x] T065 Expand flavor note selector per reputation level (silent)   
+- [x] T066 Expert label in Community section (subtle)   
+- [x] T067 Integration test: reputation advances silently   
+- [x] T068 Guard: no progress bar, no unlock message, no notification   
  --- 
 ## Phase 7: US5 — Offline Tasting (T069–T074)   
 - [ ] T069 MMKV offline queue implementation   

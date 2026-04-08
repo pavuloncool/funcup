@@ -8,6 +8,7 @@ import { CoffeePageStory } from './CoffeePageStory';
 
 export default function CoffeePage() {
   const params = useLocalSearchParams<{ id?: string }>();
+  const demoReputationScore = 52;
 
   return (
     <ScrollView contentContainerStyle={{ padding: 24, gap: 12 }}>
@@ -17,7 +18,7 @@ export default function CoffeePage() {
       <CoffeePageProduct coffeeName="Demo Coffee" />
       <CoffeePageBrewing />
       <CoffeePageStory />
-      <CoffeePageCommunity />
+      <CoffeePageCommunity reputationScore={demoReputationScore} />
 
       <View style={{ paddingVertical: 12 }}>
         <Link href={{ pathname: '/coffee/[id]/log', params: { id: params.id ?? '' } }}>
