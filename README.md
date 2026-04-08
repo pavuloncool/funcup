@@ -24,6 +24,7 @@ funcup is a platform connecting coffee roasters and drinkers through QR codes an
 - **Sprint Readiness (DoR, Phase 005):** [DEFINITION_OF_READY_PHASE005_NEXT_SPRINT.md](DEFINITION_OF_READY_PHASE005_NEXT_SPRINT.md)
 - **Phase 004 Handoff:** [PHASE4_HANDOFF.md](PHASE4_HANDOFF.md)
 - **Phase 004 Hardening Tests:** [PHASE4_HARDENING_TESTS.md](PHASE4_HARDENING_TESTS.md)
+- **Phase 005 Handoff:** [PHASE5_HANDOFF.md](PHASE5_HANDOFF.md)
 - **Project Log (timeline):** [project-log.md](project-log.md)
 
 ## Core Documents Rule
