@@ -47,4 +47,4 @@ Ten dokument definiuje warunki wejscia do sprintu implementujacego Polish (final
 
 Phase 009 moze startowac, gdy Phase 008 ma sign-off w backlogu i quality gate shared+mobile jest PASS.
 
-Status: **DONE** — Phase 009 zamkniety: **SIGN-OFF PASS** (2026-04-10); evidence: `PHASE009_HANDOFF.md` §11, `project-log.md` §3.
+Status: **DONE** — Phase 009 zamkniety: **SIGN-OFF PASS** (2026-04-10); evidence: `PHASE009_HANDOFF.md` (section 11), `project-log.md` (section 3).
