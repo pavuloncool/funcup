@@ -303,6 +303,9 @@ importers:
         specifier: ^18.0.0 || ^19.0.0
         version: 18.3.1
     devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.14
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
@@ -9568,7 +9571,9 @@ snapshots:
       metro-runtime: 0.84.2
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-colors@0.76.6': {}
 

@@ -22,11 +22,12 @@ test.describe('generate_qr function', () => {
   test('returns 201 then idempotent 200 for same batch', async ({ request }) => {
     const actor = await provisionVerifiedRoaster(request, 'generate-qr');
     const { batch } = await createCoffeeAndBatch(request, actor, 'generate-qr');
-    const { url } = supabaseEnv();
+    const { url, anonKey } = supabaseEnv();
 
     const first = await request.post(`${url}/functions/v1/generate_qr`, {
       headers: {
         Authorization: `Bearer ${actor.accessToken}`,
+        apikey: anonKey,
         'Content-Type': 'application/json',
       },
       data: { batch_id: batch.id },
@@ -44,6 +45,7 @@ test.describe('generate_qr function', () => {
     const second = await request.post(`${url}/functions/v1/generate_qr`, {
       headers: {
         Authorization: `Bearer ${actor.accessToken}`,
+        apikey: anonKey,
         'Content-Type': 'application/json',
       },
       data: { batch_id: batch.id },
@@ -58,11 +60,12 @@ test.describe('generate_qr function', () => {
 
   test('returns 404 for unknown batch_id', async ({ request }) => {
     const actor = await provisionVerifiedRoaster(request, 'generate-qr-404');
-    const { url } = supabaseEnv();
+    const { url, anonKey } = supabaseEnv();
 
     const response = await request.post(`${url}/functions/v1/generate_qr`, {
       headers: {
         Authorization: `Bearer ${actor.accessToken}`,
+        apikey: anonKey,
         'Content-Type': 'application/json',
       },
       data: { batch_id: '11111111-1111-4111-8111-111111111111' },

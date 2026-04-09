@@ -25,12 +25,14 @@ funcup is a platform connecting coffee roasters and drinkers through QR codes an
 - **Sprint Readiness (DoR, Phase 006):** [DEFINITION_OF_READY_PHASE006_NEXT_SPRINT.md](DEFINITION_OF_READY_PHASE006_NEXT_SPRINT.md)
 - **Sprint Readiness (DoR, Phase 007):** [DEFINTION_OF_READY_PHASE007.md](DEFINTION_OF_READY_PHASE007.md)
 - **Sprint Readiness (DoR, Phase 008):** [DEFINTION_OF_READY_PHASE008.md](DEFINTION_OF_READY_PHASE008.md)
+- **Sprint Readiness (DoR, Phase 009):** [DEFINTION_OF_READY_PHASE009.md](DEFINTION_OF_READY_PHASE009.md)
 - **Phase 004 Handoff:** [PHASE004_HANDOFF.md](PHASE004_HANDOFF.md)
 - **Phase 004 Hardening Tests:** [PHASE004_HARDENING_TESTS.md](PHASE004_HARDENING_TESTS.md)
 - **Phase 005 Handoff:** [PHASE005_HANDOFF.md](PHASE005_HANDOFF.md)
 - **Phase 006 Handoff:** [PHASE006_HANDOFF.md](PHASE006_HANDOFF.md)
 - **Phase 007 Handoff:** [PHASE007_HANDOFF.md](PHASE007_HANDOFF.md)
 - **Phase 008 Handoff:** [PHASE008_HANDOFF.md](PHASE008_HANDOFF.md)
+- **Phase 009 Handoff:** [PHASE009_HANDOFF.md](PHASE009_HANDOFF.md)
 - **Phase 006 DoR (requested alias):** [DEFINTION_OF_READY_PHASE006.md](DEFINTION_OF_READY_PHASE006.md)
 - **Project Log (timeline):** [project-log.md](project-log.md)
 
@@ -50,3 +52,4 @@ funcup is a platform connecting coffee roasters and drinkers through QR codes an
 - **Branch:** main
 - **Constitution Check:** 9/9 PASS
 - **Generated:** 2026-03-25
+- **Current sprint entry:** Phase 009 (Polish, T081–T088) — see [PHASE009_HANDOFF.md](PHASE009_HANDOFF.md) and [DEFINTION_OF_READY_PHASE009.md](DEFINTION_OF_READY_PHASE009.md).

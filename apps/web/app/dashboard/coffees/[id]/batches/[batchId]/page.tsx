@@ -20,6 +20,9 @@ export default async function BatchDetailsPage({ params }: Props) {
       </p>
       <QRDownloadButton batchId={batchId} />
       <p>
+        <Link href={`/dashboard/analytics/${batchId}`}>Batch analytics</Link>
+      </p>
+      <p>
         <Link href={`/dashboard/coffees/${id}`}>Back to coffee</Link>
       </p>
     </main>

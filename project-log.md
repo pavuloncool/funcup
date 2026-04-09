@@ -1,6 +1,6 @@
 # funcup - Project Log
 
-Data aktualizacji: 2026-04-08
+Data aktualizacji: 2026-04-10
 
 ## Cel dokumentu
 
@@ -13,84 +13,44 @@ Ten log opisuje wykonane prace i status delivery w repozytorium `funcup`, z odni
 - Phase 005 (US3, T054-T063): SIGN-OFF PASS.
 - Phase 006 (US4, T064-T068): SIGN-OFF PASS.
 - Phase 007 (US5, T069-T074): SIGN-OFF PASS.
+- Phase 008 (US6, T075-T080): SIGN-OFF PASS.
 
-## 2) Najwazniejsze rezultaty do konca Phase 007
+## 2) Najwazniejsze rezultaty do konca Phase 008
 
-- Mobile Hub (US3):
-  - `apps/mobile/(tabs)/hub/index.tsx` z dominant scan CTA (min 40% wysokosci),
-  - discovery tabs: coffees / roasters / learn.
-- Discovery i follow:
-  - `packages/shared/src/hooks/useDiscoverCoffees.ts`,
-  - `packages/shared/src/hooks/useDiscoverRoasters.ts`,
-  - `packages/shared/src/hooks/useFollowRoaster.ts`,
-  - ekran profilu: `apps/mobile/roaster/[id]/index.tsx`.
-- Learn vertical:
-  - `apps/mobile/src/components/hub/LearnCoffeeTab.tsx`,
-  - `apps/mobile/learn/[slug].tsx`,
-  - seed article content: `apps/mobile/src/content/learn/articles.ts`.
-- Sensory reputation (US4):
-  - `apps/mobile/(tabs)/profile/index.tsx` (widocznosc poziomu reputacji),
-  - `apps/mobile/coffee/[id]/components/FlavorNoteSelector.tsx` (silent expansion per level),
-  - `apps/mobile/coffee/[id]/CoffeePageCommunity.tsx` (subtle expert label),
-  - `packages/shared/src/constants/reputation.ts` (single source of truth),
-  - `packages/shared/src/hooks/reputation.integration.test.ts` (integration + guardy anty-gamification).
-- Offline tasting (US5):
-  - `packages/shared/src/services/offlineTastingQueue.ts` (kolejka offline + LWW),
-  - `packages/shared/src/services/offlineTastingQueue.test.ts` (testy enqueue/flush/cap),
-  - `packages/shared/src/services/offlineTasting.integration.test.ts` (airplane mode -> sync <= 30s),
-  - `apps/mobile/src/hooks/useOfflineTastingSync.ts` (NetInfo + auto-flush reconnect),
-  - `apps/mobile/src/services/offlineQueueStorage.ts` (MMKV storage adapter),
-  - `packages/shared/src/hooks/useCoffeePage.ts` (`staleTime: Infinity`),
-  - `apps/mobile/coffee/[id]/log.tsx` (online/offline submit + queue state).
+- Roaster Analytics (US6):
+  - RLS: `supabase/migrations/0004_roaster_analytics_rls.sql` (odczyt `coffee_logs` / `tasting_notes` dla wlasciciela batcha).
+  - Logika czysta: `packages/shared/src/analytics/roasterBatchAnalytics.ts` (agregaty, top flavor notes, filtr brew method).
+  - Hook: `packages/shared/src/hooks/useRoasterAnalytics.ts` (published stats vs widok filtrowany).
+  - Web: `apps/web/app/dashboard/analytics/[batchId]/page.tsx` + komponenty `AnalyticsSummary`, `TopFlavorNotes`, `BrewMethodFilter` w `apps/web/src/components/analytics/`.
+  - Testy: `packages/shared/src/analytics/roasterBatchAnalytics.test.ts` (T080: 5 mock tastings, filtr).
+- Regresja US2 (web): funkcja `generate_qr` — `supabase/config.toml` sekcja `[functions.generate_qr] verify_jwt = false` (Kong nie odrzuca user JWT); testy Playwright z naglowkiem `apikey`; skrypt `apps/web/scripts/sync-supabase-env-local.sh` + dokumentacja `.env.local`.
 
-## 3) Jakosc i testy (evidence)
+## 3) Jakosc i testy (evidence Phase 008 sign-off)
 
-- US3 quality gate:
-  - `pnpm -C packages/shared test` -> PASS
+- US6 quality gate (uruchomione w CI/sandbox bez Dockera: **PASS**):
+  - `pnpm -C packages/shared test` -> PASS (19 testow, m.in. `roasterBatchAnalytics.test.ts`)
   - `pnpm -C packages/shared typecheck` -> PASS
   - `pnpm -C apps/mobile typecheck` -> PASS
-- US2 regression gate po zmianach US3:
-  - `pnpm -C apps/web test:generate-qr` -> PASS
-  - `pnpm -C apps/web test:e2e` -> PASS
-- US4 quality gate:
-  - `pnpm -C packages/shared test` -> PASS
-  - `pnpm -C packages/shared typecheck` -> PASS
-  - `pnpm -C apps/mobile typecheck` -> PASS
-- US2 regression gate po zmianach US4:
-  - `pnpm -C apps/web test:generate-qr` -> PASS
-  - `pnpm -C apps/web test:e2e` -> PASS
-- US5 quality gate:
-  - `pnpm -C packages/shared test` -> PASS
-  - `pnpm -C packages/shared typecheck` -> PASS
-  - `pnpm -C apps/mobile typecheck` -> PASS
-- US2 regression gate po zmianach US5:
-  - `pnpm -C apps/web test:generate-qr` -> PASS
-  - `pnpm -C apps/web test:e2e` -> PASS
-- US3 integration smoke flow:
-  - `packages/shared/src/hooks/us3IntegrationSmoke.test.ts`
-  - scenariusz: Hub -> RoasterProfile -> Follow (happy path + error path).
+- US2 regression gate (wymaga **lokalnego** Supabase na `127.0.0.1:54321` oraz `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` w `apps/web/.env.local`):
+  - `pnpm -C apps/web test:generate-qr` -> PASS (potwierdzone na stacku z Dockerem)
+  - `pnpm -C apps/web test:e2e` -> PASS (j.w.)
 
 ## 4) Artefakty zarzadcze zaktualizowane w tej fazie
 
-- `PHASE005_HANDOFF.md`
-- `DEFINITION_OF_READY_PHASE005_NEXT_SPRINT.md`
-- `PHASE006_HANDOFF.md`
-- `DEFINITION_OF_READY_PHASE006_NEXT_SPRINT.md`
-- `PHASE007_HANDOFF.md`
-- `DEFINTION_OF_READY_PHASE007.md`
-- `PHASE008_HANDOFF.md`
-- `DEFINTION_OF_READY_PHASE008.md`
+- `PHASE008_HANDOFF.md` (sign-off)
+- `PHASE009_HANDOFF.md`
+- `DEFINTION_OF_READY_PHASE009.md`
 - `funcup-src-docs/04-tasks/13-tasks-002-qr-coffee-platform-88-tasks.md`
+- `README.md`
+- `project-log.md`
 
 ## 5) Status techniczny repo
 
-- Repo jest gotowe do wejscia w Phase 008 (US6 - Roaster Analytics).
-- Aplikacja web jest uruchamialna lokalnie (localhost) i przetestowana regresyjnie.
-- Nadal wystepuja artefakty developerskie w `.next` po lokalnych runach test/dev (normalne dla pracy lokalnej).
+- Repo jest gotowe do wejscia w **Phase 009 (Polish, T081-T088)**.
+- Aplikacja web i mobile kompiluja sie; testy wymagajace Supabase uruchamiac przy wlaczonym `supabase start`.
 
 ## 6) Nastepne kroki
 
-1. Wejscie w Phase 008 (T075-T080) zgodnie z backlogiem.
-2. Utrzymanie zasady no-regression dla US2/US3/US4/US5 przy kazdym wiekszym PR.
-3. Aktualizacja checklist i logu po kazdym domknietym tasku Phase 008.
-
+1. Wejscie w Phase 009 zgodnie z `PHASE009_HANDOFF.md` i `DEFINTION_OF_READY_PHASE009.md`.
+2. Utrzymanie regresji US2 przed finalnym sign-off Polish.
+3. Domkniecie `T081-T088` i aktualizacja backlogu oraz logu.

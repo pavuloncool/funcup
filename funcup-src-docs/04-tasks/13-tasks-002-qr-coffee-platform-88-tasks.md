@@ -25,6 +25,9 @@ Source of truth: `.specify/features/002-qr-coffee-platform/tasks.md`
 - Phase 007 (US5, T069–T074) **SIGN-OFF: PASS** (2026-04-08)  
 - Evidence: `pnpm -C packages/shared test && pnpm -C packages/shared typecheck && pnpm -C apps/mobile typecheck` -> PASS (offline queue + reconnect sync + conflict resolution coverage)  
 - Evidence: `pnpm -C apps/web test:generate-qr && pnpm -C apps/web test:e2e` -> PASS (US2 regression gate green after US5 changes + hardening rerun)  
+- Phase 008 (US6, T075–T080) **SIGN-OFF: PASS** (2026-04-10)  
+- Evidence: `pnpm -C packages/shared test && pnpm -C packages/shared typecheck && pnpm -C apps/mobile typecheck` -> PASS (roaster analytics aggregates + `roasterBatchAnalytics.test.ts` US6/T080)  
+- Evidence: `pnpm -C apps/web test:generate-qr && pnpm -C apps/web test:e2e` -> PASS przy lokalnym Supabase (`supabase start`, klucze w `apps/web/.env.local`; Kong: `[functions.generate_qr] verify_jwt = false` + naglowek `apikey` w testach) — regresja US2 po US6  
  --- 
 ## Podsumowanie   
 |      Faza |                     User Story |            Taski |
@@ -137,13 +140,13 @@ Demonstratable bez roaster web app (seed data wystarczy).
 - [x] T073 Conflict resolution (last-write-wins for ratings)   
 - [x] T074 Integration test: airplane mode → queue → sync within 30s   
  --- 
-## Phase 8: US6 — Roaster Analytics (T075–T080)   
-- [ ] T075 `apps/web/dashboard/analytics/[batchId]/page.tsx`   
-- [ ] T076 AnalyticsSummary component (total tastings, avg rating, distribution)   
-- [ ] T077 TopFlavorNotes component   
-- [ ] T078 BrewMethodFilter component   
-- [ ] T079 useRoasterAnalytics hook   
-- [ ] T080 Integration test: 5 mock tastings → stats correct → filter works   
+## Phase 8: US6 — Roaster Analytics (T075–T080)
+- [x] T075 `apps/web/dashboard/analytics/[batchId]/page.tsx`
+- [x] T076 AnalyticsSummary component (total tastings, avg rating, distribution)
+- [x] T077 TopFlavorNotes component
+- [x] T078 BrewMethodFilter component
+- [x] T079 useRoasterAnalytics hook
+- [x] T080 Integration test: 5 mock tastings → stats correct → filter works
  --- 
 ## Phase 9: Polish (T081–T088)   
 - [ ] T081 Error boundary + global error states (mobile)   

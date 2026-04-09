@@ -5,6 +5,8 @@ Zakres odniesienia: domkniety Phase 007 (US5, T069-T074) i wejscie w Phase 008 (
 
 Ten dokument definiuje warunki wejscia do sprintu implementujacego Roaster Analytics.
 
+> **Phase 008 zamkniety (sign-off 2026-04-10).** Kontynuacja: Phase 009 — [DEFINTION_OF_READY_PHASE009.md](DEFINTION_OF_READY_PHASE009.md), [PHASE009_HANDOFF.md](PHASE009_HANDOFF.md).
+
 ## 1) Gate wejsciowy po Phase 007
 
 - [x] Backlog ma formalny sign-off dla Phase 007 (US5).
@@ -87,4 +89,4 @@ Sprint Phase 008 moze wystartowac, jezeli jednoczesnie:
 - [x] backlog T075-T080 jest gotowy i sproiorytetyzowany,
 - [ ] test plan dla US6 jest rozpisany per task i zaakceptowany przez zespol.
 
-Status: **GO warunkowe** (mozna startowac implementacje, ale zamknac otwarte checkboxy planistyczne najpozniej na kick-off sprintu).
+Status: **Zakonczony** — sprint Phase 008 dostarczony; backlog T075–T080 `[x]`; nastepny sprint: Polish (Phase 009).

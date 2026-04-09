@@ -96,9 +96,17 @@ pnpm -C apps/web dev
 ## 9) Sugerowany pierwszy prompt do nowego czatu
 
 ```text
-Przeczytaj PHASE008_HANDOFF.md i rozpocznij implementacje Phase 008 (US6, T075-T080).
+Przeczytaj DEFINTION_OF_READY_PHASE008.md i PHASE008_HANDOFF.md i rozpocznij implementacje Phase 008 (US6, T075-T080).
 Priorytet: T079/T076/T077 (analytics foundation), potem filtr i kompozycja strony (T078/T075),
 na koncu integration test i hardening (T080), bez regresji US2/US3/US4/US5.
 Pamietaj o aktualizacji checklisty taskow po kazdym domknietym tasku.
 Pamietaj o hardening test przed Phase Sign-off.
 ```
+
+## 10) Sign-off Phase 008 (2026-04-10)
+
+- **Status:** PASS (US6, T075–T080).
+- **Quality gate (shared + mobile):** `pnpm -C packages/shared test`, `pnpm -C packages/shared typecheck`, `pnpm -C apps/mobile typecheck` → PASS.
+- **Hardening / regresja US2 (web):** `pnpm -C apps/web test:generate-qr`, `pnpm -C apps/web test:e2e` → PASS przy lokalnym Supabase (`supabase start`; klucze w `apps/web/.env.local` lub `./apps/web/scripts/sync-supabase-env-local.sh`).
+- **US6:** integracja `packages/shared/src/analytics/roasterBatchAnalytics.test.ts` (mock tastings + filtr); ekran `apps/web/app/dashboard/analytics/[batchId]`.
+- **Nastepna faza:** Phase 009 (Polish) — `PHASE009_HANDOFF.md`, `DEFINTION_OF_READY_PHASE009.md`.
