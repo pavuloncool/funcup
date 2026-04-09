@@ -77,6 +77,9 @@ function TabButton(props: { label: string; active: boolean; onPress: () => void 
   return (
     <Pressable
       onPress={props.onPress}
+      accessibilityRole="tab"
+      accessibilityState={{ selected: props.active }}
+      accessibilityLabel={props.label}
       style={{
         borderWidth: 1,
         borderColor: props.active ? '#111827' : '#d1d5db',

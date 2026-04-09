@@ -13,7 +13,9 @@ import { supabase } from '../../src/services/supabaseClient';
 import { getPendingTastings } from '@funcup/shared';
 
 export default function TastingLogScreen() {
-  const params = useLocalSearchParams<{ id?: string }>();
+  const params = useLocalSearchParams<{ id?: string; batchId?: string }>();
+  const batchId =
+    typeof params.batchId === 'string' && params.batchId.length > 0 ? params.batchId : params.id;
   const demoReputationScore = 24;
   const [isOnline, setIsOnline] = useState(true);
   const [pendingCount, setPendingCount] = useState(0);
@@ -35,7 +37,7 @@ export default function TastingLogScreen() {
 
   const onSubmit = async () => {
     const parsedRating = Number(ratingInput);
-    if (!params.id) {
+    if (!batchId) {
       setStatus('Missing batch id');
       return;
     }
@@ -49,7 +51,7 @@ export default function TastingLogScreen() {
 
     if (!online) {
       enqueuePendingTasting(offlineQueueStorage, {
-        batchId: params.id,
+        batchId,
         rating: parsedRating,
       });
       refreshPendingCount();
@@ -59,13 +61,13 @@ export default function TastingLogScreen() {
 
     try {
       await logTasting(supabase, {
-        batchId: params.id,
+        batchId,
         rating: parsedRating,
       });
       setStatus('Synced immediately.');
     } catch {
       enqueuePendingTasting(offlineQueueStorage, {
-        batchId: params.id,
+        batchId,
         rating: parsedRating,
       });
       refreshPendingCount();
@@ -76,7 +78,7 @@ export default function TastingLogScreen() {
   return (
     <View style={{ flex: 1, padding: 24, gap: 12 }}>
       <Text style={{ fontSize: 24, fontWeight: '600' }}>Tasting Log</Text>
-      <Text>Batch/Coffee id: {params.id ?? '(missing)'}</Text>
+      <Text>Batch id: {batchId ?? '(missing)'}</Text>
       <Text style={{ color: isOnline ? '#166534' : '#b91c1c' }}>
         {isOnline ? 'Online' : 'Offline'} | Pending queue: {pendingCount}
       </Text>

@@ -52,4 +52,5 @@ funcup is a platform connecting coffee roasters and drinkers through QR codes an
 - **Branch:** main
 - **Constitution Check:** 9/9 PASS
 - **Generated:** 2026-03-25
-- **Current sprint entry:** Phase 009 (Polish, T081–T088) — see [PHASE009_HANDOFF.md](PHASE009_HANDOFF.md) and [DEFINTION_OF_READY_PHASE009.md](DEFINTION_OF_READY_PHASE009.md).
+- **MVP roadmap (88 tasks, US1–US6 + Polish):** Phase 009 **SIGN-OFF: PASS** (2026-04-10) — evidence and commands: [PHASE009_HANDOFF.md](PHASE009_HANDOFF.md) §11, [project-log.md](project-log.md) §3, [tasks backlog](funcup-src-docs/04-tasks/13-tasks-002-qr-coffee-platform-88-tasks.md).
+- **Sprint readiness (Phase 009 DoR):** [DEFINTION_OF_READY_PHASE009.md](DEFINTION_OF_READY_PHASE009.md)

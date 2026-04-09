@@ -28,6 +28,10 @@ Source of truth: `.specify/features/002-qr-coffee-platform/tasks.md`
 - Phase 008 (US6, T075–T080) **SIGN-OFF: PASS** (2026-04-10)  
 - Evidence: `pnpm -C packages/shared test && pnpm -C packages/shared typecheck && pnpm -C apps/mobile typecheck` -> PASS (roaster analytics aggregates + `roasterBatchAnalytics.test.ts` US6/T080)  
 - Evidence: `pnpm -C apps/web test:generate-qr && pnpm -C apps/web test:e2e` -> PASS przy lokalnym Supabase (`supabase start`, klucze w `apps/web/.env.local`; Kong: `[functions.generate_qr] verify_jwt = false` + naglowek `apikey` w testach) — regresja US2 po US6  
+- Phase 009 (Polish, T081–T088) **SIGN-OFF: PASS** (2026-04-10)  
+- Evidence (quality gate): `pnpm -C packages/shared test && pnpm -C packages/shared typecheck && pnpm -C apps/mobile typecheck` -> PASS (19 testów Vitest; m.in. discovery przez `qr_codes`, Polish UX)  
+- Evidence (US2 regression): `pnpm -C apps/web test:generate-qr` -> PASS; `WEB_BASE_URL=http://127.0.0.1:3000 pnpm -C apps/web test:e2e` -> PASS przy równoległym `next dev -p 3000` (happy path wymaga działającego serwera web)  
+- Evidence (hardening / perf baseline web): `pnpm -C apps/web build` -> PASS (`next build`, bundle report w logu)  
  --- 
 ## Podsumowanie   
 |      Faza |                     User Story |            Taski |
@@ -149,14 +153,14 @@ Demonstratable bez roaster web app (seed data wystarczy).
 - [x] T080 Integration test: 5 mock tastings → stats correct → filter works
  --- 
 ## Phase 9: Polish (T081–T088)   
-- [ ] T081 Error boundary + global error states (mobile)   
-- [ ] T082 Loading skeletons for Coffee Page + Hub   
-- [ ] T083 Empty states for Journal + Discovery   
-- [ ] T084 Deep link handling (web: `/q/{hash}` → mobile: funcup://q/{hash})   
-- [ ] T085 Accessibility audit (mobile + web)   
-- [ ] T086 Performance audit (JS bundle size, image optimization)   
-- [ ] T087 EAS Build configuration (production profile)   
-- [ ] T088 Final QA checklist   
+- [x] T081 Error boundary + global error states (mobile)   
+- [x] T082 Loading skeletons for Coffee Page + Hub   
+- [x] T083 Empty states for Journal + Discovery   
+- [x] T084 Deep link handling (web: `/q/{hash}` → mobile: funcup://q/{hash})   
+- [x] T085 Accessibility audit (mobile + web)   
+- [x] T086 Performance audit (JS bundle size, image optimization)   
+- [x] T087 EAS Build configuration (production profile)   
+- [x] T088 Final QA checklist   
  --- 
 ## Independent Test Criteria per Story   
 | Story |                                                                   Co weryfikować |

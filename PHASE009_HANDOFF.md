@@ -89,3 +89,24 @@ Przeczytaj DEFINTION_OF_READY_PHASE009.md i PHASE009_HANDOFF.md i rozpocznij imp
 Priorytet: error/loading/empty states (T081-T083), potem deep links (T084), na koncu a11y/perf/EAS/QA (T085-T088).
 Pamietaj o aktualizacji checklisty taskow po kazdym domknietym tasku i o regresji US2 przed sign-off.
 ```
+
+## 10) T088 — smoke QA (Phase 009 close-out)
+
+- Mobile: Coffee Page shows skeleton then data from `scan_qr`; error + retry on bad hash; Journal empty / signed-out / list; Hub discovery tabs empty + skeleton + list; `funcup://q/{uuid}` resolves via `q/[hash]` → Coffee Page (Expo Go or dev client).
+- Web: `/q/[hash]` shows loading status and alert on error; dashboard build still green.
+- CI/local: `pnpm -C packages/shared test`, `pnpm -C packages/shared typecheck`, `pnpm -C apps/mobile typecheck`, `pnpm -C apps/web test:generate-qr`, `pnpm -C apps/web test:e2e`.
+
+## 11) SIGN-OFF: Phase 009 (Polish) — **PASS** (2026-04-10)
+
+Potwierdzone testy i hardening zgodnie z sekcjami **7** (plan) i **10** (smoke), plus build produkcyjny web:
+
+| Gate | Komenda | Wynik |
+|------|---------|--------|
+| Shared tests | `pnpm -C packages/shared test` | PASS (19 testów) |
+| Shared types | `pnpm -C packages/shared typecheck` | PASS |
+| Mobile types | `pnpm -C apps/mobile typecheck` | PASS |
+| US2 generate_qr | `pnpm -C apps/web test:generate-qr` | PASS |
+| US2 E2E | `pnpm -C apps/web test:e2e` | PASS (przy `WEB_BASE_URL=http://127.0.0.1:3000` i działającym `next dev -p 3000`; Playwright ładuje `.env.local` — ustaw spójny port lub nadpisz `WEB_BASE_URL`) |
+| Web production build (perf/hardening baseline) | `pnpm -C apps/web build` | PASS |
+
+Uwaga operacyjna: scenariusz `us2-happy-path.e2e.spec.ts` wymaga działającego serwera Next na adresie z `WEB_BASE_URL` (domyślnie `http://127.0.0.1:3000`).

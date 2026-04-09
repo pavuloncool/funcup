@@ -12,8 +12,8 @@ Ten dokument definiuje warunki wejscia do sprintu implementujacego Polish (final
   - [x] `pnpm -C packages/shared test`
   - [x] `pnpm -C packages/shared typecheck`
   - [x] `pnpm -C apps/mobile typecheck`
-  - [ ] `pnpm -C apps/web test:generate-qr` (wymaga `supabase start` + `SUPABASE_*` w `apps/web/.env.local`)
-  - [ ] `pnpm -C apps/web test:e2e` (j.w.)
+  - [x] `pnpm -C apps/web test:generate-qr` (wymaga `supabase start` + `SUPABASE_*` w `apps/web/.env.local`)
+  - [x] `pnpm -C apps/web test:e2e` (j.w.)
 
 ## 2) Repozytorium i srodowisko
 
@@ -30,21 +30,21 @@ Ten dokument definiuje warunki wejscia do sprintu implementujacego Polish (final
 ## 4) Zaleznosci produktowe
 
 - [x] Wszystkie user stories MVP (US1–US6) sa zaimplementowane w backlogu przed Polish.
-- [ ] Lista priorytetow a11y/perf uzgodniona (minimalny zakres vs “ideal”).
+- [x] Lista priorytetow a11y/perf uzgodniona (minimalny zakres vs “ideal”) — minimal: mobile tab/hub/CTA labels + web `/q` status/alert; perf: Next `images.remotePatterns` dla Supabase storage, build report jako baseline.
 
 ## 5) Jakosc i test plan
 
 - [x] Regresja automatyczna (shared + mobile) przed merge Phase 009.
-- [ ] Regresja Playwright (generate-qr + e2e) przed final sign-off Phase 009.
-- [ ] Checklist `T088` wypelniona przed oznaczeniem fazy jako PASS.
+- [x] Regresja Playwright (generate-qr + e2e) przed final sign-off Phase 009.
+- [x] Checklist `T088` wypelniona przed oznaczeniem fazy jako PASS (smoke: patrz `PHASE009_HANDOFF.md` sekcja QA).
 
 ## 6) Ryzyka
 
-- [ ] Ryzyko: scope Polish rozplywa sie — mitigacja: trzymac sie taskow T081-T088 i checklisty.
+- [x] Ryzyko: scope Polish rozplywa sie — mitigacja: trzymac sie taskow T081-T088 i checklisty.
 - [x] Ryzyko: regresja US2 — mitigacja: rerun `test:generate-qr` i `test:e2e` z lokalnym Supabase.
 
 ## 7) Go / No-Go
 
 Phase 009 moze startowac, gdy Phase 008 ma sign-off w backlogu i quality gate shared+mobile jest PASS.
 
-Status: **GO** (implementacja Polish; testy web uruchamiac przy lokalnym stacku).
+Status: **DONE** — Phase 009 zamkniety: **SIGN-OFF PASS** (2026-04-10); evidence: `PHASE009_HANDOFF.md` §11, `project-log.md` §3.

@@ -2,10 +2,16 @@ import { Link } from 'expo-router';
 import { Text, View } from 'react-native';
 
 import { learnArticles } from '../../content/learn/articles';
+import { EmptyState } from '../EmptyState';
 
 export function LearnCoffeeTab() {
   if (learnArticles.length === 0) {
-    return <Text>No learning content yet.</Text>;
+    return (
+      <EmptyState
+        title="No articles yet"
+        description="Learning content will show up here when it is published."
+      />
+    );
   }
 
   return (

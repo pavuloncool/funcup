@@ -7,7 +7,21 @@
     "orientation": "portrait",
     "platforms": ["ios", "android"],
     "assetBundlePatterns": ["**/*"],
-    "plugins": ["expo-router"]
+    "plugins": ["expo-router"],
+    "android": {
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "funcup",
+              "host": "q"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
+    }
   }
 }
 

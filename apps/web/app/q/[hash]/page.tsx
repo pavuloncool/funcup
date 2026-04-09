@@ -56,7 +56,11 @@ export default function ResolveHashPage() {
       <p>
         <strong>Hash:</strong> {params.hash}
       </p>
-      {error ? <p style={{ color: 'crimson' }}>{error}</p> : null}
+      {error ? (
+        <p role="alert" style={{ color: 'crimson' }}>
+          {error}
+        </p>
+      ) : null}
       {data ? (
         <>
           <p>
@@ -70,7 +74,9 @@ export default function ResolveHashPage() {
           </p>
         </>
       ) : (
-        <p>Resolving...</p>
+        <p role="status" aria-live="polite">
+          Resolving…
+        </p>
       )}
     </main>
   );

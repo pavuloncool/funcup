@@ -3,7 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import type { TypedSupabaseClient } from '../services/supabaseClientFactory';
 
 export type DiscoverCoffeeItem = {
+  /** `coffees.id` — stable product id for keys and analytics. */
   id: string;
+  /** `qr_codes.hash` — pass to `useCoffeePage` / `scan_qr` (not the same as `id`). */
+  qrHash: string;
   name: string;
   processingMethod: string | null;
   roaster: {
@@ -14,67 +17,96 @@ export type DiscoverCoffeeItem = {
   } | null;
 };
 
-type CoffeeRow = {
-  id: string;
-  name: string;
-  processing_method: string | null;
-  roasters:
-    | {
-        id: string;
-        name: string;
-        country: string | null;
-        city: string | null;
-      }
-    | {
-        id: string;
-        name: string;
-        country: string | null;
-        city: string | null;
-      }[]
-    | null;
+type RoasterRel =
+  | {
+      id: string;
+      name: string;
+      country: string | null;
+      city: string | null;
+    }
+  | {
+      id: string;
+      name: string;
+      country: string | null;
+      city: string | null;
+    }[]
+  | null;
+
+type QrDiscoverRow = {
+  hash: string;
+  roast_batches: {
+    coffees: {
+      id: string;
+      name: string;
+      processing_method: string | null;
+      status: string;
+      roasters: RoasterRel;
+    };
+  } | null;
 };
+
+function normalizeRoaster(roasters: RoasterRel) {
+  const roaster = Array.isArray(roasters) ? roasters[0] ?? null : roasters;
+  return roaster
+    ? {
+        id: roaster.id,
+        name: roaster.name,
+        country: roaster.country,
+        city: roaster.city,
+      }
+    : null;
+}
 
 export async function fetchDiscoverCoffees(
   supabase: TypedSupabaseClient,
   limit = 12
 ): Promise<DiscoverCoffeeItem[]> {
   const { data, error } = await supabase
-    .from('coffees')
+    .from('qr_codes')
     .select(
       `
-      id,
-      name,
-      processing_method,
-      roasters (
-        id,
-        name,
-        country,
-        city
+      hash,
+      roast_batches!inner (
+        coffees!inner (
+          id,
+          name,
+          processing_method,
+          status,
+          roasters (
+            id,
+            name,
+            country,
+            city
+          )
+        )
       )
     `
     )
-    .eq('status', 'active')
-    .order('created_at', { ascending: false })
-    .limit(limit);
+    .order('generated_at', { ascending: false })
+    .limit(Math.max(limit * 3, limit));
 
   if (error) throw error;
 
-  return ((data ?? []) as CoffeeRow[]).map((coffee) => {
-    const roaster = Array.isArray(coffee.roasters) ? coffee.roasters[0] ?? null : coffee.roasters;
-    return {
+  const rows = (data ?? []) as QrDiscoverRow[];
+  const out: DiscoverCoffeeItem[] = [];
+  const seenCoffeeIds = new Set<string>();
+
+  for (const row of rows) {
+    const coffee = row.roast_batches?.coffees;
+    if (!coffee || coffee.status !== 'active') continue;
+    if (seenCoffeeIds.has(coffee.id)) continue;
+    seenCoffeeIds.add(coffee.id);
+    out.push({
       id: coffee.id,
+      qrHash: row.hash,
       name: coffee.name,
       processingMethod: coffee.processing_method,
-      roaster: roaster
-        ? {
-            id: roaster.id,
-            name: roaster.name,
-            country: roaster.country,
-            city: roaster.city,
-          }
-        : null,
-    };
-  });
+      roaster: normalizeRoaster(coffee.roasters),
+    });
+    if (out.length >= limit) break;
+  }
+
+  return out;
 }
 
 export function useDiscoverCoffees(params: { supabase: TypedSupabaseClient; limit?: number }) {

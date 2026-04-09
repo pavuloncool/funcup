@@ -3,13 +3,6 @@ import { describe, expect, it } from 'vitest';
 import { fetchDiscoverCoffees } from './useDiscoverCoffees';
 import { fetchDiscoverRoasters } from './useDiscoverRoasters';
 
-type CoffeeSelectRow = {
-  id: string;
-  name: string;
-  processing_method: string | null;
-  roasters: { id: string; name: string; country: string | null; city: string | null } | null;
-};
-
 type RoasterSelectRow = {
   id: string;
   name: string;
@@ -19,58 +12,83 @@ type RoasterSelectRow = {
   website: string | null;
 };
 
+type QrCodeRow = {
+  hash: string;
+  roast_batches: {
+    coffees: {
+      id: string;
+      name: string;
+      processing_method: string | null;
+      status: string;
+      roasters: { id: string; name: string; country: string | null; city: string | null } | null;
+    };
+  };
+};
+
 function createMockSupabase(input: {
-  coffees?: CoffeeSelectRow[];
+  qrCodes?: QrCodeRow[];
   roasters?: RoasterSelectRow[];
   follows?: string[];
   error?: Error | null;
 }): unknown {
   return {
-    from: (table: string) => ({
-      select: () => ({
-        eq: () => {
-          if (table === 'users') {
-            return {
+    from: (table: string) => {
+      if (table === 'users') {
+        return {
+          select: () => ({
+            eq: () => ({
               maybeSingle: async () => ({
                 data: { following_roaster_ids: input.follows ?? [] },
                 error: input.error ?? null,
               }),
-            };
-          }
-          return {
+            }),
+          }),
+        };
+      }
+      return {
+        select: () => ({
+          eq: () => ({
             order: () => ({
               limit: async () => ({
-                data:
-                  table === 'coffees'
-                    ? (input.coffees ?? [])
-                    : table === 'roasters'
-                      ? (input.roasters ?? [])
-                      : [],
+                data: table === 'roasters' ? (input.roasters ?? []) : [],
                 error: input.error ?? null,
               }),
             }),
-          };
-        },
-      }),
-    }),
+          }),
+          order: () => ({
+            limit: async () => ({
+              data: table === 'qr_codes' ? (input.qrCodes ?? []) : [],
+              error: input.error ?? null,
+            }),
+          }),
+        }),
+      };
+    },
   };
 }
 
 describe('discovery hooks fetchers', () => {
-  it('maps coffees payload', async () => {
+  it('maps coffees payload from qr_codes', async () => {
     const supabase = createMockSupabase({
-      coffees: [
+      qrCodes: [
         {
-          id: 'coffee-1',
-          name: 'Kenya AA',
-          processing_method: 'washed',
-          roasters: { id: 'roaster-1', name: 'A', country: 'PL', city: 'WAW' },
+          hash: 'qr-hash-1',
+          roast_batches: {
+            coffees: {
+              id: 'coffee-1',
+              name: 'Kenya AA',
+              processing_method: 'washed',
+              status: 'active',
+              roasters: { id: 'roaster-1', name: 'A', country: 'PL', city: 'WAW' },
+            },
+          },
         },
       ],
     });
 
     const result = await fetchDiscoverCoffees(supabase as never);
     expect(result[0]?.name).toBe('Kenya AA');
+    expect(result[0]?.qrHash).toBe('qr-hash-1');
     expect(result[0]?.roaster?.name).toBe('A');
   });
 
