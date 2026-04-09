@@ -24,9 +24,18 @@ export default function ResolveHashPage() {
         return;
       }
 
+      const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
       const response = await fetch(`${supabaseUrl}/functions/v1/scan_qr`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(anonKey
+            ? {
+                apikey: anonKey,
+                Authorization: `Bearer ${anonKey}`,
+              }
+            : {}),
+        },
         body: JSON.stringify({ hash: params.hash }),
       });
 
