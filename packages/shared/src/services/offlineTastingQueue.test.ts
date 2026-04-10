@@ -11,20 +11,20 @@ import {
 function createMemoryStorage(): QueueStorage {
   const memory = new Map<string, string>();
   return {
-    getItem(key) {
+    async getItem(key) {
       return memory.get(key) ?? null;
     },
-    setItem(key, value) {
+    async setItem(key, value) {
       memory.set(key, value);
     },
   };
 }
 
 describe('offlineTastingQueue', () => {
-  it('enqueues tasting and persists queue', () => {
+  it('enqueues tasting and persists queue', async () => {
     const storage = createMemoryStorage();
 
-    const result = enqueuePendingTasting(
+    const result = await enqueuePendingTasting(
       storage,
       {
         batchId: 'batch-a',
@@ -36,40 +36,40 @@ describe('offlineTastingQueue', () => {
 
     expect(result.queueSize).toBe(1);
     expect(result.queuedItem.batchId).toBe('batch-a');
-    expect(getPendingTastings(storage)).toHaveLength(1);
+    expect(await getPendingTastings(storage)).toHaveLength(1);
   });
 
-  it('applies last-write-wins for the same batch', () => {
+  it('applies last-write-wins for the same batch', async () => {
     const storage = createMemoryStorage();
 
-    enqueuePendingTasting(
+    await enqueuePendingTasting(
       storage,
       { batchId: 'batch-a', rating: 2 },
       new Date('2026-01-01T00:00:00.000Z')
     );
-    enqueuePendingTasting(
+    await enqueuePendingTasting(
       storage,
       { batchId: 'batch-a', rating: 5 },
       new Date('2026-01-01T00:00:01.000Z')
     );
 
-    const pending = getPendingTastings(storage);
+    const pending = await getPendingTastings(storage);
     expect(pending).toHaveLength(1);
     expect(pending[0]?.rating).toBe(5);
   });
 
-  it('caps queue to max size', () => {
+  it('caps queue to max size', async () => {
     const storage = createMemoryStorage();
 
     for (let i = 0; i < offlineQueueConfig.maxQueueSize + 3; i += 1) {
-      enqueuePendingTasting(
+      await enqueuePendingTasting(
         storage,
         { batchId: `batch-${i}`, rating: 3 },
         new Date(`2026-01-01T00:00:${String(i).padStart(2, '0')}.000Z`)
       );
     }
 
-    const pending = getPendingTastings(storage);
+    const pending = await getPendingTastings(storage);
     expect(pending).toHaveLength(offlineQueueConfig.maxQueueSize);
     expect(pending.at(-1)?.batchId).toBe(`batch-${offlineQueueConfig.maxQueueSize + 2}`);
   });
@@ -77,12 +77,12 @@ describe('offlineTastingQueue', () => {
   it('flushes queue and keeps failed items', async () => {
     const storage = createMemoryStorage();
 
-    enqueuePendingTasting(
+    await enqueuePendingTasting(
       storage,
       { batchId: 'ok-1', rating: 4 },
       new Date('2026-01-01T00:00:00.000Z')
     );
-    enqueuePendingTasting(
+    await enqueuePendingTasting(
       storage,
       { batchId: 'fail-1', rating: 1 },
       new Date('2026-01-01T00:00:01.000Z')
@@ -103,6 +103,6 @@ describe('offlineTastingQueue', () => {
 
     expect(result.synced).toBe(1);
     expect(result.remaining).toBe(1);
-    expect(getPendingTastings(storage)[0]?.batchId).toBe('fail-1');
+    expect((await getPendingTastings(storage))[0]?.batchId).toBe('fail-1');
   });
 });

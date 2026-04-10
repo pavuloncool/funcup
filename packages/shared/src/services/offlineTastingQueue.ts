@@ -6,8 +6,8 @@ const OFFLINE_QUEUE_STORAGE_KEY = 'funcup_pending_tastings_v1';
 const MAX_QUEUE_SIZE = 50;
 
 export type QueueStorage = {
-  getItem(key: string): string | null;
-  setItem(key: string, value: string): void;
+  getItem(key: string): Promise<string | null>;
+  setItem(key: string, value: string): Promise<void>;
 };
 
 export type PendingTasting = LogTastingInput & {
@@ -41,24 +41,24 @@ function safeParseQueue(raw: string | null): PendingTasting[] {
   }
 }
 
-function readQueue(storage: QueueStorage): PendingTasting[] {
-  return safeParseQueue(storage.getItem(OFFLINE_QUEUE_STORAGE_KEY));
+async function readQueue(storage: QueueStorage): Promise<PendingTasting[]> {
+  return safeParseQueue(await storage.getItem(OFFLINE_QUEUE_STORAGE_KEY));
 }
 
-function writeQueue(storage: QueueStorage, queue: PendingTasting[]) {
-  storage.setItem(OFFLINE_QUEUE_STORAGE_KEY, JSON.stringify(queue));
+async function writeQueue(storage: QueueStorage, queue: PendingTasting[]) {
+  await storage.setItem(OFFLINE_QUEUE_STORAGE_KEY, JSON.stringify(queue));
 }
 
-export function getPendingTastings(storage: QueueStorage): PendingTasting[] {
+export async function getPendingTastings(storage: QueueStorage): Promise<PendingTasting[]> {
   return readQueue(storage);
 }
 
-export function enqueuePendingTasting(
+export async function enqueuePendingTasting(
   storage: QueueStorage,
   input: LogTastingInput,
   now = new Date()
-): EnqueueResult {
-  const queue = readQueue(storage);
+): Promise<EnqueueResult> {
+  const queue = await readQueue(storage);
   const nextItem: PendingTasting = {
     ...input,
     id: `${now.getTime()}-${Math.random().toString(36).slice(2, 10)}`,
@@ -68,7 +68,7 @@ export function enqueuePendingTasting(
   // T073: last-write-wins for rating collisions within a batch while offline.
   const queueWithoutBatch = queue.filter((item) => item.batchId !== input.batchId);
   const nextQueue = [...queueWithoutBatch, nextItem].slice(-MAX_QUEUE_SIZE);
-  writeQueue(storage, nextQueue);
+  await writeQueue(storage, nextQueue);
 
   return {
     queuedItem: nextItem,
@@ -81,7 +81,7 @@ export async function flushPendingTastings(params: {
   storage: QueueStorage;
   supabase: TypedSupabaseClient;
 }): Promise<{ synced: number; remaining: number }> {
-  const queue = readQueue(params.storage);
+  const queue = await readQueue(params.storage);
   if (queue.length === 0) return { synced: 0, remaining: 0 };
 
   let synced = 0;
@@ -104,7 +104,7 @@ export async function flushPendingTastings(params: {
     }
   }
 
-  writeQueue(params.storage, remaining);
+  await writeQueue(params.storage, remaining);
   return { synced, remaining: remaining.length };
 }
 

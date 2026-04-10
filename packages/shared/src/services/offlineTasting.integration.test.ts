@@ -6,13 +6,13 @@ describe('offline tasting integration', () => {
   it('queues offline tasting and syncs it within 30s budget after reconnect', async () => {
     const memory = new Map<string, string>();
     const storage = {
-      getItem: (key: string) => memory.get(key) ?? null,
-      setItem: (key: string, value: string) => {
+      getItem: async (key: string) => memory.get(key) ?? null,
+      setItem: async (key: string, value: string) => {
         memory.set(key, value);
       },
     };
 
-    enqueuePendingTasting(storage, {
+    await enqueuePendingTasting(storage, {
       batchId: 'batch-airplane',
       rating: 5,
       review: 'offline-first',

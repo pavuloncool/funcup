@@ -12,12 +12,15 @@ export function useOfflineTastingSync() {
   const [pendingCount, setPendingCount] = useState(0);
 
   const refreshPendingCount = useMemo(
-    () => () => setPendingCount(getPendingTastings(offlineQueueStorage).length),
+    () => async () => {
+      const pending = await getPendingTastings(offlineQueueStorage);
+      setPendingCount(pending.length);
+    },
     []
   );
 
   useEffect(() => {
-    refreshPendingCount();
+    void refreshPendingCount();
   }, [refreshPendingCount]);
 
   useEffect(() => {
@@ -40,7 +43,7 @@ export function useOfflineTastingSync() {
         storage: offlineQueueStorage,
         supabase,
       });
-      refreshPendingCount();
+      await refreshPendingCount();
     };
 
     void flush();

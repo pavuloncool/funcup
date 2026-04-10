@@ -6,9 +6,21 @@
     "version": "0.1.0",
     "newArchEnabled": true,
     "orientation": "portrait",
-    "platforms": ["ios", "android"],
-    "assetBundlePatterns": ["**/*"],
-    "plugins": ["expo-router"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "plugins": [
+      [
+        "expo-router",
+        {
+          "root": "app"
+        }
+      ]
+    ],
     "android": {
       "intentFilters": [
         {
@@ -19,10 +31,29 @@
               "host": "q"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        },
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "funcup",
+              "host": "q"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
-      ]
+      ],
+      "package": "com.anonymous.funcup"
+    },
+    "ios": {
+      "bundleIdentifier": "com.anonymous.funcup"
     }
   }
 }
-

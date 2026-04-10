@@ -5,10 +5,10 @@ import { useCoffeePage } from '@funcup/shared';
 import { ScreenError } from '../../../src/components/ScreenError';
 import { CoffeePageSkeleton } from '../../../src/components/ui/Skeleton';
 import { supabase } from '../../../src/services/supabaseClient';
-import { CoffeePageBrewing } from './CoffeePageBrewing';
-import { CoffeePageCommunity } from './CoffeePageCommunity';
-import { CoffeePageProduct } from './CoffeePageProduct';
-import { CoffeePageStory } from './CoffeePageStory';
+import { CoffeePageBrewing } from '../../../src/coffee/CoffeePageBrewing';
+import { CoffeePageCommunity } from '../../../src/coffee/CoffeePageCommunity';
+import { CoffeePageProduct } from '../../../src/coffee/CoffeePageProduct';
+import { CoffeePageStory } from '../../../src/coffee/CoffeePageStory';
 
 function formatError(err: unknown): string {
   if (err instanceof Error) return err.message;

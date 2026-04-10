@@ -5,9 +5,9 @@ import { Pressable, Text, TextInput, View } from 'react-native';
 import { enqueuePendingTasting, logTasting } from '@funcup/shared';
 import NetInfo from '@react-native-community/netinfo';
 
-import { BrewMethodPicker } from './components/BrewMethodPicker';
-import { FlavorNoteSelector } from './components/FlavorNoteSelector';
-import { RatingInput } from './components/RatingInput';
+import { BrewMethodPicker } from '../../../src/coffee/tasting/BrewMethodPicker';
+import { FlavorNoteSelector } from '../../../src/coffee/tasting/FlavorNoteSelector';
+import { RatingInput } from '../../../src/coffee/tasting/RatingInput';
 import { offlineQueueStorage } from '../../../src/services/offlineQueueStorage';
 import { supabase } from '../../../src/services/supabaseClient';
 import { getPendingTastings } from '@funcup/shared';
@@ -22,15 +22,16 @@ export default function TastingLogScreen() {
   const [ratingInput, setRatingInput] = useState('4');
   const [status, setStatus] = useState<string | null>(null);
 
-  const refreshPendingCount = () => {
-    setPendingCount(getPendingTastings(offlineQueueStorage).length);
+  const refreshPendingCount = async () => {
+    const pending = await getPendingTastings(offlineQueueStorage);
+    setPendingCount(pending.length);
   };
 
   useEffect(() => {
-    refreshPendingCount();
+    void refreshPendingCount();
     const unsubscribe = NetInfo.addEventListener((state) => {
       setIsOnline(Boolean(state.isConnected && state.isInternetReachable !== false));
-      refreshPendingCount();
+      void refreshPendingCount();
     });
     return () => unsubscribe();
   }, []);
@@ -50,11 +51,11 @@ export default function TastingLogScreen() {
     const online = Boolean(netState.isConnected && netState.isInternetReachable !== false);
 
     if (!online) {
-      enqueuePendingTasting(offlineQueueStorage, {
+      await enqueuePendingTasting(offlineQueueStorage, {
         batchId,
         rating: parsedRating,
       });
-      refreshPendingCount();
+      await refreshPendingCount();
       setStatus('Queued offline. It will sync after reconnect.');
       return;
     }
@@ -66,11 +67,11 @@ export default function TastingLogScreen() {
       });
       setStatus('Synced immediately.');
     } catch {
-      enqueuePendingTasting(offlineQueueStorage, {
+      await enqueuePendingTasting(offlineQueueStorage, {
         batchId,
         rating: parsedRating,
       });
-      refreshPendingCount();
+      await refreshPendingCount();
       setStatus('Network issue. Queued offline for retry.');
     }
   };

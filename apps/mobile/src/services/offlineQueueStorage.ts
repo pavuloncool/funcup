@@ -1,15 +1,13 @@
-import { MMKV } from 'react-native-mmkv';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import type { QueueStorage } from '@funcup/shared';
 
-const storage = new MMKV({ id: 'funcup-offline-tasting' });
-
+/** AsyncStorage works in Expo Go; MMKV requires a dev/client build with native modules. */
 export const offlineQueueStorage: QueueStorage = {
   getItem(key) {
-    const value = storage.getString(key);
-    return value ?? null;
+    return AsyncStorage.getItem(key);
   },
   setItem(key, value) {
-    storage.set(key, value);
+    return AsyncStorage.setItem(key, value);
   },
 };
