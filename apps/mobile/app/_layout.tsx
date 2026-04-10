@@ -17,7 +17,8 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <OfflineSyncBootstrap />
         <Stack screenOptions={{ headerShown: true }}>
-          <Stack.Screen name="index" options={{ title: 'funcup' }} />
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="home" options={{ title: 'funcup' }} />
         </Stack>
       </QueryClientProvider>
     </RootErrorBoundary>

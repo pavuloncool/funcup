@@ -62,7 +62,7 @@ Repo audited: `/Users/pa/projects/funcup`
 - [x] **T023** `apps/mobile/src/app/_layout.tsx` — **PASS**
   - Present: `apps/mobile/src/app/_layout.tsx`
 - [x] **T024** Create auth + tabs layouts (mobile + web) — **PASS**
-  - Present: `apps/mobile/(auth)/_layout.tsx`, `apps/mobile/(tabs)/_layout.tsx`, `apps/web/app/(auth)/layout.tsx`, `apps/web/app/(tabs)/layout.tsx`
+  - Present: `apps/mobile/app/(auth)/_layout.tsx`, `apps/mobile/app/(tabs)/_layout.tsx`, `apps/web/app/(auth)/layout.tsx`, `apps/web/app/(tabs)/layout.tsx`
 
 ## Phase 3: US1 — QR Scan + Tasting Log (T025–T042)
 
@@ -70,36 +70,36 @@ Repo audited: `/Users/pa/projects/funcup`
   - Present: `supabase/functions/scan_qr/index.ts`
 - [x] **T026** `supabase/functions/update_coffee_stats/index.ts` — **PASS**
   - Present: `supabase/functions/update_coffee_stats/index.ts`
-- [x] **T027** `apps/mobile/(auth)/login.tsx` — **PASS**
-  - Present: `apps/mobile/(auth)/login.tsx`
-- [x] **T028** `apps/mobile/(auth)/register.tsx` — **PASS**
-  - Present: `apps/mobile/(auth)/register.tsx`
-- [x] **T029** `apps/mobile/(tabs)/hub/scan.tsx` — **PASS**
-  - Present: `apps/mobile/(tabs)/hub/scan.tsx`
+- [x] **T027** `apps/mobile/app/(auth)/login.tsx` — **PASS**
+  - Present: `apps/mobile/app/(auth)/login.tsx`
+- [x] **T028** `apps/mobile/app/(auth)/register.tsx` — **PASS**
+  - Present: `apps/mobile/app/(auth)/register.tsx`
+- [x] **T029** `apps/mobile/app/(tabs)/hub/scan.tsx` — **PASS**
+  - Present: `apps/mobile/app/(tabs)/hub/scan.tsx`
 - [x] **T030** `packages/shared/src/hooks/useCoffeePage.ts` — **PASS**
   - Present: `packages/shared/src/hooks/useCoffeePage.ts`
-- [x] **T031** `apps/mobile/coffee/[id]/index.tsx` — **PASS**
-  - Present: `apps/mobile/coffee/[id]/index.tsx`
+- [x] **T031** `apps/mobile/app/coffee/[id]/index.tsx` — **PASS**
+  - Present: `apps/mobile/app/coffee/[id]/index.tsx`
 - [x] **T032** CoffeePageProduct.tsx — **PASS**
-  - Present: `apps/mobile/coffee/[id]/CoffeePageProduct.tsx`
+  - Present: `apps/mobile/app/coffee/[id]/CoffeePageProduct.tsx`
 - [x] **T033** CoffeePageBrewing.tsx — **PASS**
-  - Present: `apps/mobile/coffee/[id]/CoffeePageBrewing.tsx`
+  - Present: `apps/mobile/app/coffee/[id]/CoffeePageBrewing.tsx`
 - [x] **T034** CoffeePageStory.tsx — **PASS**
-  - Present: `apps/mobile/coffee/[id]/CoffeePageStory.tsx`
+  - Present: `apps/mobile/app/coffee/[id]/CoffeePageStory.tsx`
 - [x] **T035** CoffeePageCommunity.tsx — **PASS**
-  - Present: `apps/mobile/coffee/[id]/CoffeePageCommunity.tsx`
+  - Present: `apps/mobile/app/coffee/[id]/CoffeePageCommunity.tsx`
 - [x] **T036** FlavorNoteSelector.tsx — **PASS**
-  - Present: `apps/mobile/coffee/[id]/components/FlavorNoteSelector.tsx`
+  - Present: `apps/mobile/app/coffee/[id]/components/FlavorNoteSelector.tsx`
 - [x] **T037** RatingInput.tsx — **PASS**
-  - Present: `apps/mobile/coffee/[id]/components/RatingInput.tsx`
+  - Present: `apps/mobile/app/coffee/[id]/components/RatingInput.tsx`
 - [x] **T038** BrewMethodPicker.tsx — **PASS**
-  - Present: `apps/mobile/coffee/[id]/components/BrewMethodPicker.tsx`
-- [x] **T039** `apps/mobile/coffee/[id]/log.tsx` — **PASS**
-  - Present: `apps/mobile/coffee/[id]/log.tsx`
+  - Present: `apps/mobile/app/coffee/[id]/components/BrewMethodPicker.tsx`
+- [x] **T039** `apps/mobile/app/coffee/[id]/log.tsx` — **PASS**
+  - Present: `apps/mobile/app/coffee/[id]/log.tsx`
 - [x] **T040** `packages/shared/src/services/tastingService.ts` — **PASS**
   - Present: `packages/shared/src/services/tastingService.ts`
-- [x] **T041** `apps/mobile/(tabs)/journal/index.tsx` — **PASS**
-  - Present: `apps/mobile/(tabs)/journal/index.tsx`
+- [x] **T041** `apps/mobile/app/(tabs)/journal/index.tsx` — **PASS**
+  - Present: `apps/mobile/app/(tabs)/journal/index.tsx`
 - [x] **T042** `packages/shared/src/hooks/useJournal.ts` — **PASS**
   - Present: `packages/shared/src/hooks/useJournal.ts`
 

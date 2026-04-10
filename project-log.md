@@ -18,7 +18,7 @@ Ten log opisuje wykonane prace i status delivery w repozytorium `funcup`, z odni
 
 ## 2) Najwazniejsze rezultaty do konca Phase 009 (Polish)
 
-- Mobile: `RootErrorBoundary`, stany loading (skeleton), empty/error (Journal, Hub discovery, Learn), Coffee Page oparta o `useCoffeePage` / `scan_qr`, deep link `apps/mobile/q/[hash].tsx` (par z web `/q/{hash}`), `eas.json` (profil production), Android intent filter dla `funcup` / host `q`.
+- Mobile: `RootErrorBoundary`, stany loading (skeleton), empty/error (Journal, Hub discovery, Learn), Coffee Page oparta o `useCoffeePage` / `scan_qr`, deep link `apps/mobile/app/q/[hash].tsx` (par z web `/q/{hash}`), `eas.json` (profil production), Android intent filter dla `funcup` / host `q`.
 - Shared: typ `ScanQrResponse`; discovery (`fetchDiscoverCoffees`) przez `qr_codes` + hash do skanera; tasting log przyjmuje `batchId` z batcha z `scan_qr`.
 - Web: `next.config.ts` — `images.remotePatterns` dla Supabase storage; `/q/[hash]` — `role="alert"` / `role="status"` (a11y).
 - Regresja US2 i build: patrz sekcja 3 ponizej.

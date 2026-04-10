@@ -32,9 +32,9 @@ Domknac US5: Offline Tasting (`T069-T074`) z naciskiem na niezawodny offline-fir
 ### Mobile
 
 - Istnieje ekran logowania tastingu:
-  - `apps/mobile/coffee/[id]/log.tsx`
+  - `apps/mobile/app/coffee/[id]/log.tsx`
 - Istnieje Coffee Page i baza pod cache:
-  - `apps/mobile/coffee/[id]/index.tsx`
+  - `apps/mobile/app/coffee/[id]/index.tsx`
   - `packages/shared/src/hooks/useCoffeePage.ts`
 - Wspolna warstwa service:
   - `packages/shared/src/services/tastingService.ts`

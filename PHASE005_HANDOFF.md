@@ -25,7 +25,7 @@ Domknac US3: Coffee Hub + Discovery (`T054-T063`) z naciskiem na:
 ### Mobile
 
 - Istnieje punkt startowy scan:
-  - `apps/mobile/(tabs)/hub/scan.tsx`
+  - `apps/mobile/app/(tabs)/hub/scan.tsx`
   - obecnie placeholder z recznym hashem i linkiem do `/coffee/[id]`.
 - Kluczowe elementy z US1 juz istnieja i mozna je reutilizowac:
   - Coffee Page + sekcje
@@ -38,7 +38,7 @@ Domknac US3: Coffee Hub + Discovery (`T054-T063`) z naciskiem na:
 
 ## 4) Scope implementacyjny Task-by-Task (Phase 005)
 
-- `T054` `apps/mobile/(tabs)/hub/index.tsx` (Coffee Hub 4 sekcje)
+- `T054` `apps/mobile/app/(tabs)/hub/index.tsx` (Coffee Hub 4 sekcje)
 - `T054b` dominant Scan Coffee (min. 40% ekranu, primary CTA)
 - `T055` DiscoverCoffees tab component
 - `T056` DiscoverRoasters tab component

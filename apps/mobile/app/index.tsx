@@ -1,16 +1,9 @@
-import { Link } from 'expo-router';
-import { Text, View } from 'react-native';
+import { Redirect } from 'expo-router';
 
-export default function Home() {
-  return (
-    <View style={{ flex: 1, padding: 24, gap: 12, justifyContent: 'center' }}>
-      <Text style={{ fontSize: 28, fontWeight: '600' }}>funcup (mobile)</Text>
-      <Text>Expo Router scaffold for Phase 1 tasks.</Text>
-      <Link href="/(auth)/login">Go to login</Link>
-      <Link href="/(tabs)/hub/scan">Go to scan</Link>
-      <Link href="/(tabs)/journal">Go to journal</Link>
-      <Link href="/(tabs)/profile">Go to profile</Link>
-    </View>
-  );
+/**
+ * Expo: pierwotny AnimatedSplash jest w apps/frontend (Vite) i apps/web (Next) z assetami SVG.
+ * Tu proste przekierowanie do shellu — bez duplikacji animacji opartej o canvas/DOM.
+ */
+export default function Index() {
+  return <Redirect href="/home" />;
 }
-

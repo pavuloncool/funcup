@@ -31,8 +31,8 @@ Domknac US4: Sensory Reputation (`T064-T068`) z naciskiem na "silent progression
 ### Mobile
 
 - Istnieja ekrany i komponenty, ktore beda rozszerzane:
-  - `apps/mobile/coffee/[id]/components/FlavorNoteSelector.tsx`
-  - `apps/mobile/coffee/[id]/CoffeePageCommunity.tsx`
+  - `apps/mobile/app/coffee/[id]/components/FlavorNoteSelector.tsx`
+  - `apps/mobile/app/coffee/[id]/CoffeePageCommunity.tsx`
 - Reputation thresholds sa dostepne w shared:
   - `packages/shared/src/constants/reputationThresholds.ts`
 

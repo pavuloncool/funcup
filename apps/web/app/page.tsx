@@ -1,22 +1,28 @@
 import Link from 'next/link';
 
+/** Spójny z apps/frontend HomePage — ekran po splash (konsument / playground). */
 export default function HomePage() {
   return (
-    <main style={{ padding: 24, fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-      <h1>funcup (web)</h1>
-      <p>US2 flow playground.</p>
-      <ul>
-        <li>
-          <Link href="/login">Login</Link>
-        </li>
-        <li>
-          <Link href="/register">Register</Link>
-        </li>
-        <li>
-          <Link href="/dashboard/coffees">Coffees dashboard</Link>
-        </li>
-      </ul>
-    </main>
+    <div className="min-h-screen bg-stone-50 p-8">
+      <h1 className="text-3xl font-bold text-stone-800">funcup</h1>
+      <p className="mt-2 text-stone-600">Twój przewodnik po świecie kawy</p>
+      <div className="mt-8 flex gap-4">
+        <Link
+          href="/scan"
+          className="rounded-lg bg-amber-600 px-4 py-2 text-white"
+        >
+          Skanuj QR
+        </Link>
+        <Link href="/hub" className="rounded-lg bg-stone-200 px-4 py-2 text-stone-800">
+          Kawiarnia
+        </Link>
+        <Link
+          href="/profile"
+          className="rounded-lg bg-stone-200 px-4 py-2 text-stone-800"
+        >
+          Profil
+        </Link>
+      </div>
+    </div>
   );
 }
-

@@ -19,6 +19,7 @@ const queryClient = new QueryClient({
   },
 });
 
+/** Splash: `ready` resetuje się przy pełnym reloadzie. Linki wewnętrzne muszą być `<Link to>` (RRD), nie `<a href>` — inaczej każda nawigacja przeładowuje SPA i powtarza animację. */
 function AppContent() {
   const [ready, setReady] = useState(false);
 

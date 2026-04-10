@@ -56,7 +56,7 @@ Build funcup MVP: a QR-driven specialty coffee discovery platform consisting of 
 | **VI. Type-Safe Across the Stack** | ✅ PASS | TypeScript strict mode in all packages. Supabase-generated types as canonical entity definitions. `any` policy enforced via ESLint rule. |
 | **VII. QR-First Interaction** | ✅ PASS | QR scanner is primary entry point (FR-001); Coffee Page loads within 5 s (FR-002). Scan Coffee is visually dominant CTA in Coffee Hub (FR-006). All mobile features designed around the scan moment. |
 | **VIII. Separation of Roles** | ✅ PASS | FR-021 enforces: roasters write product data, consumers write sensory data. RLS policies enforce this at DB level. Verified-roaster check in Edge Functions + Supabase policies. |
-| **IX. Entry Interaction — Tap to Bean** | ✅ PASS | FR-012 protects the splash screen. Zero engineering effort in this plan. No implementation task touches entry animation flow. |
+| **IX. Entry Interaction — Tap to Bean** | ✅ PASS | FR-012 protects the splash screen (fingerprint → confetti → bean). It is the **app-open** sequence only—not replayed on every route. Phase 010 tracks entry UX hardening; sequence order remains constitution-protected. |
 
 **Gate result: ALL PASS — proceed to Phase 0.**
 

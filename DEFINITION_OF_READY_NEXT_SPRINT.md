@@ -70,7 +70,7 @@ Evidence T017/T018:
 
 - [x] Mobile (US1) ma działający flow developerski:
   - [x] auth entry (`login`, `register`)
-  - [x] scan entry (`(tabs)/hub/scan`)
+  - [x] scan entry (`app/(tabs)/hub/scan`)
   - [x] coffee page + tasting log + journal entry point
 - [x] Web ma bazę pod kolejne sprinty (US2+):
   - [x] App Router działa

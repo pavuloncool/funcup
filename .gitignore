@@ -11,6 +11,15 @@ coverage
 build
 dist
 
+# Next.js (apps/web)
+apps/web/.next/
+
+# Playwright
+apps/web/test-results/
+
+# TypeScript incremental
+*.tsbuildinfo
+
 # misc
 .DS_Store
 *.pem

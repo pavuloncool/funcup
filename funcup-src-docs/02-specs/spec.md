@@ -127,6 +127,14 @@ A verified roaster views aggregated consumer feedback for their coffees. For eac
 
 ### Functional Requirements
 
+#### Global UI/UX constraint — FR-012 entry animation (source of truth, all phases)
+
+**Critical.** The rules below are **normative** for **every** phase of UI/UX design and implementation (discovery, MVP, polish, and any future tranche), across **all** consumer-facing clients (native mobile, web SPA, Next.js, or successors). Backlog items, design reviews, and QA MUST verify compliance.
+
+- **Animated entry only on app launch:** The protected FR-012 sequence (fingerprint → tap → confetti → bean → dissolve → main shell) — or an approved accessibility/reduced-motion equivalent — MUST run **only** when the user **opens the app** into the interactive shell (cold/warm process start into the root experience). It MUST NOT be used as a decorative transition between feature screens.
+- **No repeat on in-app navigation:** After the shell is active, **ordinary navigation inside the app** (tabs, stacks, drawers, client-side route changes, deep links handled without killing the shell) MUST **not** remount or replay the full FR-012 animation. Implementations MUST avoid full document reloads for internal navigation (e.g. use SPA `Link` / client routers, not `<a href>` to same-origin app routes) so entry state is not reset unintentionally.
+- **Single spec line:** The canonical beat order and change control for the animation itself remain **FR-012** below; timing, assets, and platform notes are elaborated in [08-entry-ux-spec-fr012.md](./08-entry-ux-spec-fr012.md).
+
 **Mobile App — Consumers**
 
 - **FR-001**: The app MUST provide a QR code scanner as the primary entry point, accessible from the home screen with a single tap.
@@ -143,7 +151,7 @@ A verified roaster views aggregated consumer feedback for their coffees. For eac
 
 **Mobile App — Entry Interaction (MVP, protected)**
 
-- **FR-012**: The entry animation sequence (white screen → fingerprint → tap → confetti → bean slides up → bean dissolves → main screen slides in) MUST remain unchanged. No implementation task may alter this flow without a formal constitution amendment.
+- **FR-012**: The entry animation sequence (white screen → fingerprint → tap → confetti → bean slides up → bean dissolves → main screen slides in) MUST remain unchanged. No implementation task may alter this flow without a formal constitution amendment. **Scope:** this sequence is the **app opening** experience **only** — it runs when the consumer launches the app (cold/warm start into the shell) and MUST NOT replay on ordinary in-app navigation (tabs, stack screens, or deep-linked routes once the shell is already running). **Cross-phase source of truth:** the launch-only and no-repeat-on-navigation rules are stated authoritatively under **Global UI/UX constraint — FR-012 entry animation** above and MUST be applied to every UI/UX phase and every consumer client stack.
 
 **Web App — Roasters**
 
@@ -194,6 +202,6 @@ A verified roaster views aggregated consumer feedback for their coffees. For eac
 - Consumer following targets roasters only (not other consumers) in MVP scope.
 - The Learn Coffee section in MVP contains static or manually curated content; dynamic CMS is post-MVP.
 - Consumer authentication uses email/password and OAuth (Google + Apple); no phone-number auth in MVP.
-- The entry animation (FR-012) is already implemented and requires zero engineering effort in this spec cycle.
+- The entry animation (FR-012) is a fixed, protected sequence; it runs **once per app open** (launch into the shell), not on each in-app navigation. Engineering effort for entry UX is tracked in Phase 010.
 - Social sharing of tastings (share to Instagram, export journal) is post-MVP.
 - Roaster-to-consumer direct messaging is out of scope.

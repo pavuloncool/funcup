@@ -1,3 +1,4 @@
+// Pierwotny animated-splash (Vite). Port Next: apps/web/components/AnimatedSplash.tsx — trzymaj sekwencję i assety zsynchronizowane.
 import { motion, AnimatePresence } from "framer-motion"
 import { useState, useEffect, useRef } from "react"
 

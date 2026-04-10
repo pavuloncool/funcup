@@ -5,7 +5,7 @@
 **Feature:** 002-qr-coffee-platform
 
 ## Context
-FR-012 mandates the splash screen animation: fingerprint → burst → coffee bean. This is the user's first interaction with the app.
+FR-012 mandates the splash screen animation: fingerprint → burst → coffee bean. This is the user's first interaction with the app **on open** (launch into the shell). It does not repeat on every in-app route or tab change after the app has loaded.
 
 ## Decision
 Implement AnimatedSplash.jsx with:

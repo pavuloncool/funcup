@@ -86,11 +86,11 @@ Demonstratable bez roaster web app (seed data wystarczy).
 ## Phase 3: US1 — QR Scan + Tasting Log 🎯 (T025–T042)   
 - [x] T025 [P] Implement `supabase/functions/scan\_qr/index.ts` (p95 < 500ms)   
 - [x] T026 Implement `supabase/functions/update\_coffee\_stats/index.ts`   
-- [x] T027 [P] Create `apps/mobile/(auth)/login.tsx` (email + Google + Apple)   
-- [x] T028 [P] Create `apps/mobile/(auth)/register.tsx`   
-- [x] T029 Create `apps/mobile/(tabs)/hub/scan.tsx` (QR Scanner)   
+- [x] T027 [P] Create `apps/mobile/app/(auth)/login.tsx` (email + Google + Apple)   
+- [x] T028 [P] Create `apps/mobile/app/(auth)/register.tsx`   
+- [x] T029 Create `apps/mobile/app/(tabs)/hub/scan.tsx` (QR Scanner)   
 - [x] T030 Create `packages/shared/src/hooks/useCoffeePage.ts`   
-- [x] T031 Create `apps/mobile/coffee/[id]/index.tsx` (Coffee Page — 4 sections)   
+- [x] T031 Create `apps/mobile/app/coffee/[id]/index.tsx` (Coffee Page — 4 sections)   
 - [x] T032 [P] CoffeePageProduct.tsx   
 - [x] T033 [P] CoffeePageBrewing.tsx   
 - [x] T034 [P] CoffeePageStory.tsx   
@@ -98,9 +98,9 @@ Demonstratable bez roaster web app (seed data wystarczy).
 - [x] T036 [P] FlavorNoteSelector.tsx   
 - [x] T037 [P] RatingInput.tsx   
 - [x] T038 [P] BrewMethodPicker.tsx   
-- [x] T039 Create `apps/mobile/coffee/[id]/log.tsx` (Tasting Log screen)   
+- [x] T039 Create `apps/mobile/app/coffee/[id]/log.tsx` (Tasting Log screen)   
 - [x] T040 Create `packages/shared/src/services/tastingService.ts`   
-- [x] T041 Create `apps/mobile/(tabs)/journal/index.tsx`   
+- [x] T041 Create `apps/mobile/app/(tabs)/journal/index.tsx`   
 - [x] T042 Create `packages/shared/src/hooks/useJournal.ts`   
  --- 
 ## Phase 4: US2 — Roaster Publishes QR (T043–T053)   
@@ -117,7 +117,7 @@ Demonstratable bez roaster web app (seed data wystarczy).
 - [x] T053 [P] useRoasterCoffees + useCreateBatch hooks   
  --- 
 ## Phase 5: US3 — Coffee Hub + Discovery (T054–T063)   
-- [x] T054 `apps/mobile/(tabs)/hub/index.tsx` (Coffee Hub — 4 sections)   
+- [x] T054 `apps/mobile/app/(tabs)/hub/index.tsx` (Coffee Hub — 4 sections)   
 - [x] T054b [P] Scan Coffee visually dominant (min 40% screen, primary CTA per Founding Philosophy)   
 - [x] T055 [P] DiscoverCoffees tab component   
 - [x] T056 [P] DiscoverRoasters tab component   
@@ -171,4 +171,19 @@ Demonstratable bez roaster web app (seed data wystarczy).
 |   US4 |           Test account tastings advance level silently; Expert label w Community |
 |   US5 |                   Airplane mode → cached page → tasting queued → sync within 30s |
 |   US6 |                    5 mock tastings → stats displayed → brew method filter działa |
+
+### Weryfikacja kryteriów (Independent Test Criteria) — stan repozytorium
+
+Poniżej: co jest **pokryte testami automatycznymi**, co **wymaga smoke manualnego**, oraz **rozjazdy** względem opisu w tabeli.
+
+| Story | Ocena | Uzasadnienie |
+|:------|:------|:-------------|
+| **US1** | Częściowo | **Seed:** `supabase/seed.sql` — jeden hash QR (`11111111-1111-1111-1111-111111111111`), jedna kawa Demo. **UI:** Coffee Page ma cztery sekcje (`CoffeePageProduct`, `CoffeePageBrewing`, `CoffeePageStory`, `CoffeePageCommunity` w `apps/mobile/app/coffee/[id]/`). **Tasting log / journal:** przepływ jest w kodzie (`log.tsx`, `useJournal`); **brak** jednego zautomatyzowanego E2E mobile od skanu do wpisu w journalu. |
+| **US2** | Tak | **E2E:** `apps/web/tests/us2-happy-path.e2e.spec.ts` — login → nowa kawa → batch → pobranie PNG → hash → `/q/{hash}` rozwiązuje kawę i batch. **API:** `apps/web/tests/generate-qr.spec.ts` — `generate_qr` 201/200/404. |
+| **US3** | Częściowo | **Discover / follow:** `packages/shared/src/hooks/us3IntegrationSmoke.test.ts` (mock Supabase: lista roasterów + follow). **Learn:** 3 artykuły seed w `apps/mobile/src/content/learn/articles.ts` (zgodnie z T063 — „3 seed articles”, nie pięć kaw). **„5 seeded coffees”:** w `seed.sql` jest **jedna** kawa z QR; kryterium „5” nie jest spełnione przez obecny seed — discovery pokazuje kawy z `qr_codes` (może być mniej niż 5 bez rozszerzenia seeda). Profil roastera: ekran `apps/mobile/app/roaster/[id]/index.tsx` (manual smoke). |
+| **US4** | Częściowo | **Logika:** `packages/shared/src/hooks/reputation.integration.test.ts` — progi poziomów, rozszerzanie flavor notes bez fanfar, `hasExpertBadge`, `silentReputationUi`. **UI „Expert”:** `CoffeePageCommunity` (etykieta przy odpowiednim `reputationScore`). **Brak** automatycznego testu „konto po serii tastings w DB przechodzi poziom” end-to-end. |
+| **US5** | Częściowo | **Kolejka offline:** `packages/shared/src/services/offlineTastingQueue.test.ts`, `offlineTasting.integration.test.ts` — enqueue, flush, budżet czasu sync w teście integracyjnym. **Brak** E2E z prawdziwym airplane mode / NetInfo na urządzeniu; cache Coffee Page (`staleTime: Infinity` w `useCoffeePage`) wymaga weryfikacji manualnej. |
+| **US6** | Tak | **Unit:** `packages/shared/src/analytics/roasterBatchAnalytics.test.ts` — dokładnie 5 mock logów, agregaty (średnia, rozkład), top flavor notes, filtr metody parzenia (`filterLogsByBrewMethod`, `brewMethodsPresentInLogs`). |
+
+**Podsumowanie:** US2 i US6 mają najsilniejsze pokrycie automatyczne zgodne z tabelą. US1, US3, US4, US5 są **częściowo** potwierdzone w repo; pełna zgodność z opisem „5 kaw” (US3) i pełny łańcuch US1 wymaga albo rozszerzenia seeda / testów, albo rejestracji smoke QA poza CI.
 

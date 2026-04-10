@@ -47,7 +47,7 @@ Ten dokument definiuje warunki wejscia do sprintu implementujacego Coffee Hub + 
 
 ## 5) Frontend readiness dla US3 (mobile-first)
 
-- [x] Istnieje punkt wejscia do scan flow (`apps/mobile/(tabs)/hub/scan.tsx`).
+- [x] Istnieje punkt wejscia do scan flow (`apps/mobile/app/(tabs)/hub/scan.tsx`).
 - [ ] Zdefiniowane sa kryteria UX dla dominant scan CTA (co najmniej 40% ekranu, primary action).
 - [ ] Zdefiniowane sa states dla Discovery:
   - loading

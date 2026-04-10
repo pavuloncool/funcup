@@ -52,7 +52,7 @@ Ten dokument definiuje warunki wejscia do sprintu implementujacego Offline Tasti
 ## 5) Frontend readiness dla US5 (mobile-first)
 
 - [x] Istnieja komponenty i flow do rozszerzenia:
-  - [x] `apps/mobile/coffee/[id]/log.tsx`
+  - [x] `apps/mobile/app/coffee/[id]/log.tsx`
   - [x] `packages/shared/src/hooks/useCoffeePage.ts`
   - [x] `packages/shared/src/services/tastingService.ts`
 - [ ] Zdefiniowane sa wszystkie states dla offline UX:
