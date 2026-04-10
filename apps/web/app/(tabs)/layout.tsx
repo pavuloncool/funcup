@@ -1,4 +1,6 @@
-export default function TabsLayout(props: { children: JSX.Element | JSX.Element[] }) {
+import type { ReactNode } from 'react';
+
+export default function TabsLayout(props: { children: ReactNode }) {
   return <>{props.children}</>;
 }
 

@@ -1,4 +1,6 @@
-export default function AuthLayout(props: { children: JSX.Element | JSX.Element[] }) {
+import type { ReactNode } from 'react';
+
+export default function AuthLayout(props: { children: ReactNode }) {
   return <>{props.children}</>;
 }
 

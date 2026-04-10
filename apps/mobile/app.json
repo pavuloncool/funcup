@@ -4,6 +4,7 @@
     "slug": "funcup",
     "scheme": "funcup",
     "version": "0.1.0",
+    "newArchEnabled": true,
     "orientation": "portrait",
     "platforms": ["ios", "android"],
     "assetBundlePatterns": ["**/*"],

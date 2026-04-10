@@ -176,3 +176,4 @@ Any change to **order**, **number of beats**, or **replacement of fingerprint/co
 | 2026-04-10 | **010-001** | Initial Entry UX spec authored. |
 | 2026-04-10 | **010-002** | Pierwotna implementacja: `apps/frontend/src/AnimatedSplash.jsx` + assety `public/assets/home-*.svg`. Next (`apps/web`): ten sam flow w `components/AnimatedSplash.tsx` + `AppOpenGate` w root layout (bez powtórzeń przy client-side navigacji). Expo mobile: bez duplikacji canvas/DOM — `app/index.tsx` → `/home`. |
 | 2026-04-10 | Clarification | Documented: FR-012 splash is **app-open only**; does not repeat on in-app navigation. |
+| 2026-04-10 | **010-003** | Mobile (`apps/mobile`): FR-012 entry via `MobileEntrySplash` + `AccessibilityInfo.isReduceMotionEnabled()` / `reduceMotionChanged`; shortened fades, no pulse, static bean translation when reduce motion; same beat order as web; optional SR announce on white + home landing. |

@@ -17,6 +17,7 @@ id: bafyreiphase010productuxuibacklogdraft
 Drafted: 2026-04-10 \| Depends on: Phase 009 (T081–T088) **SIGN-OFF: PASS**  
 - Phase 010 **010-001** **DONE** (2026-04-10) — Entry UX spec: [funcup-src-docs/02-specs/08-entry-ux-spec-fr012.md](../02-specs/08-entry-ux-spec-fr012.md)  
 - Phase 010 **010-002** **DONE** (2026-04-10) — Entry: pierwotny `AnimatedSplash` (`home-print.svg` / `home-bean.svg`) w `apps/frontend` i `apps/web` (`AppOpenGate` w layout); mobile Expo `app/index.tsx` → `/home` (bez duplikacji animacji DOM).  
+- Phase 010 **010-003** **DONE** (2026-04-10) — Mobile: `MobileEntrySplash` + reduce-motion branch (`AccessibilityInfo`), SR cues; `app/index.tsx` mounts entry then `replace('/home')`.  
 Source of truth (product scenarios): [funcup-src-docs/02-specs/spec.md](funcup-src-docs/02-specs/spec.md)  
 Reference style: [funcup-src-docs/04-tasks/13-tasks-002-qr-coffee-platform-88-tasks.md](funcup-src-docs/04-tasks/13-tasks-002-qr-coffee-platform-88-tasks.md)  
 Architecture: [funcup-src-docs/02-specs/07-technical-architecture-blueprint-mvp.md](funcup-src-docs/02-specs/07-technical-architecture-blueprint-mvp.md)
@@ -143,7 +144,7 @@ flowchart TD
 
 - [x] **010-001** Author **Entry UX spec** (timing, motion tokens, tap affordance, loading if assets slow, error fallback copy). **Depends:** —. **Surfaces:** mobile (doc), shared (doc). **Deliverable:** [08-entry-ux-spec-fr012.md](../02-specs/08-entry-ux-spec-fr012.md).
 - [x] **010-002** [P] **Mobile:** Implement/refactor entry flow module so sequence is isolated (single owner component / route group). **Depends:** 010-001. **Surfaces:** web (Next), Vite (`apps/frontend`). **Deliverable:** `apps/web/components/AnimatedSplash.tsx` (port z `apps/frontend/src/AnimatedSplash.jsx`), `apps/web/public/assets/home-*.svg`, `AppOpenGate` w `app/layout.tsx`; mobile: `app/index.tsx` → `/home`.
-- [ ] **010-003** [P] **Mobile:** **Reduced motion / accessibility:** alternative path (e.g. static frame + haptic or screen-reader announcement) that does **not** replace or reorder FR-012 steps for default users. **Depends:** 010-001, 010-002. **Surfaces:** mobile.
+- [x] **010-003** [P] **Mobile:** **Reduced motion / accessibility:** alternative path (e.g. static frame + haptic or screen-reader announcement) that does **not** replace or reorder FR-012 steps for default users. **Depends:** 010-001, 010-002. **Surfaces:** mobile.
 - [ ] **010-004** **Mobile:** Post-entry routing: cold start → splash **once** → auth stack vs main tabs; document transition and **session rule** (splash must not replay on tab/stack navigation or deep link when app already running). **Depends:** 010-002. **Surfaces:** mobile.
 - [ ] **010-005** [P] **Shared:** Document entry **state contract** (e.g. `splashComplete`, `minDisplayMs`) for analytics or future A/B (no behavior change required). **Depends:** 010-001. **Surfaces:** shared.
 - [ ] **010-006** **Gate:** Sign-off checklist — FR-012 sequence byte-for-byte storyboard match; video or frame capture; **explicit approval** field if any deviation. **Depends:** 010-002, 010-003, 010-004. **Surfaces:** mobile, shared (checklist in repo or doc link).

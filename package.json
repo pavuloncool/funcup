@@ -11,18 +11,15 @@
     "phase004:readiness": "bash scripts/phase004-readiness-check.sh",
     "supabase:types": "echo \"Generate types via Supabase CLI: supabase gen types typescript --project-id <id> --schema public > supabase/types/database.ts\"",
     "test": "turbo run test",
+    "mobile:prebuild": "pnpm -C apps/mobile exec expo prebuild",
+    "mobile:prebuild:clean": "pnpm -C apps/mobile exec expo prebuild --clean",
     "postinstall": "node scripts/patch-metro-cache-exports.js",
     "prepare": "husky"
   },
   "pnpm": {
     "overrides": {
       "xmlbuilder": "15.0.0",
-      "resolve": "1.22.10",
-      "metro": "0.81.5",
-      "metro-cache": "0.81.5",
-      "metro-config": "0.81.5",
-      "metro-core": "0.81.5",
-      "metro-transform-worker": "0.81.5"
+      "resolve": "1.22.10"
     }
   },
   "devDependencies": {

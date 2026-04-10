@@ -1,9 +1,9 @@
-import { Redirect } from 'expo-router';
+import { MobileEntrySplash } from '../src/components/entry/MobileEntrySplash';
 
 /**
- * Expo: pierwotny AnimatedSplash jest w apps/frontend (Vite) i apps/web (Next) z assetami SVG.
- * Tu proste przekierowanie do shellu — bez duplikacji animacji opartej o canvas/DOM.
+ * FR-012 entry (Phase 010-003): fingerprint → tap → confetti → bean → home.
+ * Reduced motion uses AccessibilityInfo.isReduceMotionEnabled() + shortened/static motion.
  */
 export default function Index() {
-  return <Redirect href="/home" />;
+  return <MobileEntrySplash />;
 }

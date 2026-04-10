@@ -11,7 +11,7 @@ Backlog: [funcup-src-docs/04-tasks/14-tasks-003-phase-010-product-ux-ui-backlog.
 | Task | Status | Dowód / artefakty |
 |:-----|:-------|:------------------|
 | **010-001** | DONE | [funcup-src-docs/02-specs/08-entry-ux-spec-fr012.md](funcup-src-docs/02-specs/08-entry-ux-spec-fr012.md) — timing, tokeny, tap, loading/error, reduced motion (opis), kontrakt stanu (preview). |
-| **010-002** | DONE | **Vite:** [apps/frontend/src/AnimatedSplash.jsx](apps/frontend/src/AnimatedSplash.jsx) + `public/assets/home-print.svg`, `home-bean.svg`; [apps/frontend/src/App.tsx](apps/frontend/src/App.tsx) (`ready` + `<Routes>`). **Next:** [apps/web/components/AnimatedSplash.tsx](apps/web/components/AnimatedSplash.tsx), [apps/web/components/AppOpenGate.tsx](apps/web/components/AppOpenGate.tsx), [apps/web/app/layout.tsx](apps/web/app/layout.tsx), assety w `apps/web/public/assets/`. **Frontend:** nawigacja z home — **`<Link to>`** (react-router), **nie** `<a href>`, żeby uniknąć pełnego reloadu i ponownego splashu ([apps/frontend/src/pages/HomePage.tsx](apps/frontend/src/pages/HomePage.tsx)). **Next:** strona główna jak Vite + trasy `/scan`, `/hub`, `/profile`. **Expo:** [apps/mobile/app/index.tsx](apps/mobile/app/index.tsx) → `<Redirect href="/home" />` (brak natywnego FR-012 w RN w tej iteracji). |
+| **010-002** | DONE | **Vite:** [apps/frontend/src/AnimatedSplash.jsx](apps/frontend/src/AnimatedSplash.jsx) + `public/assets/home-print.svg`, `home-bean.svg`; [apps/frontend/src/App.tsx](apps/frontend/src/App.tsx) (`ready` + `<Routes>`). **Next:** [apps/web/components/AnimatedSplash.tsx](apps/web/components/AnimatedSplash.tsx), [apps/web/components/AppOpenGate.tsx](apps/web/components/AppOpenGate.tsx), [apps/web/app/layout.tsx](apps/web/app/layout.tsx), assety w `apps/web/public/assets/`. **Frontend:** nawigacja z home — **`<Link to>`** (react-router), **nie** `<a href>`, żeby uniknąć pełnego reloadu i ponownego splashu ([apps/frontend/src/pages/HomePage.tsx](apps/frontend/src/pages/HomePage.tsx)). **Next:** strona główna jak Vite + trasy `/scan`, `/hub`, `/profile`. **Expo (010-002):** pierwotnie [apps/mobile/app/index.tsx](apps/mobile/app/index.tsx) → redirect `/home`; **010-003** zastąpiło entry przez [MobileEntrySplash](apps/mobile/src/components/entry/MobileEntrySplash.tsx). |
 
 **Source of truth (FR-012 + zakres):** [funcup-src-docs/02-specs/spec.md](funcup-src-docs/02-specs/spec.md) — sekcja **Global UI/UX constraint — FR-012 entry animation** oraz **FR-012** (tylko przy starcie aplikacji, bez powtórzeń przy zwykłej nawigacji w shellu).
 
@@ -21,7 +21,7 @@ Backlog: [funcup-src-docs/04-tasks/14-tasks-003-phase-010-product-ux-ui-backlog.
 
 **Epic A (P0)** — Entry experience hardening — **FR-012**
 
-- **[ ] 010-003** [P] **Mobile:** **Reduced motion / accessibility:** alternatywna ścieżka (np. statyczna klatka + haptic lub komunikat screen readera), która **nie** zastępuje ani nie zmienia kolejności kroków FR-012 dla użytkowników domyślnych.  
+- **[x] 010-003** [P] **Mobile:** **Reduced motion / accessibility:** alternatywna ścieżka (np. statyczna klatka + haptic lub komunikat screen readera), która **nie** zastępuje ani nie zmienia kolejności kroków FR-012 dla użytkowników domyślnych.  
 - **Depends:** 010-001, 010-002  
 - **Surfaces (backlog):** mobile  
 
@@ -36,12 +36,7 @@ Zaimplementować zachowanie zgodne z [08-entry-ux-spec-fr012.md § Accessibility
 
 ### Uwaga implementacyjna (stan repo)
 
-Obecnie **`apps/mobile` nie montuje pełnego AnimatedSplash** (redirect na `/home`). **010-003** wymaga **faktycznego ekranu wejścia na RN** (nawet uproszczonego), żeby reduced motion miało do czego się odnieść — albo:
-
-1. **Port uproszczonej sekwencji** (SVG przez `react-native-svg` / obrazy + `Animated` / Reanimated) z gałęzią `reduceMotion`, **albo**
-2. **Krótkoterminowo:** ekran „entry” z przyciskiem **Kontynuuj** + krótki fade spełniający semantykę beatów przy włączonym reduce motion, zgodnie z spec.
-
-Doprecyzuj z product/010-006, która ścieżka jest akceptowalna przed dużym portem canvas z wersji web.
+**010-003 (done):** `apps/mobile` montuje `MobileEntrySplash` z `app/index.tsx` — ten sam artwork SVG co web (`react-native-svg`), uproszczony ruch (bez canvas „pyłu”), gałąź **reduce motion** przez `AccessibilityInfo`. Opcjonalny follow-up przed **010-006:** pełniejszy port animacji z wersji web (Reanimated / cząsteczki), jeśli product wymaga wizualnej równoważności 1:1.
 
 ---
 

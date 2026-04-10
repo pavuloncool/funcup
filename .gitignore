@@ -37,6 +37,10 @@ yarn-error.log*
 .turbo
 node_modules/.cache
 
+# Expo (local dev / device history)
+.expo/
+apps/mobile/.expo/
+
 # vercel
 .vercel
 
