@@ -32,7 +32,7 @@ export default function HomeScreen() {
         funcup (mobile)
       </Text>
       <Text>Expo Router scaffold for Phase 1 tasks.</Text>
-      <Link href="/(auth)/login">Go to login</Link>
+      <Link href="/(auth)/login-form">Go to login</Link>
       <Link href="/(tabs)/hub/scan">Go to scan</Link>
       <Link href="/(tabs)/journal">Go to journal</Link>
       <Link href="/(tabs)/profile">Go to profile</Link>

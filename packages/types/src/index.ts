@@ -1,3 +1,11 @@
+export type {
+  RoasterCoffeeBeanType,
+  RoasterCoffeeTag,
+  RoasterCoffeeTagForm,
+  RoasterCoffeeTagInsert,
+  RoasterCoffeeTagRow
+} from './roasterCoffeeTag';
+
 export type SensoryLevel = 'beginner' | 'advanced' | 'expert';
 export type VerificationStatus = 'pending' | 'verified' | 'revoked';
 export type CoffeeStatus = 'draft' | 'active' | 'archived';
