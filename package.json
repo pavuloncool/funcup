@@ -14,8 +14,9 @@
     "mobile:start": "pnpm -C apps/mobile start",
     "mobile:ios": "pnpm -C apps/mobile ios",
     "mobile:web": "pnpm -C apps/mobile web",
-    "mobile:prebuild": "pnpm -C apps/mobile exec expo prebuild",
-    "mobile:prebuild:clean": "pnpm -C apps/mobile exec expo prebuild --clean",
+    "mobile:web:clear": "pnpm -C apps/mobile run web -- -c",
+    "mobile:prebuild": "pnpm -C apps/mobile run prebuild",
+    "mobile:prebuild:clean": "pnpm -C apps/mobile run prebuild:clean",
     "postinstall": "node scripts/patch-metro-cache-exports.js",
     "prepare": "husky"
   },
