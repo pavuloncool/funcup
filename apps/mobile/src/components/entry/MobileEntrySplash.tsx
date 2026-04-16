@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AccessibilityInfo,
   Animated,
+  Dimensions,
   Easing,
   Pressable,
   StyleSheet,
@@ -12,6 +13,7 @@ import {
 } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { HOME_BEAN_XML, HOME_PRINT_XML } from './entrySvgXml';
+import { useFingerprintConfetti } from './useFingerprintConfetti';
 
 const PRINT_SIZE = 128;
 const BEAN_SIZE = 128;
@@ -41,6 +43,8 @@ type Timings = {
   fpIn: number;
   confettiIn: number;
   confettiOut: number;
+  /** Bean fade-in starts at this fraction of (confettiIn + confettiOut). */
+  beanEntryAtConfettiPhase: number;
   beanHold: number;
   beanIn: number;
   beanOut: number;
@@ -56,6 +60,7 @@ function useEntryTimings(reduceMotion: boolean): Timings {
             fpIn: 220,
             confettiIn: 80,
             confettiOut: 100,
+            beanEntryAtConfettiPhase: 0.8,
             beanHold: 280,
             beanIn: 200,
             beanOut: 200,
@@ -66,6 +71,7 @@ function useEntryTimings(reduceMotion: boolean): Timings {
             fpIn: 720,
             confettiIn: 200,
             confettiOut: 320,
+            beanEntryAtConfettiPhase: 0.8,
             beanHold: 900,
             beanIn: 900,
             beanOut: 520,
@@ -87,6 +93,18 @@ export function MobileEntrySplash() {
   const [stage, setStage] = useState<'boot' | 'tap' | 'done'>('boot');
   const tappedRef = useRef(false);
   const pulseLoopRef = useRef<Animated.CompositeAnimation | null>(null);
+  const printMeasureRef = useRef<View>(null);
+  const beanEntryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [burstKey, setBurstKey] = useState(0);
+  const [burstOriginX, setBurstOriginX] = useState(0);
+  const [burstOriginY, setBurstOriginY] = useState(0);
+
+  const confettiParticles = useFingerprintConfetti({
+    burstKey,
+    originX: burstOriginX,
+    originY: burstOriginY,
+    reduceMotion,
+  });
 
   const fpOpacity = useRef(new Animated.Value(0)).current;
   const pulse = useRef(new Animated.Value(1)).current;
@@ -149,9 +167,18 @@ export function MobileEntrySplash() {
     };
   }, [stage, reduceMotion, pulse]);
 
-  const finishToHome = useCallback(() => {
+  useEffect(() => {
+    return () => {
+      if (beanEntryTimerRef.current != null) {
+        clearTimeout(beanEntryTimerRef.current);
+        beanEntryTimerRef.current = null;
+      }
+    };
+  }, []);
+
+  const finishToLogin = useCallback(() => {
     setStage('done');
-    router.replace('/home');
+    router.replace('/(auth)/login');
   }, [router]);
 
   const onFingerprintTap = useCallback(() => {
@@ -179,26 +206,43 @@ export function MobileEntrySplash() {
         useNativeDriver: true,
       }),
     ]).start(() => {
-      Animated.sequence([
-        Animated.timing(confettiOpacity, {
-          toValue: reduceMotion ? 0.18 : 0.28,
-          duration: timings.confettiIn,
-          useNativeDriver: true,
-        }),
-        Animated.timing(confettiOpacity, {
-          toValue: 0,
-          duration: timings.confettiOut,
-          useNativeDriver: true,
-        }),
-      ]).start(() => {
-        Animated.timing(fpOpacity, {
-          toValue: 0,
-          duration: reduceMotion ? 120 : 200,
-          useNativeDriver: true,
-        }).start(() => {
+      const afterMeasure = (ox: number, oy: number) => {
+        setBurstOriginX(ox);
+        setBurstOriginY(oy);
+        if (!reduceMotion) {
+          requestAnimationFrame(() => setBurstKey((k) => k + 1));
+        }
+
+        const confettiPhaseMs = timings.confettiIn + timings.confettiOut;
+        const beanEnterDelayMs = Math.round(timings.beanEntryAtConfettiPhase * confettiPhaseMs);
+
+        Animated.sequence([
+          Animated.timing(confettiOpacity, {
+            toValue: reduceMotion ? 0.18 : 0.06,
+            duration: timings.confettiIn,
+            useNativeDriver: true,
+          }),
+          Animated.timing(confettiOpacity, {
+            toValue: 0,
+            duration: timings.confettiOut,
+            useNativeDriver: true,
+          }),
+        ]).start();
+
+        if (beanEntryTimerRef.current != null) {
+          clearTimeout(beanEntryTimerRef.current);
+        }
+
+        const runBeanSequence = () => {
           beanTranslate.setValue(reduceMotion ? 0 : 72);
           beanOpacity.setValue(0);
           Animated.parallel([
+            Animated.timing(fpOpacity, {
+              toValue: 0,
+              duration: reduceMotion ? 120 : 220,
+              easing: Easing.out(Easing.cubic),
+              useNativeDriver: true,
+            }),
             Animated.timing(beanOpacity, {
               toValue: 1,
               duration: timings.beanIn,
@@ -219,12 +263,23 @@ export function MobileEntrySplash() {
                 easing: Easing.inOut(Easing.quad),
                 useNativeDriver: true,
               }).start(() => {
-                setTimeout(finishToHome, timings.mainDelay);
+                setTimeout(finishToLogin, timings.mainDelay);
               });
             }, timings.beanHold);
           });
+        };
+
+        beanEntryTimerRef.current = setTimeout(runBeanSequence, beanEnterDelayMs);
+      };
+
+      if (printMeasureRef.current) {
+        printMeasureRef.current.measureInWindow((x, y, w, h) => {
+          afterMeasure(x + w / 2, y + h / 2);
         });
-      });
+      } else {
+        const { width: winW, height: winH } = Dimensions.get('window');
+        afterMeasure(winW / 2, winH / 2);
+      }
     });
   }, [
     stage,
@@ -235,7 +290,7 @@ export function MobileEntrySplash() {
     beanOpacity,
     beanTranslate,
     timings,
-    finishToHome,
+    finishToLogin,
   ]);
 
   if (stage === 'done') {
@@ -267,7 +322,9 @@ export function MobileEntrySplash() {
             accessibilityHint="Double tap to continue the intro"
             style={styles.hit}
           >
-            <SvgXml xml={HOME_PRINT_XML} width={PRINT_SIZE} height={PRINT_SIZE} />
+            <View ref={printMeasureRef} collapsable={false}>
+              <SvgXml xml={HOME_PRINT_XML} width={PRINT_SIZE} height={PRINT_SIZE} />
+            </View>
             <Text style={styles.wordmark} accessible={false}>
               funcup
             </Text>
@@ -276,10 +333,28 @@ export function MobileEntrySplash() {
 
         <Animated.View
           pointerEvents="none"
-          style={[styles.confettiLayer, { opacity: confettiOpacity }]}
+          style={[styles.confettiFlash, { opacity: confettiOpacity }]}
           accessibilityElementsHidden
           importantForAccessibility="no"
         />
+        <View style={styles.particleHost} pointerEvents="none" accessibilityElementsHidden>
+          {!reduceMotion &&
+            confettiParticles.map((p, i) => (
+              <View
+                key={`${burstKey}-${i}`}
+                style={{
+                  position: 'absolute',
+                  left: p.x,
+                  top: p.y,
+                  width: Math.max(2.5, p.size * 2.2),
+                  height: Math.max(2, p.size),
+                  backgroundColor: '#0a0a0a',
+                  opacity: Math.max(0, p.life * 0.9),
+                  transform: [{ rotate: `${p.rot}rad` }],
+                }}
+              />
+            ))}
+        </View>
 
         <Animated.View
           style={[
@@ -329,9 +404,14 @@ const styles = StyleSheet.create({
     color: '#1a1a1a',
     fontWeight: '400',
   },
-  confettiLayer: {
+  /** Brief dim pulse — particle opacity is independent (matches web canvas read). */
+  confettiFlash: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(26,26,26,0.35)',
+    backgroundColor: 'rgba(26,26,26,0.12)',
+  },
+  particleHost: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 2,
   },
   beanWrap: {
     ...StyleSheet.absoluteFillObject,

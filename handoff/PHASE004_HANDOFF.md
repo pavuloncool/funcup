@@ -110,3 +110,4 @@ Priorytet: testy automatyczne dla generate_qr + E2E happy path dashboard->QR->ha
 bez zmiany kontraktu API i bez regresji ścieżek apps/web/app/... .
 Pamiętaj: każdy nowy core-document ma mieć link w README.md.
 ```
+

@@ -20,13 +20,12 @@ Created by:
 
 The specialty coffee market has been growing rapidly worldwide, but **the consumer data layer of the industry is almost nonexistent**.  
 Today:   
-
 - consumers often **do not really know what coffee they are drinking** beyond the information printed on the label,   
 - roasters **have little to no insight into how their coffee is perceived or brewed by consumers**,   
 - coffee discovery happens mainly through:  
-  • cafés  
-  • social media  
-  • friends’ recommendations  
+  • cafés,
+  • social media,
+  • friends’ recommendations,
   • packaging.
 
 Unlike other taste-driven industries, coffee still lacks a dominant discovery platform comparable to:   
@@ -40,11 +39,11 @@ Unlike other taste-driven industries, coffee still lacks a dominant discovery pl
 | sport    | Strava   |
 
 
-## As a result, a large portion of the real consumer experience **is never captured or analyzed**.   
+## As a result, a large portion of the real consumer experience data **is never captured or analyzed**.
 
 # 2. The Product Idea
 
-funcup.app creates a **digital identity for coffee** and builds a **community layer of tasting experiences** around that identity.  
+funcup.app creates a **digital identity for coffee** and builds a **community layer of tasting experiences** around that identity.
 The platform connects three sides of the market:   
 
 ```
@@ -56,9 +55,8 @@ Platform → aggregates and analyzes the data
 The mechanism that connects these elements is **coffee identification through QR codes**.  
 Each bag of coffee needs to carry a QR code leading to a **dynamic product page inside funcup**.  
 This allows:   
-
-- every coffee to have a digital identity   
-- consumers to log and evaluate coffees   
+- every coffee to have a digital identity,
+- consumers to log and evaluate coffees,
 - roasters to receive real feedback from the market.
 
 ---
@@ -77,10 +75,10 @@ Platform → aggregation and analysis
 
 # 4. Core Product Interaction
 
-The existential rationale of the app is to allow the user to:
+The existential rationale of the app is to allow the users to:
 
 ```
-scan coffee using the QR scanner and record it in their 'coffee journal'
+scan coffee using the QR scanner and record it in their 'coffee journal'.
 ```
 
 The process looks as follows:   
@@ -118,7 +116,7 @@ The interaction works as follows:
 4. After the coffee bean reaches its 100% visual size in its container, it bursts into a cloud of black confetti exploding in the same circular fashion, edge-to-edge all over the screen.
 ↓
 5. Authentication: While the bean explosion is wearing out, a background process authenticates the user's device session. The check may return two scenarios:
-    a. the session token is valid: user authenticates with PIN or biometrics ➝ the Coffee Hub screen including the QR scanner button is diplayed;
+    a. the session token is valid/user login data is stored: the Coffee Hub screen including the QR scanner button is diplayed;
     b. the session token is missing on the device ➝ the app displays the sign-in/sign-up screen (email only sign-up plus magic link) with message 'Sign in or register to join the coffee community'; the user provides their email address, a magic link is sent to their email inbox and, upon clicking, takes them back into the app; next:
         ➝ if the user's email matches an existing account ➝ the Coffee Hub screen including the QR scanner button is diplayed and the user's data are loaded from the server;
         ➝ if the user's email does not match any account ➝ an account is created for them in the app (DB, auth etc.) and the user is taken to their user account screen to complete the registration and validate their consents (the user account screen will include the Coffee Hub button and the QR scanner button for the user to launch their first scan as soon as they are ready with their sign-up information).
@@ -128,25 +126,25 @@ The interaction works as follows:
 
 # 6. Coffee Hub — the heart of the app
 
-After entering, the user arrives at the main screen:  
-**Coffee Hub**  
-This is where the user “lives” inside the application. The Coffe Hub (main) screen features navigation to 5 primary areas:
+After entering, the user arrives at the app 'cockpit' screen called 'Coffe Hub':  
+**Coffee Hub**
+This is where the user 'lives' inside the application. 
+The **Coffe Hub** screen displays navigation to 5 major app areas:
 
 ```
-Big, central, bottom navbar button: QR Coffee Scanner
-Screen tile 1: Discover Coffees (coffee data, user ratings /user nick plus rating/)
-Screen tile 2: Discover Roasters (roaster data, coffee submitted, averaged coffee ratings)
-Screen tile 3: Learn Coffee (coffee blog, brewing guide, roasting guide)
+Central, bottom button: QR Coffee Scanner – the heart and the core tool of the app
+Screen tile 1: Discover Coffees (coffee data, including roaster name, lot, roast date, brew method, tasting radar chart based on roaster info, tasting radar chart based on user info, overall coffee rating)
+Screen tile 2: Discover Roasters (roaster name, roaster locatioin, coffee lots submitted to the app, averaged coffee ratings, tasting radars compliance (roaster vs user))
+Screen tile 3: Tips & Skills (coffee blog posts, brewing tips, roaster presentations)
 Screen tile 4: Community (users who rated the same coffee or follow the same roaster);
 ```
 ### A future option: the app may offer users hero-identities — a set of characters/avatars, as part of the gamification layer.
 
-The Coffee Hub is designed to:
-
+The **Coffee Hub** is designed to:
 - prioritize coffee scanning,
-- encourage exploration,
-- support discovery of new coffees and roasters,
-– network with users with something in common.
+- encourage coffee exploration,
+- support roaster discovery,
+– network with likewise users.
 
 ---
 

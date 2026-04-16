@@ -3,7 +3,6 @@ import { Link, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
-  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -13,11 +12,12 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SelectField, type SelectOption } from '../src/components/form/SelectField';
-import { supabase } from '../src/services/supabaseClient';
+import { getResolvedSupabasePublicOrigin, supabase } from '../src/services/supabaseClient';
 import { authScreenStyles } from '../src/theme/authScreenStyles';
 import { formToInsert, validateRoasterCoffeeTagForm } from '../src/validation/roasterCoffeeTagForm';
 
 const ORIGIN_COUNTRIES: SelectOption[] = [
+  { value: 'Nicaragua', label: 'Nikaragua' },
   { value: 'Ethiopia', label: 'Etiopia' },
   { value: 'Colombia', label: 'Kolumbia' },
   { value: 'Kenya', label: 'Kenia' },
@@ -79,11 +79,16 @@ const getTodayIso = (): string => {
   return `${y}-${m}-${day}`;
 };
 
+type SaveFeedback =
+  | { kind: 'success'; id: string; roaster_short_name: string }
+  | { kind: 'error'; message: string };
+
 export default function RoasterAddCoffeeScreen() {
   const router = useRouter();
   const [form, setForm] = useState<RoasterCoffeeTagFormStrings>(initialForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
+  const [saveFeedback, setSaveFeedback] = useState<SaveFeedback | null>(null);
 
   const setField = useCallback(
     <K extends keyof RoasterCoffeeTagFormStrings>(key: K, value: RoasterCoffeeTagFormStrings[K]) => {
@@ -100,21 +105,29 @@ export default function RoasterAddCoffeeScreen() {
     const row = formToInsert(form);
     if (!row) return;
 
+    setSaveFeedback(null);
     setSaving(true);
     try {
       // Database placeholder types do not yet infer Insert for all tables; row matches migration + `RoasterCoffeeTagInsert`.
-      const { error } = await supabase.from('roaster_coffee_tags').insert(row as never);
+      const { data, error } = await supabase
+        .from('roaster_coffee_tags')
+        .insert(row as never)
+        .select('id, roaster_short_name')
+        .single();
       if (error) {
-        Alert.alert('Błąd zapisu', error.message);
+        setSaveFeedback({ kind: 'error', message: error.message });
         return;
       }
-      Alert.alert('Zapisano', 'Rekord został zapisany w roaster_coffee_tags.', [
-        { text: 'OK', onPress: () => router.replace('/test-select-user') },
-      ]);
+      const saved = data as { id: string; roaster_short_name: string };
+      setSaveFeedback({
+        kind: 'success',
+        id: saved.id,
+        roaster_short_name: saved.roaster_short_name,
+      });
     } finally {
       setSaving(false);
     }
-  }, [form, router]);
+  }, [form]);
 
   return (
     <SafeAreaView style={authScreenStyles.safeArea}>
@@ -127,6 +140,36 @@ export default function RoasterAddCoffeeScreen() {
         <Link href="/test-select-user" style={local.backLink}>
           Wróć do wyboru roli
         </Link>
+
+        {saveFeedback?.kind === 'success' ? (
+          <View style={local.feedbackOk} accessibilityLiveRegion="polite">
+            <Text style={local.feedbackOkTitle}>Zapisano w tej samej bazie co Studio (127.0.0.1:54323)</Text>
+            <Text style={local.feedbackBody}>
+              Roaster: {saveFeedback.roaster_short_name}
+              {'\n'}
+              ID: {saveFeedback.id}
+              {'\n'}
+              W Studio: Table Editor → schema <Text style={local.mono}>public</Text> → tabela{' '}
+              <Text style={local.mono}>roaster_coffee_tags</Text>. Odśwież stronę (⌘R). Szukaj po kolumnie{' '}
+              <Text style={local.mono}>roaster_short_name</Text> albo po tym ID.
+            </Text>
+            <Pressable
+              style={local.feedbackBtn}
+              onPress={() => router.replace('/test-select-user')}
+              accessibilityRole="button"
+              accessibilityLabel="Wróć do wyboru roli po zapisie"
+            >
+              <Text style={local.feedbackBtnText}>Wróć do wyboru roli</Text>
+            </Pressable>
+          </View>
+        ) : null}
+
+        {saveFeedback?.kind === 'error' ? (
+          <View style={local.feedbackErr} accessibilityLiveRegion="assertive">
+            <Text style={local.feedbackErrTitle}>Błąd zapisu</Text>
+            <Text style={local.feedbackBody}>{saveFeedback.message}</Text>
+          </View>
+        ) : null}
 
         <FieldLabel text="Nazwa roastera (skrót)" />
         <TextInput
@@ -287,6 +330,13 @@ export default function RoasterAddCoffeeScreen() {
             <Text style={authScreenStyles.socialButtonText}>Zapisz w Supabase</Text>
           )}
         </Pressable>
+
+        {__DEV__ ? (
+          <Text style={local.devHint} accessibilityLabel="Adres API Supabase w trybie deweloperskim">
+            API: {getResolvedSupabasePublicOrigin()} — musi być 127.0.0.1:54321, żeby rekord pojawił się w lokalnym Studio
+            (127.0.0.1:54323). Po zmianie .env.local: zatrzymaj Expo i uruchom ponownie z czyszczeniem cache (expo start -c).
+          </Text>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -362,5 +412,62 @@ const local = StyleSheet.create({
   saveBtn: {
     marginTop: 8,
     marginBottom: 24,
+  },
+  devHint: {
+    marginTop: 16,
+    fontSize: 11,
+    lineHeight: 16,
+    color: '#555',
+  },
+  feedbackOk: {
+    marginBottom: 16,
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#1a7f37',
+    backgroundColor: '#e8f5e9',
+  },
+  feedbackOkTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#0d3b16',
+    marginBottom: 8,
+  },
+  feedbackErr: {
+    marginBottom: 16,
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#b00020',
+    backgroundColor: '#ffebee',
+  },
+  feedbackErrTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#7f1010',
+    marginBottom: 8,
+  },
+  feedbackBody: {
+    fontSize: 13,
+    lineHeight: 18,
+    color: '#1a1a1a',
+  },
+  mono: {
+    fontFamily: 'monospace',
+    fontSize: 12,
+    color: '#111',
+  },
+  feedbackBtn: {
+    marginTop: 12,
+    alignSelf: 'flex-start',
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    backgroundColor: '#111',
+  },
+  feedbackBtnText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 14,
   },
 });

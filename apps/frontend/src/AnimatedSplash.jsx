@@ -5,6 +5,17 @@ import { useState, useEffect, useRef } from "react"
 const fingerprintSvg = "/assets/home-print.svg"
 const beanSvg = "/assets/home-bean.svg"
 
+/** Ms from tap until fingerprint dissolves and canvas confetti runs */
+const MS_TO_DISSOLVE = 480
+/**
+ * Confetti “burst” window for scheduling only — bean fade starts at 80% into this phase (after dissolve).
+ * fingerprint → tap → confetti → @ 80% of burst → bean fades in from white (no slide).
+ */
+const CONFETTI_BURST_PHASE_MS = 2000
+const BEAN_PHASE_START_MS = MS_TO_DISSOLVE + 0.8 * CONFETTI_BURST_PHASE_MS
+const FADE_BEAN_PHASE_START_MS = BEAN_PHASE_START_MS + 1900
+const ON_FINISH_MS = FADE_BEAN_PHASE_START_MS + 1550
+
 // ─── Dust particle animation hook ──────────────────────────────────────────
 // anchorRef  – ref do elementu <img> SVG, żeby pobrać pozycję i spróbkować piksele
 // canvasRef  – fullscreen fixed canvas (zwracany przez hook)
@@ -113,11 +124,10 @@ export default function AnimatedSplash({ onFinish }) {
     navigator.vibrate?.(14)
     setStage("press")
     setTimeout(() => setStage("burst"),    220)
-    setTimeout(() => setStage("dissolve"), 480)
-    // ziarno startuje w połowie animacji pyłu – nie czeka na jej koniec
-    setTimeout(() => setStage("bean"),     900)
-    setTimeout(() => setStage("fadeBean"), 2700)
-    setTimeout(() => onFinish(),           3400)
+    setTimeout(() => setStage("dissolve"), MS_TO_DISSOLVE)
+    setTimeout(() => setStage("bean"), BEAN_PHASE_START_MS)
+    setTimeout(() => setStage("fadeBean"), FADE_BEAN_PHASE_START_MS)
+    setTimeout(() => onFinish(), ON_FINISH_MS)
   }
 
   return (
@@ -195,25 +205,21 @@ export default function AnimatedSplash({ onFinish }) {
             key="bean"
             style={{ width: 128, height: 128 }}
 
-            initial={{ opacity: 0, scale: 0.3, rotate: -6, filter: "blur(12px)" }}
+            initial={{ opacity: 0 }}
 
             animate={
               stage === "bean"
-                ? { opacity: 1, scale: 1, rotate: 0, filter: "blur(0px)" }
-                : { opacity: 0, scale: 0.92 }
+                ? { opacity: 1 }
+                : { opacity: 0 }
             }
 
             transition={
               stage === "bean"
                 ? {
-                    opacity: { duration: 1.4, ease: "easeOut" },
-                    scale:   { type: "spring", stiffness: 20, damping: 14 },
-                    rotate:  { duration: 1.4, ease: "easeOut" },
-                    filter:  { duration: 1.1 },
+                    opacity: { duration: 1.25, ease: [0.22, 1, 0.36, 1] },
                   }
                 : {
-                    opacity: { duration: 1.4, ease: "easeInOut" },
-                    scale:   { duration: 1.4 },
+                    opacity: { duration: 1.25, ease: "easeInOut" },
                   }
             }
           >
