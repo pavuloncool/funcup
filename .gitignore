@@ -39,7 +39,7 @@ node_modules/.cache
 
 # Expo (local dev / device history)
 .expo/
-apps/mobile/.expo/
+apps/consumer-mobile/.expo/
 
 # vercel
 .vercel

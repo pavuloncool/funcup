@@ -1,4 +1,4 @@
-/** Values persisted for roaster QR tag flow (see funcup-src-docs/01-vision/qr-generate-roaster.md). */
+/** Values persisted for roaster QR tag flow (see dev-docs/funcup-src-docs/01-vision/qr-generate-roaster.md). */
 export type RoasterCoffeeBeanType = 'arabica' | 'robusta';
 
 export interface RoasterCoffeeTagForm {

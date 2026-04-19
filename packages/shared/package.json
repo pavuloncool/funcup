@@ -9,6 +9,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@funcup/types": "workspace:*",
     "@supabase/supabase-js": "^2.49.1",
     "@tanstack/react-query": "^5.80.0"
   },

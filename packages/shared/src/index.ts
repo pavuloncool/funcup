@@ -15,3 +15,4 @@ export * from './hooks/useJournal';
 export * from './hooks/useDiscoverCoffees';
 export * from './hooks/useDiscoverRoasters';
 export * from './hooks/useFollowRoaster';
+export * from './validation/roasterCoffeeTagForm';

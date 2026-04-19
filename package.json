@@ -11,12 +11,12 @@
     "phase004:readiness": "bash scripts/phase004-readiness-check.sh",
     "supabase:types": "echo \"Generate types via Supabase CLI: supabase gen types typescript --project-id <id> --schema public > supabase/types/database.ts\"",
     "test": "turbo run test",
-    "mobile:start": "pnpm -C apps/mobile start",
-    "mobile:ios": "pnpm -C apps/mobile ios",
-    "mobile:web": "pnpm -C apps/mobile web",
-    "mobile:web:clear": "pnpm -C apps/mobile run web -- -c",
-    "mobile:prebuild": "pnpm -C apps/mobile run prebuild",
-    "mobile:prebuild:clean": "pnpm -C apps/mobile run prebuild:clean",
+    "consumer:start": "pnpm -C apps/consumer-mobile start",
+    "consumer:ios": "pnpm -C apps/consumer-mobile ios",
+    "consumer:web": "pnpm -C apps/consumer-mobile web",
+    "consumer:web:clear": "pnpm -C apps/consumer-mobile run web -- -c",
+    "consumer:prebuild": "pnpm -C apps/consumer-mobile run prebuild",
+    "consumer:prebuild:clean": "pnpm -C apps/consumer-mobile run prebuild:clean",
     "postinstall": "node scripts/patch-metro-cache-exports.js",
     "prepare": "husky"
   },
@@ -28,7 +28,12 @@
       "resolve": "1.22.10",
       "react": "19.1.0",
       "react-dom": "19.1.0"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp",
+      "unrs-resolver"
+    ]
   },
   "devDependencies": {
     "@commitlint/cli": "^20.5.0",

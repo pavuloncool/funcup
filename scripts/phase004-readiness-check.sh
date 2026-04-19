@@ -37,10 +37,10 @@ echo "PASS: no peer dependency warnings detected"
 
 echo
 echo "[3/7] TypeScript blockers in new modules"
-pnpm -C apps/mobile typecheck
+pnpm -C apps/consumer-mobile typecheck
 pnpm -C packages/shared typecheck
 pnpm exec tsc -p apps/web/tsconfig.json --noEmit
-echo "PASS: mobile/shared/web typechecks"
+echo "PASS: consumer-mobile/shared/web typechecks"
 
 echo
 echo "[4/7] Supabase seed smoke (requires Docker)"
