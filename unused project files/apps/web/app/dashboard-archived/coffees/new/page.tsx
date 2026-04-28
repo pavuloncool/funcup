@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 
@@ -93,6 +94,13 @@ export default function NewCoffeePage() {
         </button>
       </form>
       {error ? <p style={{ color: 'crimson' }}>{error}</p> : null}
+      {error === 'No roaster profile found for this account.' ? (
+        <p style={{ marginTop: 12 }}>
+          <Link href="/dashboard/roaster/setup" style={{ fontWeight: 600 }}>
+            Utwórz profil palarni
+          </Link>
+        </p>
+      ) : null}
     </main>
   );
 }

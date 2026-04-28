@@ -1,7 +1,5 @@
 import Link from 'next/link';
 
-import QRDownloadButton from './QRDownloadButton';
-
 type Props = {
   params: Promise<{ id: string; batchId: string }>;
 };
@@ -18,7 +16,9 @@ export default async function BatchDetailsPage({ params }: Props) {
       <p>
         <strong>Batch:</strong> {batchId}
       </p>
-      <QRDownloadButton batchId={batchId} />
+      <p style={{ marginTop: 12, color: '#444' }}>
+        Generowanie kodów QR dla batchy przeniesiono do flow tagu kawy (strona /tag).
+      </p>
       <p>
         <Link href={`/dashboard/analytics/${batchId}`}>Batch analytics</Link>
       </p>
