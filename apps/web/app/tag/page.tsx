@@ -14,7 +14,7 @@ import { pl } from 'date-fns/locale';
 import { CalendarDays } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { FilePond, registerPlugin } from 'react-filepond';
 
@@ -24,8 +24,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/src/components/ui/pop
 import { supabaseBrowser } from '@/src/lib/supabase/browserClient';
 import { uploadCoffeeLabelToSupabase } from '@/src/lib/uploadCoffeeLabel';
 import { getResolvedSupabasePublicOrigin } from '@/src/lib/supabasePublicOrigin';
-import { cn } from '@/src/lib/utils';
-import { authScreenStyles } from '@/src/theme/authScreenStyles';
+import { tagStyles } from './tag.styles';
 
 import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
@@ -99,14 +98,54 @@ const defaultFormValues = (): RoasterCoffeeTagClientFormInput => ({
 });
 
 type SaveFeedback =
-  | { kind: 'success'; id: string; roaster_short_name: string }
+  | { kind: 'success'; id: string; public_hash: string; roaster_short_name: string }
   | { kind: 'error'; message: string };
+
+type QrPreview = { svg: string; png: string; url: string };
 
 export default function RoasterAddCoffeePage() {
   const router = useRouter();
   const [saveFeedback, setSaveFeedback] = useState<SaveFeedback | null>(null);
+  const [sessionReady, setSessionReady] = useState(false);
+  const [hasSession, setHasSession] = useState(false);
+  const [roasterMeta, setRoasterMeta] = useState<{
+    id: string;
+    roaster_short_name: string | null;
+  } | null>(null);
+  const roasterId = roasterMeta?.id ?? null;
+  const [qrPreview, setQrPreview] = useState<QrPreview | null>(null);
+  const [qrLoading, setQrLoading] = useState(false);
+  const [qrError, setQrError] = useState<string | null>(null);
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'http://127.0.0.1:54321';
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const {
+        data: { session },
+      } = await supabaseBrowser.auth.getSession();
+      if (cancelled) return;
+      setHasSession(Boolean(session));
+      if (!session) {
+        setRoasterMeta(null);
+        setSessionReady(true);
+        return;
+      }
+      const { data: roaster } = await supabaseBrowser
+        .from('roasters')
+        .select('id, roaster_short_name')
+        .eq('user_id', session.user.id)
+        .maybeSingle();
+      if (cancelled) return;
+      const r = roaster as { id: string; roaster_short_name: string | null } | null;
+      setRoasterMeta(r ? { id: r.id, roaster_short_name: r.roaster_short_name } : null);
+      setSessionReady(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const form = useForm<RoasterCoffeeTagClientFormInput, unknown, RoasterCoffeeTagClientFormValues>({
     resolver: zodResolver(roasterCoffeeTagClientFormSchema),
@@ -123,6 +162,18 @@ export default function RoasterAddCoffeePage() {
     formState: { errors, isSubmitting },
   } = form;
 
+  useEffect(() => {
+    const fromProfile = roasterMeta?.roaster_short_name?.trim() ?? '';
+    setValue('roaster_short_name', fromProfile, { shouldValidate: true, shouldDirty: false });
+  }, [roasterMeta, setValue]);
+
+  const roasterShortNameDisplay = useMemo(() => {
+    if (!sessionReady) return '…';
+    const n = roasterMeta?.roaster_short_name?.trim();
+    if (n) return n;
+    return '—';
+  }, [sessionReady, roasterMeta]);
+
   const coffeeLabelFile = watch('coffeeLabelFile');
 
   const pondFiles = useMemo(() => {
@@ -132,10 +183,31 @@ export default function RoasterAddCoffeePage() {
   const onSubmit = useCallback(
     async (values: RoasterCoffeeTagClientFormValues) => {
       setSaveFeedback(null);
+      setQrPreview(null);
+      setQrError(null);
       if (!(values.coffeeLabelFile instanceof File)) {
         throw new Error('Image upload failed');
       }
       assertCoffeeLabelFileSize(values.coffeeLabelFile);
+
+      const {
+        data: { session },
+      } = await supabaseBrowser.auth.getSession();
+      if (!session) {
+        setSaveFeedback({
+          kind: 'error',
+          message: 'Zaloguj się jako palarnia, aby zapisać tag.',
+        });
+        return;
+      }
+      if (!roasterId) {
+        setSaveFeedback({
+          kind: 'error',
+          message:
+            'Brak profilu palarni dla tego konta. Utwórz wpis w tabeli roasters lub skontaktuj się z administratorem.',
+        });
+        return;
+      }
 
       let coffeeLabelUrl: string;
       try {
@@ -154,22 +226,23 @@ export default function RoasterAddCoffeePage() {
         throw new Error('Image upload failed');
       }
 
-      const row = clientFormValuesToInsert(values, coffeeLabelUrl);
+      const row = clientFormValuesToInsert(values, coffeeLabelUrl, roasterId);
 
       try {
         const { data, error } = await supabaseBrowser
           .from('roaster_coffee_tags')
           .insert(row as never)
-          .select('id, roaster_short_name')
+          .select('id, public_hash, roaster_short_name')
           .single();
         if (error) {
           setSaveFeedback({ kind: 'error', message: error.message });
           return;
         }
-        const saved = data as { id: string; roaster_short_name: string };
+        const saved = data as { id: string; public_hash: string; roaster_short_name: string };
         setSaveFeedback({
           kind: 'success',
           id: saved.id,
+          public_hash: saved.public_hash,
           roaster_short_name: saved.roaster_short_name,
         });
       } catch (e) {
@@ -177,42 +250,169 @@ export default function RoasterAddCoffeePage() {
         setSaveFeedback({ kind: 'error', message });
       }
     },
-    []
+    [roasterId]
   );
+
+  const handleGenerateQr = useCallback(async () => {
+    if (saveFeedback?.kind !== 'success') return;
+    setQrError(null);
+    setQrLoading(true);
+    try {
+      const {
+        data: { session },
+      } = await supabaseBrowser.auth.getSession();
+      if (!session?.access_token) {
+        setQrError('Brak sesji. Zaloguj się ponownie.');
+        setQrLoading(false);
+        return;
+      }
+      const res = await fetch('/api/qr', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ tagId: saveFeedback.id }),
+      });
+      const body = (await res.json()) as QrPreview & { error?: string; message?: string };
+      if (!res.ok) {
+        setQrError(body.message ?? body.error ?? 'Nie udało się wygenerować kodu QR.');
+        setQrLoading(false);
+        return;
+      }
+      setQrPreview({ svg: body.svg, png: body.png, url: body.url });
+    } catch (e) {
+      setQrError(e instanceof Error ? e.message : 'Błąd sieci');
+    } finally {
+      setQrLoading(false);
+    }
+  }, [saveFeedback]);
+
+  const downloadSvg = useCallback(() => {
+    if (!qrPreview || saveFeedback?.kind !== 'success') return;
+    const blob = new Blob([qrPreview.svg], { type: 'image/svg+xml' });
+    const href = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = href;
+    a.download = `qr-${saveFeedback.public_hash}.svg`;
+    a.click();
+    URL.revokeObjectURL(href);
+  }, [qrPreview, saveFeedback]);
 
   const setTodayRoastDate = useCallback(() => {
     setValue('bean_roast_date', getTodayIsoDateString(), { shouldValidate: true });
   }, [setValue]);
 
-  return (
-    <div className={`${authScreenStyles.page} pb-12`}>
-      <div className="mx-auto w-full max-w-[480px] px-4 pt-2">
-        <h1 className="mb-2 mt-2 text-[22px] font-bold text-[#111]">Dodaj tag kawy</h1>
-        <Link href="/role" className="mb-5 inline-block text-sm font-semibold text-[#111] underline">
-          Wróć do wyboru roli
+  const authGate =
+    sessionReady && !hasSession ? (
+      <div
+        className={tagStyles.authGateBox}
+        role="status"
+      >
+        <p className={tagStyles.authGateTitle}>Wymagane logowanie</p>
+        <p className={tagStyles.authGateBody}>
+          Aby zapisać tag kawy i wygenerować kod QR,{' '}
+          <Link href="/login?next=/tag" className={tagStyles.authGateLink}>
+            zaloguj się
+          </Link>{' '}
+          kontem palarni.
+        </p>
+      </div>
+    ) : null;
+
+  const roasterGate =
+    sessionReady && hasSession && !roasterId ? (
+      <div className={tagStyles.roasterGateBox} role="alert">
+        <p className={tagStyles.roasterGateTitle}>Brak profilu palarni</p>
+        <p className={tagStyles.roasterGateBody}>
+          To konto nie ma powiązanego wiersza w tabeli <code className={tagStyles.roasterGateCode}>roasters</code>. Utwórz profil palarni,
+          aby zapisywać tagi i generować kody QR.
+        </p>
+        <Link
+          href="/roaster-hub/setup"
+          className={tagStyles.roasterGateLinkPrimary}
+          data-testid="link-roaster-setup"
+        >
+          Utwórz profil palarni
         </Link>
+        <Link href="/roaster-hub/coffees" className={tagStyles.roasterGateLinkSecondary}>
+          Lista kaw
+        </Link>
+      </div>
+    ) : null;
+
+  const qrPanel = (
+    <div className={tagStyles.qrPanelWrap}>
+      <p className={tagStyles.qrPanelTitle}>Kod QR</p>
+      {qrPreview ? (
+        <div className={tagStyles.qrCard}>
+          <img
+            alt="Wygenerowany kod QR"
+            className={tagStyles.qrImage}
+            src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(qrPreview.svg)}`}
+          />
+          {qrPreview.png ? (
+            <img
+              alt="Podgląd PNG"
+              className={tagStyles.qrImagePng}
+              src={`data:image/png;base64,${qrPreview.png}`}
+            />
+          ) : null}
+          <p className={tagStyles.qrUrl}>{qrPreview.url}</p>
+          <button
+            type="button"
+            data-testid="btn-download-qr-svg"
+            className={tagStyles.qrDownloadBtn}
+            onClick={downloadSvg}
+          >
+            Pobierz SVG
+          </button>
+        </div>
+      ) : (
+        <p className={tagStyles.qrHint}>
+          Po zapisaniu tagu użyj przycisku „Generuj kod QR”, aby zobaczyć podgląd tutaj.
+        </p>
+      )}
+      {qrError ? (
+        <p className={tagStyles.qrError} role="alert">
+          {qrError}
+        </p>
+      ) : null}
+    </div>
+  );
+
+  return (
+    <div className={tagStyles.pageShell}>
+      <div className={tagStyles.contentInner}>
+        <h1 className={tagStyles.pageTitle}>Dodaj tag kawy</h1>
+        <Link href="/roaster-hub" className={tagStyles.backToHub}>
+          Wróć do Roaster Hub
+        </Link>
+
+        {authGate}
+        {roasterGate}
 
         {saveFeedback?.kind === 'success' ? (
           <div
-            className="mb-4 rounded-[10px] border-2 border-[#1a7f37] bg-[#e8f5e9] p-3"
+            className={tagStyles.successBox}
             role="status"
             aria-live="polite"
           >
-            <p className="mb-2 text-sm font-bold text-[#0d3b16]">
-              Zapisano w tej samej bazie co Studio (127.0.0.1:54323)
-            </p>
-            <p className="text-[13px] leading-relaxed text-[#1a1a1a]">
+            <p className={tagStyles.successTitle}>Dane zapisane</p>
+            <p className={tagStyles.successBody}>
               Roaster: {saveFeedback.roaster_short_name}
               <br />
-              ID: {saveFeedback.id}
-              <br />
-              W Studio: Table Editor → schema <code className="font-mono text-xs">public</code> → tabela{' '}
-              <code className="font-mono text-xs">roaster_coffee_tags</code>. Odśwież stronę (⌘R). Szukaj po kolumnie{' '}
-              <code className="font-mono text-xs">roaster_short_name</code> albo po tym ID.
+              Public hash: <code className={tagStyles.successCode}>{saveFeedback.public_hash}</code>
             </p>
+            {process.env.NODE_ENV === 'development' ? (
+              <p className={tagStyles.successDevNote}>
+                Studio: tabela <code className={tagStyles.successDevMono}>roaster_coffee_tags</code>, kolumna{' '}
+                <code className={tagStyles.successDevMono}>public_hash</code>.
+              </p>
+            ) : null}
             <button
               type="button"
-              className="mt-3 rounded-lg bg-[#111] px-3.5 py-2 text-sm font-semibold text-white"
+              className={tagStyles.successCta}
               onClick={() => router.replace('/role')}
             >
               Wróć do wyboru roli
@@ -222,29 +422,31 @@ export default function RoasterAddCoffeePage() {
 
         {saveFeedback?.kind === 'error' ? (
           <div
-            className="mb-4 rounded-[10px] border-2 border-[#b00020] bg-[#ffebee] p-3"
+            className={tagStyles.errorBox}
             role="alert"
             aria-live="assertive"
           >
-            <p className="mb-2 text-sm font-bold text-[#7f1010]">Błąd zapisu</p>
-            <p className="text-[13px] leading-relaxed text-[#1a1a1a]">{saveFeedback.message}</p>
+            <p className={tagStyles.errorTitle}>Błąd zapisu</p>
+            <p className={tagStyles.errorBody}>{saveFeedback.message}</p>
           </div>
         ) : null}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-0">
+        <div className={tagStyles.formGrid}>
+          <div className={tagStyles.formColumn}>
+        <form onSubmit={handleSubmit(onSubmit)} className={tagStyles.formRoot}>
           <FieldLabel text="Nazwa roastera (skrót)" />
-          <input
-            className={authScreenStyles.input}
-            {...register('roaster_short_name')}
-            maxLength={64}
-            placeholder="np. Bean Lab"
-            aria-label="Nazwa roastera"
-            autoComplete="organization"
-          />
+          <input type="hidden" {...register('roaster_short_name')} />
+          <p
+            className={tagStyles.readOnlyRoasterName}
+            data-testid="roaster-short-name-display"
+            aria-label={`Nazwa roastera: ${roasterShortNameDisplay}`}
+          >
+            {roasterShortNameDisplay}
+          </p>
           <Err msg={errors.roaster_short_name?.message} />
 
           <FieldLabel text="Zdjęcie etykiety / opakowania" />
-          <div className="mb-[18px]" data-testid="coffee-label-filepond">
+          <div className={tagStyles.filepondWrap} data-testid="coffee-label-filepond">
             <Controller
               name="coffeeLabelFile"
               control={control}
@@ -271,7 +473,7 @@ export default function RoasterAddCoffeePage() {
 
           <FieldLabel text="Kraj pochodzenia ziarna" />
           <select
-            className={authScreenStyles.input}
+            className={tagStyles.input}
             {...register('bean_origin_country')}
             data-testid="select-bean-origin-country"
             aria-label="Kraj pochodzenia ziarna"
@@ -287,7 +489,7 @@ export default function RoasterAddCoffeePage() {
 
           <FieldLabel text="Nazwa farmy" />
           <input
-            className={authScreenStyles.input}
+            className={tagStyles.input}
             {...register('bean_origin_farm')}
             maxLength={96}
             aria-label="Nazwa farmy"
@@ -296,7 +498,7 @@ export default function RoasterAddCoffeePage() {
 
           <FieldLabel text="Nazwa handlowa ziarna" />
           <input
-            className={authScreenStyles.input}
+            className={tagStyles.input}
             {...register('bean_origin_tradename')}
             maxLength={48}
             aria-label="Nazwa handlowa ziarna"
@@ -305,7 +507,7 @@ export default function RoasterAddCoffeePage() {
 
           <FieldLabel text="Region uprawy" />
           <input
-            className={authScreenStyles.input}
+            className={tagStyles.input}
             {...register('bean_origin_region')}
             maxLength={96}
             aria-label="Region uprawy"
@@ -314,7 +516,7 @@ export default function RoasterAddCoffeePage() {
 
           <FieldLabel text="Gatunek kawy" />
           <select
-            className={authScreenStyles.input}
+            className={tagStyles.input}
             {...register('bean_type')}
             aria-label="Gatunek kawy"
           >
@@ -329,7 +531,7 @@ export default function RoasterAddCoffeePage() {
 
           <FieldLabel text="Odmiana dominująca" />
           <input
-            className={authScreenStyles.input}
+            className={tagStyles.input}
             {...register('bean_varietal_main')}
             maxLength={48}
             aria-label="Odmiana dominująca"
@@ -338,7 +540,7 @@ export default function RoasterAddCoffeePage() {
 
           <FieldLabel text="Odmiany dodatkowe (opcjonalnie)" />
           <input
-            className={authScreenStyles.input}
+            className={tagStyles.input}
             {...register('bean_varietal_extra')}
             maxLength={48}
             aria-label="Odmiany dodatkowe"
@@ -347,7 +549,7 @@ export default function RoasterAddCoffeePage() {
 
           <FieldLabel text="Wysokość uprawy (m n.p.m.)" />
           <input
-            className={authScreenStyles.input}
+            className={tagStyles.input}
             {...register('bean_origin_height')}
             inputMode="numeric"
             placeholder="np. 1800"
@@ -357,7 +559,7 @@ export default function RoasterAddCoffeePage() {
 
           <FieldLabel text="Obróbka ziarna" />
           <select
-            className={authScreenStyles.input}
+            className={tagStyles.input}
             {...register('bean_processing')}
             aria-label="Obróbka ziarna"
           >
@@ -371,7 +573,7 @@ export default function RoasterAddCoffeePage() {
           <Err msg={errors.bean_processing?.message} />
 
           <FieldLabel text="Data wypału" />
-          <div className="mb-[18px] flex flex-wrap items-center gap-2">
+          <div className={tagStyles.dateRow}>
             <Controller
               name="bean_roast_date"
               control={control}
@@ -382,18 +584,15 @@ export default function RoasterAddCoffeePage() {
                       type="button"
                       variant="outline"
                       data-testid="date-picker-roast-trigger"
-                      className={cn(
-                        authScreenStyles.input,
-                        'mb-0 flex h-[42px] flex-1 min-w-[200px] justify-between text-left font-normal'
-                      )}
+                      className={tagStyles.datePickerTrigger}
                       aria-label="Data wypału — otwórz kalendarz"
                     >
                       {field.value ? (
                         format(parseLocalIsoDate(field.value) ?? new Date(), 'd MMM yyyy', { locale: pl })
                       ) : (
-                        <span className="text-[#888]">Wybierz datę</span>
+                        <span className={tagStyles.datePlaceholder}>Wybierz datę</span>
                       )}
-                      <CalendarDays className="h-4 w-4 shrink-0 opacity-60" />
+                      <CalendarDays className={tagStyles.calendarIcon} />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -421,7 +620,7 @@ export default function RoasterAddCoffeePage() {
               type="button"
               variant="outline"
               data-testid="btn-roast-date-today"
-              className="h-[42px] shrink-0 rounded-[10px] border-2 border-[#2a2a2a] bg-[#e0e0e0] px-3.5 font-bold text-[#111] hover:bg-[#d5d5d5]"
+              className={tagStyles.todayBtn}
               onClick={setTodayRoastDate}
             >
               Dziś
@@ -431,7 +630,7 @@ export default function RoasterAddCoffeePage() {
 
           <FieldLabel text="Stopień wypału" />
           <select
-            className={authScreenStyles.input}
+            className={tagStyles.input}
             {...register('bean_roast_level')}
             aria-label="Stopień wypału"
           >
@@ -446,7 +645,7 @@ export default function RoasterAddCoffeePage() {
 
           <FieldLabel text="Przeznaczenie / parzenie" />
           <select
-            className={authScreenStyles.input}
+            className={tagStyles.input}
             {...register('brew_method')}
             aria-label="Przeznaczenie"
           >
@@ -462,33 +661,54 @@ export default function RoasterAddCoffeePage() {
           <button
             type="submit"
             data-testid="btn-save-coffee-tag"
-            className={`${authScreenStyles.socialButton} mt-2 mb-6 w-full max-w-[480px]`}
-            disabled={isSubmitting}
+            className={tagStyles.saveBtn}
+            disabled={isSubmitting || !sessionReady || !hasSession || !roasterId}
           >
             {isSubmitting ? (
-              <span className="text-[#111]">…</span>
+              <span className={tagStyles.saveBtnSpinner}>…</span>
             ) : (
-              <span className={authScreenStyles.socialButtonText}>Zapisz w Supabase</span>
+              <span className={tagStyles.socialButtonText}>Zapisz dane</span>
             )}
           </button>
         </form>
 
+        {saveFeedback?.kind === 'success' ? (
+          <div className={tagStyles.qrGenerateWrap}>
+            <button
+              type="button"
+              data-testid="btn-generate-qr"
+              className={tagStyles.qrGenerateBtn}
+              disabled={qrLoading}
+              onClick={() => void handleGenerateQr()}
+            >
+              {qrLoading ? (
+                <span className={tagStyles.qrGenerateSpinner}>…</span>
+              ) : (
+                <span className={tagStyles.socialButtonText}>Generuj kod QR</span>
+              )}
+            </button>
+          </div>
+        ) : null}
+
         {process.env.NODE_ENV === 'development' ? (
-          <p className="mt-4 text-[11px] leading-relaxed text-[#555]" aria-label="Adres API Supabase w trybie deweloperskim">
+          <p className={tagStyles.devApiNote} aria-label="Adres API Supabase w trybie deweloperskim">
             API: {getResolvedSupabasePublicOrigin(supabaseUrl)} — musi być 127.0.0.1:54321, żeby rekord pojawił się w lokalnym
             Studio (127.0.0.1:54323). Po zmianie .env.local: zrestartuj Next.
           </p>
         ) : null}
+          </div>
+          {qrPanel}
+        </div>
       </div>
     </div>
   );
 }
 
 function FieldLabel({ text }: { text: string }) {
-  return <p className={authScreenStyles.fieldLabel}>{text}</p>;
+  return <p className={tagStyles.fieldLabel}>{text}</p>;
 }
 
 function Err({ msg }: { msg?: string }) {
   if (!msg) return null;
-  return <p className={authScreenStyles.err}>{msg}</p>;
+  return <p className={tagStyles.err}>{msg}</p>;
 }

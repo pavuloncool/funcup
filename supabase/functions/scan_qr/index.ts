@@ -40,7 +40,7 @@ serve(async req => {
       return new Response(
         JSON.stringify({
           error: 'invalid_hash',
-          message: 'hash must be a valid UUID v4',
+          message: 'hash must be a valid UUID',
         }),
         {
           status: 400,
@@ -84,85 +84,103 @@ serve(async req => {
       `
       )
       .eq('hash', hash)
-      .single();
+      .maybeSingle();
 
-    if (qrError || !qrData) {
+    if (!qrError && qrData) {
+      const batch = qrData.roast_batches;
+      const coffee = batch.coffees;
+      const roaster = coffee.roasters;
+
+      let origin = null;
+      if (coffee.origin_id) {
+        const { data: originData } = await supabase
+          .from('origins')
+          .select(
+            'country, region, farm, altitude_min, altitude_max, producer'
+          )
+          .eq('id', coffee.origin_id)
+          .single();
+        origin = originData;
+      }
+
+      const { data: statsData } = await supabase
+        .from('coffee_stats')
+        .select('total_count, avg_rating, rating_distribution, top_flavor_notes')
+        .eq('batch_id', batch.id)
+        .single();
+
       return new Response(
         JSON.stringify({
-          error: 'not_found',
-          message: 'This QR code is not registered in funcup.',
+          kind: 'batch',
+          batch: {
+            id: batch.id,
+            roast_date: batch.roast_date,
+            lot_number: batch.lot_number,
+            status: batch.status,
+            brewing_notes: batch.brewing_notes,
+            roaster_story: batch.roaster_story,
+          },
+          coffee: {
+            id: coffee.id,
+            name: coffee.name,
+            variety: coffee.variety,
+            processing_method: coffee.processing_method,
+            producer_notes: coffee.producer_notes,
+            cover_image_url: coffee.cover_image_url,
+            status: coffee.status,
+          },
+          origin,
+          roaster: {
+            id: roaster.id,
+            name: roaster.name,
+            city: roaster.city,
+            country: roaster.country,
+            logo_url: roaster.logo_url,
+          },
+          stats: {
+            total_count: statsData?.total_count || 0,
+            avg_rating: statsData?.avg_rating || 0,
+            rating_distribution: statsData?.rating_distribution || {
+              '1': 0,
+              '2': 0,
+              '3': 0,
+              '4': 0,
+              '5': 0,
+            },
+            top_flavor_notes: statsData?.top_flavor_notes || [],
+          },
+          archived: batch.status === 'archived',
         }),
-        {
-          status: 404,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        }
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const batch = qrData.roast_batches;
-    const coffee = batch.coffees;
-    const roaster = coffee.roasters;
+    const { data: tagRow, error: tagErr } = await supabase
+      .from('roaster_coffee_tags')
+      .select('*')
+      .eq('public_hash', hash)
+      .maybeSingle();
 
-    let origin = null;
-    if (coffee.origin_id) {
-      const { data: originData } = await supabase
-        .from('origins')
-        .select(
-          'country, region, farm, altitude_min, altitude_max, producer'
-        )
-        .eq('id', coffee.origin_id)
-        .single();
-      origin = originData;
+    if (!tagErr && tagRow) {
+      return new Response(
+        JSON.stringify({
+          kind: 'tag',
+          tag: tagRow,
+          archived: false,
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
-
-    const { data: statsData } = await supabase
-      .from('coffee_stats')
-      .select('total_count, avg_rating, rating_distribution, top_flavor_notes')
-      .eq('batch_id', batch.id)
-      .single();
 
     return new Response(
       JSON.stringify({
-        batch: {
-          id: batch.id,
-          roast_date: batch.roast_date,
-          lot_number: batch.lot_number,
-          status: batch.status,
-          brewing_notes: batch.brewing_notes,
-          roaster_story: batch.roaster_story,
-        },
-        coffee: {
-          id: coffee.id,
-          name: coffee.name,
-          variety: coffee.variety,
-          processing_method: coffee.processing_method,
-          producer_notes: coffee.producer_notes,
-          cover_image_url: coffee.cover_image_url,
-          status: coffee.status,
-        },
-        origin,
-        roaster: {
-          id: roaster.id,
-          name: roaster.name,
-          city: roaster.city,
-          country: roaster.country,
-          logo_url: roaster.logo_url,
-        },
-        stats: {
-          total_count: statsData?.total_count || 0,
-          avg_rating: statsData?.avg_rating || 0,
-          rating_distribution: statsData?.rating_distribution || {
-            '1': 0,
-            '2': 0,
-            '3': 0,
-            '4': 0,
-            '5': 0,
-          },
-          top_flavor_notes: statsData?.top_flavor_notes || [],
-        },
-        archived: batch.status === 'archived',
+        error: 'not_found',
+        message: 'This QR code is not registered in funcup.',
       }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
     );
   } catch (error) {
     return new Response(
@@ -171,4 +189,3 @@ serve(async req => {
     );
   }
 });
-

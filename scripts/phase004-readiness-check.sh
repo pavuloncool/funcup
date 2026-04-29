@@ -53,7 +53,7 @@ fi
 
 echo
 echo "[5/7] Edge functions readiness"
-for fn in scan_qr update_coffee_stats generate_qr; do
+for fn in scan_qr update_coffee_stats; do
   if [[ -f "supabase/functions/${fn}/index.ts" ]]; then
     echo "PASS: ${fn}"
   else

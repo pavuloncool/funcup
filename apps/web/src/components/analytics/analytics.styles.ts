@@ -1,0 +1,32 @@
+/** Wspólne klasy kart analityki (Tailwind). */
+export const analyticsStyles = {
+  card: 'rounded-lg border border-zinc-200 bg-white p-4 shadow-sm',
+  cardTitle: 'text-lg font-semibold text-zinc-900',
+  cardCaption: 'mt-1 text-sm text-zinc-600',
+  emptyState: 'mt-4 text-sm text-zinc-500',
+  dashedHint: 'rounded-lg border border-dashed border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-600',
+  statGrid: 'mt-4 grid gap-3 sm:grid-cols-2',
+  statLabel: 'text-xs font-medium uppercase tracking-wide text-zinc-500',
+  statValue: 'text-2xl font-semibold tabular-nums text-zinc-900',
+  statSuffix: 'ml-1 text-base font-normal text-zinc-500',
+  sectionTitle: 'text-sm font-medium text-zinc-800',
+  distSection: 'mt-6',
+  distList: 'mt-3 space-y-2',
+  distRow: 'flex items-center gap-3 text-sm',
+  distStar: 'w-8 shrink-0 tabular-nums text-zinc-600',
+  distTrack: 'h-2 flex-1 overflow-hidden rounded-full bg-zinc-100',
+  distBar: 'h-full rounded-full bg-zinc-800 transition-all',
+  distCount: 'w-8 shrink-0 text-right tabular-nums text-zinc-700',
+  flavorList: 'mt-4 space-y-2',
+  flavorRow:
+    'flex items-center justify-between gap-3 rounded-md bg-zinc-50 px-3 py-2 text-sm',
+  flavorRank: 'mr-2 tabular-nums text-zinc-400',
+  flavorName: 'font-medium text-zinc-900',
+  flavorCategory: 'ml-2 text-xs font-normal text-zinc-500',
+  flavorCount: 'shrink-0 tabular-nums text-zinc-600',
+  filterButtons: 'mt-4 flex flex-wrap gap-2',
+  pillBase:
+    'rounded-full border px-3 py-1.5 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50',
+  pillOn: 'border-zinc-900 bg-zinc-900 text-white',
+  pillOff: 'border-zinc-300 bg-white text-zinc-800 hover:bg-zinc-50',
+} as const;

@@ -151,7 +151,8 @@ export function assertCoffeeLabelFileSize(file: File): void {
 
 export function clientFormValuesToInsert(
   v: RoasterCoffeeTagClientFormValues,
-  img_coffee_label: string
+  img_coffee_label: string,
+  roaster_id: string
 ): RoasterCoffeeTagInsert {
   const url = img_coffee_label.trim();
   if (!url) {
@@ -161,6 +162,7 @@ export function clientFormValuesToInsert(
     throw new Error('Image upload failed');
   }
   return {
+    roaster_id,
     roaster_short_name: v.roaster_short_name,
     img_coffee_label: url,
     bean_origin_country: v.bean_origin_country,

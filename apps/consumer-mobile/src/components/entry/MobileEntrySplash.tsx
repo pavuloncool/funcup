@@ -6,13 +6,13 @@ import {
   Dimensions,
   Easing,
   Pressable,
-  StyleSheet,
   Text,
   Vibration,
   View,
 } from 'react-native';
 import { SvgXml } from 'react-native-svg';
 import { HOME_BEAN_XML, HOME_PRINT_XML } from './entrySvgXml';
+import { mobileEntrySplashStyles } from './MobileEntrySplash.styles';
 import { useFingerprintConfetti } from './useFingerprintConfetti';
 
 const PRINT_SIZE = 128;
@@ -294,20 +294,20 @@ export function MobileEntrySplash() {
   ]);
 
   if (stage === 'done') {
-    return <View style={styles.fill} />;
+    return <View style={mobileEntrySplashStyles.fill} />;
   }
 
   return (
     <View
-      style={styles.fill}
+      style={mobileEntrySplashStyles.fill}
       accessibilityViewIsModal
       importantForAccessibility="yes"
       accessibilityElementsHidden={false}
     >
-      <View style={styles.white}>
+      <View style={mobileEntrySplashStyles.white}>
         <Animated.View
           style={[
-            styles.centerContent,
+            mobileEntrySplashStyles.centerContent,
             {
               opacity: fpOpacity,
               transform: [{ scale: Animated.multiply(pulse, pressScale) }],
@@ -320,12 +320,12 @@ export function MobileEntrySplash() {
             accessibilityRole="button"
             accessibilityLabel="funcup"
             accessibilityHint="Double tap to continue the intro"
-            style={styles.hit}
+            style={mobileEntrySplashStyles.hit}
           >
             <View ref={printMeasureRef} collapsable={false}>
               <SvgXml xml={HOME_PRINT_XML} width={PRINT_SIZE} height={PRINT_SIZE} />
             </View>
-            <Text style={styles.wordmark} accessible={false}>
+            <Text style={mobileEntrySplashStyles.wordmark} accessible={false}>
               funcup
             </Text>
           </Pressable>
@@ -333,11 +333,11 @@ export function MobileEntrySplash() {
 
         <Animated.View
           pointerEvents="none"
-          style={[styles.confettiFlash, { opacity: confettiOpacity }]}
+          style={[mobileEntrySplashStyles.confettiFlash, { opacity: confettiOpacity }]}
           accessibilityElementsHidden
           importantForAccessibility="no"
         />
-        <View style={styles.particleHost} pointerEvents="none" accessibilityElementsHidden>
+        <View style={mobileEntrySplashStyles.particleHost} pointerEvents="none" accessibilityElementsHidden>
           {!reduceMotion &&
             confettiParticles.map((p, i) => (
               <View
@@ -358,7 +358,7 @@ export function MobileEntrySplash() {
 
         <Animated.View
           style={[
-            styles.beanWrap,
+            mobileEntrySplashStyles.beanWrap,
             {
               opacity: beanOpacity,
               transform: [{ translateY: beanTranslate }],
@@ -374,48 +374,3 @@ export function MobileEntrySplash() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  fill: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  white: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  centerContent: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  hit: {
-    minWidth: 160,
-    minHeight: 160,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-  },
-  wordmark: {
-    marginTop: 16,
-    fontSize: 28,
-    letterSpacing: 1.2,
-    color: '#1a1a1a',
-    fontWeight: '400',
-  },
-  /** Brief dim pulse — particle opacity is independent (matches web canvas read). */
-  confettiFlash: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(26,26,26,0.12)',
-  },
-  particleHost: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 2,
-  },
-  beanWrap: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

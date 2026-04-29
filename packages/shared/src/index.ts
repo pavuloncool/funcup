@@ -1,6 +1,8 @@
 export const APP_NAME = 'funcup';
 export const VERSION = '0.1.0';
 
+export * from './authWebShellClasses';
+export * from './visualTokens';
 export * from './constants/flavorNotes';
 export * from './constants/brewMethods';
 export * from './constants/reputationThresholds';
@@ -16,3 +18,4 @@ export * from './hooks/useDiscoverCoffees';
 export * from './hooks/useDiscoverRoasters';
 export * from './hooks/useFollowRoaster';
 export * from './validation/roasterCoffeeTagForm';
+export * from './qr/parseFuncupQrScanPayload';

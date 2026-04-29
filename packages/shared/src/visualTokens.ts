@@ -1,0 +1,62 @@
+/**
+ * Surowe wartości wizualne współdzielone między web (Tailwind w osobnym pliku) a RN (StyleSheet).
+ * Brak React / RN — tylko literały.
+ */
+export const visualTokens = {
+  colors: {
+    screenBackground: '#e9e9e9',
+    textPrimary: '#111111',
+    textMuted: '#444444',
+    textMutedWeb: '#444',
+    borderButton: '#1f1f1f',
+    surfaceButton: '#f3f3f3',
+    textOnButton: '#171717',
+    borderInput: '#2a2a2a',
+    textLabel: '#1a1a1a',
+    error: '#b00020',
+    white: '#ffffff',
+    googleBlue: '#4285f4',
+    separatorLine: '#bcbcbc',
+    separatorText: '#181818',
+    loginActionText: '#090909',
+    registerPrompt: '#212121',
+    registerLink: '#111111',
+    tileHover: '#e8e8e8',
+  },
+  layout: {
+    topSectionMaxWidth: 312,
+    topSectionMarginTop: 140,
+    socialButtonHeight: 44,
+    socialButtonMarginBottom: 30,
+    socialButtonGap: 10,
+    inputHeight: 42,
+    inputBorderRadius: 10,
+    inputPaddingHorizontal: 12,
+    inputMarginBottom: 18,
+    inputBorderWidth: 2,
+    screenPaddingHorizontal: 16,
+    separatorMarginHorizontal: 12,
+    registerPromptMarginBottom: 88,
+    googleIconSize: 20,
+    googleIconRadius: 10,
+    loginActionPaddingVertical: 8,
+    loginActionPaddingHorizontal: 12,
+  },
+  radius: {
+    socialButton: 5,
+  },
+  fontSize: {
+    socialButtonText: 15,
+    separatorText: 16,
+    loginAction: 23,
+    registerPrompt: 13.5,
+    googleIcon: 16,
+    appleIcon: 18,
+  },
+  fontWeight: {
+    medium: '500' as const,
+    semibold: '600' as const,
+    bold: '700' as const,
+    extrabold: '800' as const,
+  },
+} as const;

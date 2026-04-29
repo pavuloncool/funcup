@@ -1,0 +1,22 @@
+/** Wspólna powłoka layoutu dla prostych stron CRUD pod /roaster-hub (Tailwind). */
+export const hubCrudStyles = {
+  main760: 'mx-auto max-w-[760px] px-4 py-8 font-sans text-neutral-900',
+  main480: 'mx-auto max-w-[480px] px-4 py-10 font-sans text-neutral-900',
+  navBack: 'mb-4 block text-sm font-medium text-[#111] underline',
+  link: 'text-[#111] underline',
+  linkStrong: 'font-semibold text-[#111]',
+  formGrid: 'grid gap-3',
+  label: 'text-sm font-semibold text-neutral-900',
+  input: 'w-full rounded border border-neutral-400 px-2 py-1.5 text-sm',
+  submitBtn: 'rounded bg-neutral-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50',
+  error: 'mt-3 text-sm text-red-600',
+  muted: 'text-sm text-neutral-600',
+  title: 'text-xl font-semibold text-neutral-900',
+  titleSetup: 'text-[1.35rem] font-semibold text-neutral-900 mb-2',
+  lead: 'mb-5 text-sm leading-relaxed text-[#444]',
+  footerLinks: 'mt-6 flex flex-wrap gap-2 text-sm',
+  batchNote: 'mt-3 text-sm text-[#444]',
+  pageHeading: 'mb-4 text-2xl font-semibold text-neutral-900',
+  list: 'list-disc space-y-1 pl-5 text-sm',
+  actionLink: 'text-sm font-medium text-[#111] underline',
+} as const;

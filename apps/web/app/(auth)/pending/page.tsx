@@ -1,15 +1,19 @@
 import Link from 'next/link';
 
+import { authPagesStyles } from '../auth-pages.styles';
+
 export default function PendingPage() {
   return (
-    <main style={{ maxWidth: 620, margin: '40px auto', fontFamily: 'system-ui' }}>
-      <h1>Account pending</h1>
-      <p>
+    <main className={authPagesStyles.main620}>
+      <h1 className={authPagesStyles.title}>Account pending</h1>
+      <p className="text-sm leading-relaxed text-neutral-700">
         If your project requires email verification, check your inbox and confirm the
         account. Then return to login.
       </p>
-      <p>
-        <Link href="/login">Go to login</Link>
+      <p className={authPagesStyles.footer}>
+        <Link href="/login" className="font-medium text-neutral-900 underline">
+          Go to login
+        </Link>
       </p>
     </main>
   );

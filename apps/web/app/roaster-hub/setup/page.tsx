@@ -7,6 +7,8 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { supabaseBrowser } from '@/src/lib/supabase/browserClient';
 
+import { hubCrudStyles } from '../hub-crud.styles';
+
 const LOGIN_NEXT = '/login?next=/roaster-hub/setup';
 
 export default function RoasterSetupPage() {
@@ -131,25 +133,26 @@ export default function RoasterSetupPage() {
 
   if (checking) {
     return (
-      <main style={{ maxWidth: 480, margin: '40px auto', fontFamily: 'system-ui', padding: '0 16px' }}>
-        <p>Ładowanie…</p>
+      <main className={hubCrudStyles.main480}>
+        <p className={hubCrudStyles.muted}>Ładowanie…</p>
       </main>
     );
   }
 
   return (
-    <main style={{ maxWidth: 480, margin: '40px auto', fontFamily: 'system-ui', padding: '0 16px' }}>
-      <h1 style={{ fontSize: '1.35rem', marginBottom: 8 }}>Utwórz profil palarni</h1>
-      <p style={{ color: '#444', marginBottom: 20, lineHeight: 1.45 }}>
+    <main className={hubCrudStyles.main480}>
+      <h1 className={hubCrudStyles.titleSetup}>Utwórz profil palarni</h1>
+      <p className={hubCrudStyles.lead}>
         Ta nazwa będzie używana w panelu kaw i przy powiązaniu z tagiem kawy. Status weryfikacji może pozostać „oczekujący”
         do późniejszego procesu weryfikacji.
       </p>
-      <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 12 }}>
-        <label htmlFor="roaster-name" style={{ fontWeight: 600 }}>
+      <form onSubmit={handleSubmit} className={hubCrudStyles.formGrid}>
+        <label htmlFor="roaster-name" className={hubCrudStyles.label}>
           Nazwa palarni
         </label>
         <input
           id="roaster-name"
+          className={hubCrudStyles.input}
           placeholder="np. Bean Lab"
           value={name}
           onChange={e => setName(e.target.value)}
@@ -157,17 +160,17 @@ export default function RoasterSetupPage() {
           maxLength={128}
           autoComplete="organization"
         />
-        <button type="submit" disabled={loading}>
+        <button type="submit" className={hubCrudStyles.submitBtn} disabled={loading}>
           {loading ? 'Zapisywanie…' : 'Zapisz i przejdź do tagu kawy'}
         </button>
       </form>
-      {error ? <p style={{ color: 'crimson', marginTop: 12 }}>{error}</p> : null}
-      <p style={{ marginTop: 24 }}>
-        <Link href="/roaster-hub/coffees" style={{ color: '#111' }}>
+      {error ? <p className={hubCrudStyles.error}>{error}</p> : null}
+      <p className={hubCrudStyles.footerLinks}>
+        <Link href="/roaster-hub/coffees" className={hubCrudStyles.link}>
           Wróć do listy kaw
         </Link>
-        {' · '}
-        <Link href="/tag" style={{ color: '#111' }}>
+        <span className="text-neutral-400">·</span>
+        <Link href="/tag" className={hubCrudStyles.link}>
           Tag kawy
         </Link>
       </p>

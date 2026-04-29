@@ -3,24 +3,24 @@
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-type ScanResponse = {
-  coffee?: { name?: string };
-  batch?: { id?: string; lot_number?: string };
-  roaster?: { name?: string };
-  error?: string;
-  message?: string;
-};
+import type { ScanQrResult } from '@funcup/shared';
+
+import { resolveHashStyles } from '../resolve-hash.styles';
+
+type State =
+  | { status: 'loading' }
+  | { status: 'error'; message: string }
+  | { status: 'ok'; data: ScanQrResult };
 
 export default function ResolveHashPage() {
   const params = useParams<{ hash: string }>();
-  const [data, setData] = useState<ScanResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [state, setState] = useState<State>({ status: 'loading' });
 
   useEffect(() => {
     async function resolve() {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
       if (!supabaseUrl) {
-        setError('Missing NEXT_PUBLIC_SUPABASE_URL.');
+        setState({ status: 'error', message: 'Missing NEXT_PUBLIC_SUPABASE_URL.' });
         return;
       }
 
@@ -39,45 +39,124 @@ export default function ResolveHashPage() {
         body: JSON.stringify({ hash: params.hash }),
       });
 
-      const body = (await response.json()) as ScanResponse;
+      const body = (await response.json()) as unknown;
       if (!response.ok) {
-        setError(body.message ?? body.error ?? 'Unable to resolve hash.');
+        const msg =
+          typeof body === 'object' && body !== null && 'message' in body
+            ? String((body as { message?: string }).message)
+            : 'Unable to resolve hash.';
+        setState({ status: 'error', message: msg });
         return;
       }
 
-      setData(body);
+      try {
+        const raw = body as Record<string, unknown>;
+        let data: ScanQrResult;
+        if (raw.kind === 'tag' && raw.tag && typeof raw.tag === 'object') {
+          data = raw as ScanQrResult;
+        } else if (raw.kind === 'batch' && raw.batch && raw.coffee) {
+          data = raw as ScanQrResult;
+        } else if (raw.batch && raw.coffee) {
+          data = { ...(raw as object), kind: 'batch' } as ScanQrResult;
+        } else {
+          setState({ status: 'error', message: 'Unexpected response from scan.' });
+          return;
+        }
+        setState({ status: 'ok', data });
+      } catch {
+        setState({ status: 'error', message: 'Unable to parse scan response.' });
+      }
     }
     void resolve();
   }, [params.hash]);
 
-  return (
-    <main style={{ maxWidth: 760, margin: '30px auto', fontFamily: 'system-ui' }}>
-      <h1>QR Hash Resolver</h1>
-      <p>
-        <strong>Hash:</strong> {params.hash}
-      </p>
-      {error ? (
-        <p role="alert" style={{ color: 'crimson' }}>
-          {error}
+  if (state.status === 'loading') {
+    return (
+      <main className={resolveHashStyles.main}>
+        <h1 className={resolveHashStyles.heading}>QR Hash Resolver</h1>
+        <p>
+          <strong>Hash:</strong> {params.hash}
         </p>
-      ) : null}
-      {data ? (
-        <>
-          <p>
-            <strong>Roaster:</strong> {data.roaster?.name ?? 'n/a'}
-          </p>
-          <p>
-            <strong>Coffee:</strong> {data.coffee?.name ?? 'n/a'}
-          </p>
-          <p>
-            <strong>Batch:</strong> {data.batch?.lot_number ?? data.batch?.id ?? 'n/a'}
-          </p>
-        </>
-      ) : (
         <p role="status" aria-live="polite">
           Resolving…
         </p>
-      )}
+      </main>
+    );
+  }
+
+  if (state.status === 'error') {
+    return (
+      <main className={resolveHashStyles.main}>
+        <h1 className={resolveHashStyles.heading}>QR Hash Resolver</h1>
+        <p>
+          <strong>Hash:</strong> {params.hash}
+        </p>
+        <p role="alert" className={resolveHashStyles.errorAlert}>
+          {state.message}
+        </p>
+      </main>
+    );
+  }
+
+  const { data } = state;
+
+  if (data.kind === 'tag') {
+    const t = data.tag;
+    return (
+      <main className={resolveHashStyles.main}>
+        <h1 className={resolveHashStyles.heading}>Coffee tag</h1>
+        <p>
+          <strong>Roaster:</strong> {t.roaster_short_name}
+        </p>
+        <p>
+          <img
+            src={t.img_coffee_label}
+            alt="Coffee label"
+            className={resolveHashStyles.labelImage}
+          />
+        </p>
+        <p>
+          <strong>Trade name:</strong> {t.bean_origin_tradename}
+        </p>
+        <p>
+          <strong>Origin:</strong> {t.bean_origin_country} · {t.bean_origin_region} ·{' '}
+          {t.bean_origin_farm}
+        </p>
+        <p>
+          <strong>Bean:</strong> {t.bean_type} · {t.bean_varietal_main}{' '}
+          {t.bean_varietal_extra ? `· ${t.bean_varietal_extra}` : ''}
+        </p>
+        <p>
+          <strong>Processing:</strong> {t.bean_processing}
+        </p>
+        <p>
+          <strong>Roast:</strong> {t.bean_roast_date} ({t.bean_roast_level})
+        </p>
+        <p>
+          <strong>Brew:</strong> {t.brew_method}
+        </p>
+        <p>
+          <strong>Elevation:</strong> {t.bean_origin_height} m
+        </p>
+      </main>
+    );
+  }
+
+  return (
+    <main className={resolveHashStyles.main}>
+      <h1 className={resolveHashStyles.heading}>QR Hash Resolver</h1>
+      <p>
+        <strong>Hash:</strong> {params.hash}
+      </p>
+      <p>
+        <strong>Roaster:</strong> {data.roaster?.name ?? 'n/a'}
+      </p>
+      <p>
+        <strong>Coffee:</strong> {data.coffee?.name ?? 'n/a'}
+      </p>
+      <p>
+        <strong>Batch:</strong> {data.batch?.lot_number ?? data.batch?.id ?? 'n/a'}
+      </p>
     </main>
   );
 }

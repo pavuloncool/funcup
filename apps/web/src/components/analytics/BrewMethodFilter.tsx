@@ -2,6 +2,10 @@
 
 import type { BrewMethodOption } from '@funcup/shared';
 
+import { cn } from '@/src/lib/utils';
+
+import { analyticsStyles } from './analytics.styles';
+
 type Props = {
   options: BrewMethodOption[];
   value: string | null;
@@ -16,29 +20,24 @@ export default function BrewMethodFilter({
   disabled,
 }: Props) {
   if (options.length === 0) {
-    return (
-      <div className="rounded-lg border border-dashed border-zinc-200 bg-zinc-50 px-4 py-3 text-sm text-zinc-600">
-        Brew method filter appears when tastings include a brew method.
-      </div>
-    );
+    return <div className={analyticsStyles.dashedHint}>Brew method filter appears when tastings include a brew method.</div>;
   }
 
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white p-4 shadow-sm">
-      <h2 className="text-lg font-semibold text-zinc-900">Brew method</h2>
-      <p className="mt-1 text-sm text-zinc-600">
+    <div className={analyticsStyles.card}>
+      <h2 className={analyticsStyles.cardTitle}>Brew method</h2>
+      <p className={analyticsStyles.cardCaption}>
         Filter the sections below; published batch totals above stay unchanged.
       </p>
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className={analyticsStyles.filterButtons}>
         <button
           type="button"
           disabled={disabled}
           onClick={() => onChange(null)}
-          className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
-            value === null
-              ? 'border-zinc-900 bg-zinc-900 text-white'
-              : 'border-zinc-300 bg-white text-zinc-800 hover:bg-zinc-50'
-          } disabled:cursor-not-allowed disabled:opacity-50`}
+          className={cn(
+            analyticsStyles.pillBase,
+            value === null ? analyticsStyles.pillOn : analyticsStyles.pillOff
+          )}
         >
           All methods
         </button>
@@ -48,11 +47,10 @@ export default function BrewMethodFilter({
             type="button"
             disabled={disabled}
             onClick={() => onChange(opt.id)}
-            className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
-              value === opt.id
-                ? 'border-zinc-900 bg-zinc-900 text-white'
-                : 'border-zinc-300 bg-white text-zinc-800 hover:bg-zinc-50'
-            } disabled:cursor-not-allowed disabled:opacity-50`}
+            className={cn(
+              analyticsStyles.pillBase,
+              value === opt.id ? analyticsStyles.pillOn : analyticsStyles.pillOff
+            )}
           >
             {opt.name}
           </button>

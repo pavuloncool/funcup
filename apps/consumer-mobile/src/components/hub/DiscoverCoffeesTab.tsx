@@ -7,6 +7,8 @@ import { ScreenError } from '../ScreenError';
 import { DiscoverListSkeleton } from '../ui/Skeleton';
 import { supabase } from '../../services/supabaseClient';
 
+import { discoverHubStyles } from './discoverHub.styles';
+
 function formatError(err: unknown): string {
   if (err instanceof Error) return err.message;
   return String(err);
@@ -38,15 +40,15 @@ export function DiscoverCoffeesTab() {
   }
 
   return (
-    <View style={{ gap: 10 }} accessibilityRole="list">
+    <View style={discoverHubStyles.list} accessibilityRole="list">
       {coffeesQuery.data.map((coffee) => (
         <View
           key={coffee.id}
-          style={{ borderWidth: 1, borderColor: '#ddd', borderRadius: 10, padding: 12, gap: 6 }}
+          style={discoverHubStyles.card}
           accessibilityRole="text"
           accessibilityLabel={`${coffee.name}, ${coffee.roaster?.name ?? 'Unknown roaster'}`}
         >
-          <Text style={{ fontSize: 16, fontWeight: '600' }}>{coffee.name}</Text>
+          <Text style={discoverHubStyles.title}>{coffee.name}</Text>
           <Text>
             {coffee.roaster?.name ?? 'Unknown roaster'}
             {coffee.processingMethod ? ` · ${coffee.processingMethod}` : ''}

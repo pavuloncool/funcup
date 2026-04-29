@@ -11,7 +11,9 @@ describe('uploadCoffeeLabelToSupabase', () => {
       },
     });
     const from = vi.fn().mockReturnValue({ upload, getPublicUrl });
-    const supabase = { storage: { from } } as Parameters<typeof uploadCoffeeLabelToSupabase>[0];
+    const supabase = { storage: { from } } as unknown as Parameters<
+      typeof uploadCoffeeLabelToSupabase
+    >[0];
 
     const file = new File([new Uint8Array([137, 80, 78, 71])], 'label.png', { type: 'image/png' });
     const url = await uploadCoffeeLabelToSupabase(supabase, file, 'Bean Lab');
@@ -27,7 +29,9 @@ describe('uploadCoffeeLabelToSupabase', () => {
 
   it('throws when file exceeds size limit before upload', async () => {
     const from = vi.fn();
-    const supabase = { storage: { from } } as Parameters<typeof uploadCoffeeLabelToSupabase>[0];
+    const supabase = { storage: { from } } as unknown as Parameters<
+      typeof uploadCoffeeLabelToSupabase
+    >[0];
     const big = new Uint8Array(512_001);
     const file = new File([big], 'big.png', { type: 'image/png' });
 

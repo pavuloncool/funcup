@@ -4,7 +4,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 import { useRoasterProfile } from '@/src/hooks/useRoasterProfile';
-import { authScreenStyles } from '@/src/theme/authScreenStyles';
+
+import { roasterHubStyles } from './roaster-hub.styles';
 
 type Tile = {
   label: string;
@@ -25,9 +26,9 @@ export default function RoasterHubPage() {
 
   if (loading) {
     return (
-      <div className={`${authScreenStyles.page} pb-12`}>
-        <div className="mx-auto w-full max-w-4xl px-4 pt-4">
-          <p className="text-sm text-[#444]">Ładowanie roaster hub…</p>
+      <div className={roasterHubStyles.pageWithPad}>
+        <div className={roasterHubStyles.narrowContent}>
+          <p className={roasterHubStyles.mutedSmall}>Ładowanie roaster hub…</p>
         </div>
       </div>
     );
@@ -35,9 +36,9 @@ export default function RoasterHubPage() {
 
   if (error) {
     return (
-      <div className={`${authScreenStyles.page} pb-12`}>
-        <div className="mx-auto w-full max-w-4xl px-4 pt-4">
-          <p className="text-sm text-[#b00020]">Błąd: {error}</p>
+      <div className={roasterHubStyles.pageWithPad}>
+        <div className={roasterHubStyles.narrowContent}>
+          <p className={roasterHubStyles.errorSmall}>Błąd: {error}</p>
         </div>
       </div>
     );
@@ -45,9 +46,9 @@ export default function RoasterHubPage() {
 
   if (!exists || !complete) {
     return (
-      <div className={`${authScreenStyles.page} pb-12`}>
-        <div className="mx-auto w-full max-w-4xl px-4 pt-4">
-          <p className="text-sm text-[#444]">Przekierowanie do profilu palarni…</p>
+      <div className={roasterHubStyles.pageWithPad}>
+        <div className={roasterHubStyles.narrowContent}>
+          <p className={roasterHubStyles.mutedSmall}>Przekierowanie do profilu palarni…</p>
         </div>
       </div>
     );
@@ -79,24 +80,24 @@ export default function RoasterHubPage() {
   const shortName = profile?.roaster_short_name || 'Roaster';
 
   return (
-    <div className={`${authScreenStyles.page} pb-12`}>
-      <div className="mx-auto w-full max-w-4xl px-4 pt-2">
-        <h1 className="mb-2 mt-2 text-[22px] font-bold text-[#111]">{shortName}</h1>
-        <p className="mb-6 text-sm text-[#444]">Wybierz sekcję palarni</p>
+    <div className={roasterHubStyles.pageWithPad}>
+      <div className={roasterHubStyles.narrowContentTop}>
+        <h1 className={roasterHubStyles.hubTitle}>{shortName}</h1>
+        <p className={roasterHubStyles.hubSubtitle}>Wybierz sekcję palarni</p>
 
-        <div className="grid grid-cols-1 gap-4 min-[480px]:grid-cols-2">
+        <div className={roasterHubStyles.tileGrid}>
           {tiles.map((tile) => (
             <button
               key={tile.label}
               type="button"
-              className={`${authScreenStyles.socialButton} mb-0 h-24 w-full rounded-[10px] border-2 text-left ${
-                tile.disabled ? 'cursor-not-allowed opacity-55' : 'hover:bg-[#e8e8e8]'
+              className={`${roasterHubStyles.hubTile} ${
+                tile.disabled ? roasterHubStyles.hubTileDisabled : roasterHubStyles.hubTileEnabled
               }`}
               onClick={tile.onClick}
               disabled={tile.disabled}
               aria-disabled={tile.disabled}
             >
-              <span className="px-2 text-[17px] font-semibold text-[#171717]">{tile.label}</span>
+              <span className={roasterHubStyles.hubTileLabel}>{tile.label}</span>
             </button>
           ))}
         </div>

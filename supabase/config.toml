@@ -352,12 +352,6 @@ authorization_url_path = "/oauth/consent"
 # Allow dynamic client registration
 allow_dynamic_registration = false
 
-# Kong validates JWT on /functions/v1 before the worker runs. User access tokens use a different
-# shape than anon/service keys in some local stacks, which yields 401 "Invalid JWT". The function
-# already validates the session via supabase.auth.getUser(token).
-[functions.generate_qr]
-verify_jwt = false
-
 [edge_runtime]
 enabled = true
 # Supported request policies: `oneshot`, `per_worker`.

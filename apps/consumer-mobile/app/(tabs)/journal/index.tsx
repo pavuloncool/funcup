@@ -87,11 +87,11 @@ export default function JournalIndex() {
     return (
       <ScrollView contentContainerStyle={{ padding: 24 }}>
         <Text style={{ fontSize: 24, fontWeight: '600', marginBottom: 12 }} accessibilityRole="header">
-          Journal
+          Coffee Log
         </Text>
         <EmptyState
-          title="No tastings yet"
-          description="Scan a bag, log a tasting, and your notes will land here."
+          title="Add your first tasting"
+          description="Scan QR from coffee bag, log a tasting and share your experience with other coffee lovers."
           footer={
             <Link href="/(tabs)/hub/scan" accessibilityRole="link">
               Open scanner

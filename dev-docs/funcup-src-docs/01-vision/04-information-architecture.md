@@ -41,10 +41,10 @@ Products form the **core identity layer of the platform**.
 Represents the actors participating in the system.   
 Key entities:   
 ```
-User
 Roaster
+Consumer
 ```
-Users generate experience data, while roasters generate product data.   
+Consumers generate experience data, while roasters generate product data.   
  --- 
 ## Experiences   
 Represents the real-world interaction between a user and a coffee.   
@@ -117,7 +117,7 @@ Attributes may include:
    
 Origin data provides transparency into the coffee supply chain.   
  --- 
-# User   
+# Consumer   
 Represents a registered platform user.   
 Attributes may include:   
 - username   
@@ -125,7 +125,7 @@ Attributes may include:
 - tasting history   
 - reputation level.   
    
-Users generate experience data within the platform.   
+Consumers generate experience data within the platform.   
  --- 
 # Coffee Log   
 Represents the act of a user drinking and logging a coffee.   

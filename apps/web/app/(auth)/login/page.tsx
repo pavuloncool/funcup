@@ -6,6 +6,8 @@ import { FormEvent, useState } from 'react';
 
 import { supabaseBrowser } from '@/src/lib/supabase/browserClient';
 
+import { authPagesStyles } from '../auth-pages.styles';
+
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -33,10 +35,11 @@ export default function LoginPage() {
   }
 
   return (
-    <main style={{ maxWidth: 420, margin: '40px auto', fontFamily: 'system-ui' }}>
-      <h1>Log in</h1>
-      <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 12 }}>
+    <main className={authPagesStyles.main420}>
+      <h1 className={authPagesStyles.title}>Log in</h1>
+      <form onSubmit={handleSubmit} className={authPagesStyles.form}>
         <input
+          className={authPagesStyles.input}
           type="email"
           placeholder="Email"
           value={email}
@@ -44,19 +47,23 @@ export default function LoginPage() {
           required
         />
         <input
+          className={authPagesStyles.input}
           type="password"
           placeholder="Password"
           value={password}
           onChange={event => setPassword(event.target.value)}
           required
         />
-        <button type="submit" disabled={loading}>
+        <button type="submit" className={authPagesStyles.submitBtn} disabled={loading}>
           {loading ? 'Signing in...' : 'Sign in'}
         </button>
       </form>
-      {error ? <p style={{ color: 'crimson' }}>{error}</p> : null}
-      <p>
-        No account? <Link href="/register">Create one</Link>
+      {error ? <p className={authPagesStyles.error}>{error}</p> : null}
+      <p className={authPagesStyles.footer}>
+        No account?{' '}
+        <Link href="/register" className="font-medium text-neutral-900 underline">
+          Create one
+        </Link>
       </p>
     </main>
   );

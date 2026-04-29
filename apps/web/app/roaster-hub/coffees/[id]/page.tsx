@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 
 import { supabaseBrowser } from '@/src/lib/supabase/browserClient';
 
+import { hubCrudStyles } from '../../hub-crud.styles';
+
 type CoffeeData = { id: string; name: string; status: string; created_at: string };
 
 export default function CoffeeDetailsPage() {
@@ -32,31 +34,33 @@ export default function CoffeeDetailsPage() {
   }, [params.id]);
 
   return (
-    <main style={{ maxWidth: 760, margin: '30px auto', fontFamily: 'system-ui' }}>
-      <p style={{ marginBottom: 16 }}>
-        <Link href="/roaster-hub/coffees" style={{ color: '#111' }}>
+    <main className={hubCrudStyles.main760}>
+      <p className="mb-4">
+        <Link href="/roaster-hub/coffees" className={hubCrudStyles.navBack}>
           ← Lista kaw
         </Link>
       </p>
-      <h1>Coffee details</h1>
-      {error ? <p style={{ color: 'crimson' }}>{error}</p> : null}
+      <h1 className={hubCrudStyles.pageHeading}>Coffee details</h1>
+      {error ? <p className={hubCrudStyles.error}>{error}</p> : null}
       {coffee ? (
         <>
-          <p>
+          <p className="text-sm">
             <strong>Name:</strong> {coffee.name}
           </p>
-          <p>
+          <p className="text-sm">
             <strong>Status:</strong> {coffee.status}
           </p>
-          <p>
+          <p className="text-sm">
             <strong>Created:</strong> {new Date(coffee.created_at).toLocaleString()}
           </p>
-          <p>
-            <Link href={`/roaster-hub/coffees/${coffee.id}/batches/new`}>+ Create batch</Link>
+          <p className="mt-2">
+            <Link href={`/roaster-hub/coffees/${coffee.id}/batches/new`} className={hubCrudStyles.actionLink}>
+              + Create batch
+            </Link>
           </p>
         </>
       ) : (
-        <p>Loading...</p>
+        <p className={hubCrudStyles.muted}>Loading...</p>
       )}
     </main>
   );

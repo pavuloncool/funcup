@@ -12,7 +12,8 @@ import {
   type RoasterProfileFormValues,
 } from '@/src/lib/roasterProfile';
 import { supabaseBrowser } from '@/src/lib/supabase/browserClient';
-import { authScreenStyles } from '@/src/theme/authScreenStyles';
+
+import { roasterProfileStyles } from './roaster-profile.styles';
 
 type Mode = 'create' | 'view' | 'edit';
 type FormErrors = Partial<Record<keyof RoasterProfileFormValues, string>>;
@@ -180,9 +181,9 @@ export default function RoasterProfilePage() {
 
   if (loading) {
     return (
-      <div className={`${authScreenStyles.page} pb-12`}>
-        <div className="mx-auto w-full max-w-4xl px-4 pt-4">
-          <p className="text-sm text-[#444]">Ładowanie profilu palarni…</p>
+      <div className={roasterProfileStyles.pageWithPad}>
+        <div className={roasterProfileStyles.narrowContent}>
+          <p className={roasterProfileStyles.mutedSmall}>Ładowanie profilu palarni…</p>
         </div>
       </div>
     );
@@ -190,75 +191,75 @@ export default function RoasterProfilePage() {
 
   if (loadError) {
     return (
-      <div className={`${authScreenStyles.page} pb-12`}>
-        <div className="mx-auto w-full max-w-4xl px-4 pt-4">
-          <p className="text-sm text-[#b00020]">Błąd ładowania: {loadError}</p>
+      <div className={roasterProfileStyles.pageWithPad}>
+        <div className={roasterProfileStyles.narrowContent}>
+          <p className={roasterProfileStyles.errorSmall}>Błąd ładowania: {loadError}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`${authScreenStyles.page} pb-12`}>
-      <div className="mx-auto w-full max-w-4xl px-4 pt-2">
-        <h1 className="mb-2 mt-2 text-[22px] font-bold text-[#111]">Profil palarni</h1>
-        <Link href="/roaster-hub" className="mb-5 inline-block text-sm font-semibold text-[#111] underline">
-          Wróć do roaster hub
+    <div className={roasterProfileStyles.pageWithPad}>
+      <div className={roasterProfileStyles.narrowContentMain}>
+        <h1 className={roasterProfileStyles.pageTitle}>Profil palarni</h1>
+        <Link href="/roaster-hub" className={roasterProfileStyles.backToHub}>
+          Wróć do Roaster Hub
         </Link>
 
         {mode === 'view' && profile ? (
-          <div className="rounded-[10px] border-2 border-[#2a2a2a] bg-[#f3f3f3] p-4">
-            <p className="mb-3 text-sm text-[#444]">Tryb podglądu</p>
-            <dl className="space-y-2 text-sm text-[#111]">
+          <div className={roasterProfileStyles.viewCard}>
+            <p className={roasterProfileStyles.viewModeHint}>Tryb podglądu</p>
+            <dl className={roasterProfileStyles.dlRoot}>
               <div>
-                <dt className="font-semibold">Nazwa firmy</dt>
+                <dt className={roasterProfileStyles.dlTerm}>Nazwa firmy</dt>
                 <dd>{profile.company_name ?? '—'}</dd>
               </div>
               <div>
-                <dt className="font-semibold">Nazwa skrócona</dt>
+                <dt className={roasterProfileStyles.dlTerm}>Nazwa skrócona</dt>
                 <dd>{profile.roaster_short_name ?? '—'}</dd>
               </div>
               <div>
-                <dt className="font-semibold">Adres</dt>
+                <dt className={roasterProfileStyles.dlTerm}>Adres</dt>
                 <dd>{address}</dd>
               </div>
               <div>
-                <dt className="font-semibold">REGON</dt>
+                <dt className={roasterProfileStyles.dlTerm}>REGON</dt>
                 <dd>{profile.regon ?? '—'}</dd>
               </div>
               <div>
-                <dt className="font-semibold">NIP</dt>
+                <dt className={roasterProfileStyles.dlTerm}>NIP</dt>
                 <dd>{profile.nip ?? '—'}</dd>
               </div>
               <div>
-                <dt className="font-semibold">Subskrypcja</dt>
+                <dt className={roasterProfileStyles.dlTerm}>Subskrypcja</dt>
                 <dd>{profile.subscription_status ?? 'placeholder'}</dd>
               </div>
             </dl>
 
             {!complete ? (
-              <p className="mt-4 rounded-[8px] border border-[#b00020] bg-[#ffebee] p-2 text-xs text-[#7f1010]">
+              <p className={roasterProfileStyles.incompleteBanner}>
                 Profil niekompletny. Uzupełnij wszystkie wymagane pola, aby odblokować roaster hub.
               </p>
             ) : null}
 
             <button
               type="button"
-              className={`${authScreenStyles.socialButton} mt-5 mb-0 w-full max-w-[480px]`}
+              className={roasterProfileStyles.editCta}
               onClick={startEdit}
             >
-              <span className={authScreenStyles.socialButtonText}>Edytuj dane</span>
+              <span className={roasterProfileStyles.ctaText}>Edytuj dane</span>
             </button>
           </div>
         ) : (
           <form
-            className="max-w-[480px] rounded-[10px] border-2 border-[#2a2a2a] bg-[#f3f3f3] p-4"
+            className={roasterProfileStyles.formCard}
             onSubmit={(event) => {
               event.preventDefault();
               void handleSave();
             }}
           >
-            <p className="mb-4 text-sm text-[#444]">{mode === 'create' ? 'Utwórz profil palarni' : 'Edytuj profil palarni'}</p>
+            <p className={roasterProfileStyles.formIntro}>{mode === 'create' ? 'Utwórz profil palarni' : 'Edytuj profil palarni'}</p>
 
             <Field
               label="Zarejestrowana nazwa firmy"
@@ -324,20 +325,20 @@ export default function RoasterProfilePage() {
               required
             />
 
-            {submitError ? <p className="mt-1 mb-3 text-xs text-[#b00020]">{submitError}</p> : null}
+            {submitError ? <p className={roasterProfileStyles.submitError}>{submitError}</p> : null}
 
             <button
               type="submit"
-              className={`${authScreenStyles.socialButton} mt-2 mb-0 w-full max-w-[480px]`}
+              className={roasterProfileStyles.saveCta}
               disabled={saving}
             >
-              <span className={authScreenStyles.socialButtonText}>{saving ? 'Zapisywanie…' : 'Zapisz dane'}</span>
+              <span className={roasterProfileStyles.ctaText}>{saving ? 'Zapisywanie…' : 'Zapisz dane'}</span>
             </button>
 
             {mode === 'edit' ? (
               <button
                 type="button"
-                className="mt-3 w-full rounded-[5px] border border-[#1f1f1f] bg-transparent px-3 py-2 text-sm font-medium text-[#171717]"
+                className={roasterProfileStyles.cancelButton}
                 onClick={cancelEdit}
               >
                 Anuluj
@@ -361,18 +362,18 @@ function Field(props: {
   const { label, value, onChange, error, placeholder, required } = props;
 
   return (
-    <div className="mb-3">
-      <p className={authScreenStyles.fieldLabel}>
+    <div className={roasterProfileStyles.fieldWrap}>
+      <p className={roasterProfileStyles.fieldLabel}>
         {label}
         {required ? ' *' : ''}
       </p>
       <input
-        className={`${authScreenStyles.input} mb-1`}
+        className={roasterProfileStyles.fieldInput}
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
       />
-      {error ? <p className="-mt-1 mb-1 text-xs text-[#b00020]">{error}</p> : null}
+      {error ? <p className={roasterProfileStyles.fieldError}>{error}</p> : null}
     </div>
   );
 }

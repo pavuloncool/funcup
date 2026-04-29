@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "main": "expo-router/entry",
   "scripts": {
+    "ios:proxy-supabase": "echo 'See apps/consumer-mobile/.env.example — for iPhone + local Docker use npx expo run:ios (not Expo Go) or a hosted https Supabase URL.'",
     "start": "expo start",
     "prebuild": "expo prebuild",
     "prebuild:clean": "expo prebuild --clean",
@@ -38,6 +39,7 @@
   },
   "devDependencies": {
     "@types/react": "~19.1.17",
+    "dotenv": "^16.4.7",
     "tailwindcss": "^3.4.10",
     "typescript": "^5.7.0"
   }

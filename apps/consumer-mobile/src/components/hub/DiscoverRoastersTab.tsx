@@ -8,6 +8,8 @@ import { DiscoverListSkeleton } from '../ui/Skeleton';
 import { useViewerUserId } from '../../hooks/useViewerUserId';
 import { supabase } from '../../services/supabaseClient';
 
+import { discoverHubStyles, followLabelStyle, followPressableStyle } from './discoverHub.styles';
+
 function formatError(err: unknown): string {
   if (err instanceof Error) return err.message;
   return String(err);
@@ -41,15 +43,15 @@ export function DiscoverRoastersTab() {
   }
 
   return (
-    <View style={{ gap: 10 }} accessibilityRole="list">
+    <View style={discoverHubStyles.list} accessibilityRole="list">
       {roastersQuery.data.map((roaster) => (
         <View
           key={roaster.id}
-          style={{ borderWidth: 1, borderColor: '#ddd', borderRadius: 10, padding: 12, gap: 6 }}
+          style={discoverHubStyles.card}
           accessibilityRole="text"
           accessibilityLabel={`${roaster.name}, ${[roaster.city, roaster.country].filter(Boolean).join(', ') || 'location unknown'}`}
         >
-          <Text style={{ fontSize: 16, fontWeight: '600' }}>{roaster.name}</Text>
+          <Text style={discoverHubStyles.title}>{roaster.name}</Text>
           <Text>
             {[roaster.city, roaster.country].filter(Boolean).join(', ') || 'Location unavailable'}
           </Text>
@@ -59,19 +61,12 @@ export function DiscoverRoastersTab() {
               followMutation.mutate({ roasterId: roaster.id, follow: !roaster.isFollowed })
             }
             disabled={!userId || followMutation.isPending}
-            style={{
-              borderWidth: 1,
-              borderColor: '#111827',
-              borderRadius: 8,
-              paddingHorizontal: 10,
-              paddingVertical: 8,
-              backgroundColor: roaster.isFollowed ? '#111827' : '#ffffff',
-            }}
+            style={followPressableStyle(roaster.isFollowed)}
             accessibilityRole="button"
             accessibilityState={{ disabled: !userId || followMutation.isPending }}
             accessibilityLabel={roaster.isFollowed ? `Unfollow ${roaster.name}` : `Follow ${roaster.name}`}
           >
-            <Text style={{ color: roaster.isFollowed ? '#ffffff' : '#111827', fontWeight: '600' }}>
+            <Text style={followLabelStyle(roaster.isFollowed)}>
               {roaster.isFollowed ? 'Following' : 'Follow'}
             </Text>
           </Pressable>

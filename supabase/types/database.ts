@@ -22,6 +22,24 @@ export type Database = {
           created_at: string;
           updated_at: string;
         };
+        Insert: {
+          id: string;
+          display_name: string;
+          avatar_url?: string | null;
+          sensory_level?: 'beginner' | 'advanced' | 'expert';
+          following_roaster_ids?: string[];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          display_name?: string;
+          avatar_url?: string | null;
+          sensory_level?: 'beginner' | 'advanced' | 'expert';
+          following_roaster_ids?: string[];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
       };
       roasters: {
         Row: {
@@ -37,6 +55,32 @@ export type Database = {
           created_at: string;
           updated_at: string;
         };
+        Insert: {
+          id?: string;
+          user_id: string;
+          name: string;
+          country?: string | null;
+          city?: string | null;
+          description?: string | null;
+          website?: string | null;
+          logo_url?: string | null;
+          verification_status?: 'pending' | 'verified' | 'revoked';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          user_id?: string;
+          name?: string;
+          country?: string | null;
+          city?: string | null;
+          description?: string | null;
+          website?: string | null;
+          logo_url?: string | null;
+          verification_status?: 'pending' | 'verified' | 'revoked';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
       };
       coffees: {
         Row: {
@@ -166,6 +210,8 @@ export type Database = {
       roaster_coffee_tags: {
         Row: {
           id: string;
+          public_hash: string;
+          roaster_id: string;
           roaster_short_name: string;
           img_coffee_label: string;
           bean_origin_country: string;
@@ -185,6 +231,8 @@ export type Database = {
         };
         Insert: {
           id?: string;
+          public_hash?: string;
+          roaster_id: string;
           roaster_short_name: string;
           img_coffee_label: string;
           bean_origin_country: string;
@@ -220,7 +268,15 @@ export type Database = {
           created_at?: string;
           updated_at?: string;
         };
-        Relationships: [];
+        Relationships: [
+          {
+            foreignKeyName: 'roaster_coffee_tags_roaster_id_fkey';
+            columns: ['roaster_id'];
+            isOneToOne: false;
+            referencedRelation: 'roasters';
+            referencedColumns: ['id'];
+          },
+        ];
       };
     };
   };

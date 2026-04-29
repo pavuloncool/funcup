@@ -20,11 +20,16 @@ export interface RoasterCoffeeTagForm {
 
 export interface RoasterCoffeeTagRow extends RoasterCoffeeTagForm {
   id: string;
+  /** Public identifier encoded in QR (`/q/{public_hash}`). Set by DB on insert. */
+  public_hash: string;
+  roaster_id: string;
   created_at: string;
   updated_at: string;
 }
 
-export type RoasterCoffeeTagInsert = RoasterCoffeeTagForm;
+export type RoasterCoffeeTagInsert = RoasterCoffeeTagForm & {
+  roaster_id: string;
+};
 
 /** Alias: persisted row shape for consumer-app integration. */
 export type RoasterCoffeeTag = RoasterCoffeeTagRow;

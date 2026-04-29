@@ -7,20 +7,24 @@ export type TestActor = {
   userId: string;
   accessToken: string;
   roasterId: string;
+  roasterName: string;
 };
 
-function mustGetEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing env: ${name}`);
+function mustGetEnv(...names: string[]): string {
+  for (const name of names) {
+    const value = process.env[name];
+    if (value) return value;
   }
-  return value;
+  throw new Error(`Missing env: one of [${names.join(', ')}]`);
 }
 
 export function supabaseEnv() {
   return {
-    url: process.env.SUPABASE_URL ?? 'http://127.0.0.1:54321',
-    anonKey: mustGetEnv('SUPABASE_ANON_KEY'),
+    url:
+      process.env.SUPABASE_URL ??
+      process.env.NEXT_PUBLIC_SUPABASE_URL ??
+      'http://127.0.0.1:54321',
+    anonKey: mustGetEnv('SUPABASE_ANON_KEY', 'NEXT_PUBLIC_SUPABASE_ANON_KEY'),
     serviceRoleKey: mustGetEnv('SUPABASE_SERVICE_ROLE_KEY'),
   };
 }
@@ -108,15 +112,72 @@ export async function provisionVerifiedRoaster(
 
   const userId = await createUser(request, email, password, serviceRoleKey, url);
   const accessToken = await signIn(request, email, password, anonKey, url);
-  const roasterId = await createRoaster(
-    request,
-    userId,
-    `Phase4 ${label}`,
-    serviceRoleKey,
-    url
-  );
+  const roasterName = `Phase4 ${label}`;
+  const roasterId = await createRoaster(request, userId, roasterName, serviceRoleKey, url);
 
-  return { email, password, userId, accessToken, roasterId };
+  return { email, password, userId, accessToken, roasterId, roasterName };
+}
+
+/** Inserts a `qr_codes` row for E2E / smoke (replaces removed `generate_qr` Edge flow). */
+export async function insertQrCodeForBatch(
+  request: APIRequestContext,
+  batchId: string,
+  hash: string,
+  label: string
+) {
+  const { url, serviceRoleKey } = supabaseEnv();
+  const response = await request.post(`${url}/rest/v1/qr_codes`, {
+    headers: {
+      apikey: serviceRoleKey,
+      Authorization: `Bearer ${serviceRoleKey}`,
+      'Content-Type': 'application/json',
+      Prefer: 'return=minimal',
+    },
+    data: {
+      batch_id: batchId,
+      hash,
+      qr_url: `http://127.0.0.1:3000/q/${hash}`,
+      svg_storage_path: `e2e/${label}.svg`,
+      png_storage_path: `e2e/${label}.png`,
+    },
+  });
+  expect(response.ok()).toBeTruthy();
+}
+
+export async function insertRoasterCoffeeTag(
+  request: APIRequestContext,
+  actor: TestActor,
+  label: string
+): Promise<{ id: string; public_hash: string }> {
+  const { url, serviceRoleKey } = supabaseEnv();
+  const response = await request.post(`${url}/rest/v1/roaster_coffee_tags?select=id,public_hash`, {
+    headers: {
+      apikey: serviceRoleKey,
+      Authorization: `Bearer ${serviceRoleKey}`,
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    },
+    data: {
+      roaster_id: actor.roasterId,
+      roaster_short_name: `Tag ${label}`,
+      img_coffee_label: 'https://example.com/label.png',
+      bean_origin_country: 'Ethiopia',
+      bean_origin_farm: 'Farm',
+      bean_origin_tradename: 'Trade',
+      bean_origin_region: 'Sidamo',
+      bean_type: 'arabica',
+      bean_varietal_main: 'Heirloom',
+      bean_varietal_extra: '',
+      bean_origin_height: 1800,
+      bean_processing: 'washed',
+      bean_roast_date: '2026-04-01',
+      bean_roast_level: 'light',
+      brew_method: 'filter',
+    },
+  });
+  expect(response.ok()).toBeTruthy();
+  const rows = (await response.json()) as Array<{ id: string; public_hash: string }>;
+  return rows[0]!;
 }
 
 export async function createCoffeeAndBatch(

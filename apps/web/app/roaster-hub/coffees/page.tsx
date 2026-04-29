@@ -6,6 +6,8 @@ import { useEffect } from 'react';
 import { supabaseBrowser } from '@/src/lib/supabase/browserClient';
 import { useRoasterCoffees } from '@/src/hooks/useRoasterCoffees';
 
+import { hubCrudStyles } from '../hub-crud.styles';
+
 const LOGIN_NEXT = '/login?next=' + encodeURIComponent('/roaster-hub/coffees');
 
 export default function CoffeesPage() {
@@ -35,30 +37,32 @@ export default function CoffeesPage() {
     errorMessage.includes('No roaster profile linked to this account.');
 
   return (
-    <main style={{ maxWidth: 760, margin: '30px auto', fontFamily: 'system-ui' }}>
-      <p style={{ marginBottom: 16 }}>
-        <Link href="/roaster-hub" style={{ color: '#111' }}>
+    <main className={hubCrudStyles.main760}>
+      <p className="mb-4">
+        <Link href="/roaster-hub" className={hubCrudStyles.navBack}>
           ← Roaster hub
         </Link>
       </p>
-      <h1>Roaster coffees</h1>
+      <h1 className={hubCrudStyles.pageHeading}>Roaster coffees</h1>
       <p>
-        <Link href="/roaster-hub/coffees/new">+ New coffee</Link>
+        <Link href="/roaster-hub/coffees/new" className={hubCrudStyles.actionLink}>
+          + New coffee
+        </Link>
       </p>
-      {isLoading ? <p>Loading...</p> : null}
-      {errorMessage ? <p style={{ color: 'crimson' }}>{errorMessage}</p> : null}
+      {isLoading ? <p className={hubCrudStyles.muted}>Loading...</p> : null}
+      {errorMessage ? <p className={hubCrudStyles.error}>{errorMessage}</p> : null}
       {needsRoasterSetup ? (
-        <p style={{ marginTop: 12 }}>
-          <Link href="/roaster-hub/setup" style={{ fontWeight: 600 }}>
+        <p className="mt-3">
+          <Link href="/roaster-hub/setup" className={hubCrudStyles.linkStrong}>
             Utwórz profil palarni
           </Link>
         </p>
       ) : null}
-      {!isLoading && coffees.length === 0 ? <p>No coffees yet.</p> : null}
-      <ul>
+      {!isLoading && coffees.length === 0 ? <p className={hubCrudStyles.muted}>No coffees yet.</p> : null}
+      <ul className={hubCrudStyles.list}>
         {coffees.map(coffee => (
           <li key={coffee.id}>
-            <Link href={`/roaster-hub/coffees/${coffee.id}`}>
+            <Link href={`/roaster-hub/coffees/${coffee.id}`} className={hubCrudStyles.link}>
               {coffee.name} ({coffee.status})
             </Link>
           </li>

@@ -1,5 +1,7 @@
 import React, { type ErrorInfo, type ReactNode } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+
+import { rootErrorBoundaryStyles } from './RootErrorBoundary.styles';
 
 type Props = { children: ReactNode };
 
@@ -28,17 +30,17 @@ export class RootErrorBoundary extends React.Component<Props, State> {
   override render(): ReactNode {
     if (this.state.hasError) {
       return (
-        <ScrollView contentContainerStyle={styles.center}>
-          <View style={styles.card} accessibilityRole="alert">
-            <Text style={styles.title}>Something broke</Text>
-            <Text style={styles.body}>{this.state.message}</Text>
+        <ScrollView contentContainerStyle={rootErrorBoundaryStyles.center}>
+          <View style={rootErrorBoundaryStyles.card} accessibilityRole="alert">
+            <Text style={rootErrorBoundaryStyles.title}>Something broke</Text>
+            <Text style={rootErrorBoundaryStyles.body}>{this.state.message}</Text>
             <Pressable
               onPress={this.handleRetry}
-              style={styles.button}
+              style={rootErrorBoundaryStyles.button}
               accessibilityRole="button"
               accessibilityLabel="Try again after an error"
             >
-              <Text style={styles.buttonLabel}>Try again</Text>
+              <Text style={rootErrorBoundaryStyles.buttonLabel}>Try again</Text>
             </Pressable>
           </View>
         </ScrollView>
@@ -48,30 +50,3 @@ export class RootErrorBoundary extends React.Component<Props, State> {
     return this.props.children;
   }
 }
-
-const styles = StyleSheet.create({
-  center: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: 24,
-    backgroundColor: '#fafafa',
-  },
-  card: {
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    padding: 20,
-    backgroundColor: '#ffffff',
-    gap: 12,
-  },
-  title: { fontSize: 20, fontWeight: '700', color: '#111827' },
-  body: { fontSize: 15, color: '#4b5563' },
-  button: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#111827',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-  },
-  buttonLabel: { color: '#ffffff', fontWeight: '600', fontSize: 16 },
-});

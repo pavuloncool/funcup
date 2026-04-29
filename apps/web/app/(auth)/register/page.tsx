@@ -6,6 +6,8 @@ import { FormEvent, useState } from 'react';
 
 import { supabaseBrowser } from '@/src/lib/supabase/browserClient';
 
+import { authPagesStyles } from '../auth-pages.styles';
+
 export default function RegisterPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
@@ -33,10 +35,11 @@ export default function RegisterPage() {
   }
 
   return (
-    <main style={{ maxWidth: 420, margin: '40px auto', fontFamily: 'system-ui' }}>
-      <h1>Create account</h1>
-      <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 12 }}>
+    <main className={authPagesStyles.main420}>
+      <h1 className={authPagesStyles.title}>Create account</h1>
+      <form onSubmit={handleSubmit} className={authPagesStyles.form}>
         <input
+          className={authPagesStyles.input}
           type="email"
           placeholder="Email"
           value={email}
@@ -44,6 +47,7 @@ export default function RegisterPage() {
           required
         />
         <input
+          className={authPagesStyles.input}
           type="password"
           placeholder="Password (min 8 chars)"
           minLength={8}
@@ -51,13 +55,16 @@ export default function RegisterPage() {
           onChange={event => setPassword(event.target.value)}
           required
         />
-        <button type="submit" disabled={loading}>
+        <button type="submit" className={authPagesStyles.submitBtn} disabled={loading}>
           {loading ? 'Creating...' : 'Create account'}
         </button>
       </form>
-      {error ? <p style={{ color: 'crimson' }}>{error}</p> : null}
-      <p>
-        Already have account? <Link href="/login">Log in</Link>
+      {error ? <p className={authPagesStyles.error}>{error}</p> : null}
+      <p className={authPagesStyles.footer}>
+        Already have account?{' '}
+        <Link href="/login" className="font-medium text-neutral-900 underline">
+          Log in
+        </Link>
       </p>
     </main>
   );

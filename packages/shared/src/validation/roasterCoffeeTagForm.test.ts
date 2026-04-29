@@ -45,9 +45,14 @@ describe('roasterCoffeeTagClientFormSchema', () => {
     const r = roasterCoffeeTagClientFormSchema.safeParse(baseValid());
     expect(r.success).toBe(true);
     if (r.success) {
-      const row = clientFormValuesToInsert(r.data, 'https://example.com/x.png');
+      const row = clientFormValuesToInsert(
+        r.data,
+        'https://example.com/x.png',
+        '11111111-1111-4111-8111-111111111111'
+      );
       expect(row.img_coffee_label).toBe('https://example.com/x.png');
       expect(row.bean_origin_height).toBe(1800);
+      expect(row.roaster_id).toBe('11111111-1111-4111-8111-111111111111');
     }
   });
 
@@ -96,7 +101,9 @@ describe('clientFormValuesToInsert', () => {
     const v = roasterCoffeeTagClientFormSchema.safeParse(baseValid());
     expect(v.success).toBe(true);
     if (v.success) {
-      expect(() => clientFormValuesToInsert(v.data, '   ')).toThrow(/Image upload failed/);
+      expect(() =>
+        clientFormValuesToInsert(v.data, '   ', '11111111-1111-4111-8111-111111111111')
+      ).toThrow(/Image upload failed/);
     }
   });
 });
