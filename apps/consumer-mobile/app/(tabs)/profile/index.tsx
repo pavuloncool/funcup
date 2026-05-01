@@ -1,8 +1,7 @@
 import { getReputationLevel, getReputationLevelLabel, visualSystemTokens } from '@funcup/shared';
-import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import {
-  Pressable,
   StyleSheet,
   View,
 } from 'react-native';
@@ -10,7 +9,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppButton, AppCard, AppInput, AppScreen, AppScrollScreen, AppText } from '../../../src/components/ui/primitives';
 
 import {
-  AVATAR_OPTIONS,
   changePasswordWithReauth,
   loadEditableProfile,
   requestEmailChange,
@@ -18,15 +16,26 @@ import {
   saveEditableProfile,
   serializeAvatar,
 } from '../../../src/features/profile/profileAccount';
+import { buildAvatarOptions } from '../../../src/features/profile/avatar/avatarFactory';
+import { AvatarGrid } from '../../../src/features/profile/avatar/AvatarGrid';
+import { AvatarPreview } from '../../../src/features/profile/avatar/AvatarPreview';
+import { BrewMethodPickerField } from '../../../src/features/profile/preferences/BrewMethodPickerField';
+import { FlavorNotesMultiSelect } from '../../../src/features/profile/preferences/FlavorNotesMultiSelect';
+import { loadBrewMethodOptions, type BrewMethodOption } from '../../../src/features/profile/preferences/brewMethods';
+import { loadFlavorNoteOptions, type FlavorNoteOption } from '../../../src/features/profile/preferences/flavorNotes';
 import { supabase } from '../../../src/services/supabaseClient';
+import { useAuth } from '../../../src/auth';
 
 function isValidEmail(email: string): boolean {
   return /.+@.+\..+/.test(email);
 }
 
-const { colors, spacing, radius } = visualSystemTokens;
+const { colors, spacing } = visualSystemTokens;
 
 export default function ProfileScreen() {
+  const router = useRouter();
+  const { biometricsEnabled, disableBiometrics, enableBiometrics, lockWithBiometrics, logout } = useAuth();
+  const avatarOptions = useMemo(() => buildAvatarOptions(), []);
   const insets = useSafeAreaInsets();
   const demoReputationScore = 24;
   const reputationLevel = getReputationLevel(demoReputationScore);
@@ -34,12 +43,17 @@ export default function ProfileScreen() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [passwordSaving, setPasswordSaving] = useState(false);
+  const [logoutLoading, setLogoutLoading] = useState(false);
 
   const [userId, setUserId] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [originalEmail, setOriginalEmail] = useState('');
-  const [avatarValue, setAvatarValue] = useState(serializeAvatar(AVATAR_OPTIONS[0]));
+  const [avatarValue, setAvatarValue] = useState(serializeAvatar(avatarOptions[0]));
+  const [favoriteBrewMethodId, setFavoriteBrewMethodId] = useState<string | null>(null);
+  const [favoriteFlavorNoteIds, setFavoriteFlavorNoteIds] = useState<string[]>([]);
+  const [brewMethodOptions, setBrewMethodOptions] = useState<BrewMethodOption[]>([]);
+  const [flavorNoteOptions, setFlavorNoteOptions] = useState<FlavorNoteOption[]>([]);
 
   const [editMode, setEditMode] = useState(false);
 
@@ -51,13 +65,36 @@ export default function ProfileScreen() {
   const [info, setInfo] = useState<string | null>(null);
 
   const selectedAvatar = useMemo(() => resolveAvatarOption(avatarValue), [avatarValue]);
+  const selectedAvatarSvg = useMemo(
+    () => avatarOptions.find((option) => option.id === selectedAvatar.id)?.svg ?? avatarOptions[0].svg,
+    [avatarOptions, selectedAvatar.id]
+  );
+  const favoriteBrewMethodLabel = useMemo(() => {
+    const selected = brewMethodOptions.find((option) => option.id === favoriteBrewMethodId);
+    return selected?.name ?? 'Nie ustawiono';
+  }, [brewMethodOptions, favoriteBrewMethodId]);
+  const favoriteTastingNotesLabel = useMemo(() => {
+    if (favoriteFlavorNoteIds.length === 0) {
+      return 'Nie ustawiono';
+    }
+
+    const labels = flavorNoteOptions
+      .filter((option) => favoriteFlavorNoteIds.includes(option.id))
+      .map((option) => option.label);
+
+    return labels.length > 0 ? labels.join(', ') : 'Nie ustawiono';
+  }, [flavorNoteOptions, favoriteFlavorNoteIds]);
 
   useEffect(() => {
     let mounted = true;
 
     const bootstrap = async () => {
       try {
-        const profile = await loadEditableProfile(supabase);
+        const [profile, brewMethods, flavorNotes] = await Promise.all([
+          loadEditableProfile(supabase),
+          loadBrewMethodOptions(supabase),
+          loadFlavorNoteOptions(supabase),
+        ]);
         if (!mounted) return;
 
         setUserId(profile.userId);
@@ -65,6 +102,10 @@ export default function ProfileScreen() {
         setEmail(profile.email);
         setOriginalEmail(profile.email);
         setAvatarValue(profile.avatarUrl);
+        setFavoriteBrewMethodId(profile.favoriteBrewMethodId);
+        setFavoriteFlavorNoteIds(profile.favoriteFlavorNoteIds);
+        setBrewMethodOptions(brewMethods);
+        setFlavorNoteOptions(flavorNotes);
       } catch (bootstrapError) {
         if (!mounted) return;
         setError(bootstrapError instanceof Error ? bootstrapError.message : 'Nie udało się załadować profilu.');
@@ -96,6 +137,21 @@ export default function ProfileScreen() {
       return;
     }
 
+    if (!favoriteBrewMethodId) {
+      setError('Wybierz ulubioną metodę parzenia.');
+      return;
+    }
+
+    if (favoriteFlavorNoteIds.length < 1) {
+      setError('Wybierz minimum 1 tasting note.');
+      return;
+    }
+
+    if (favoriteFlavorNoteIds.length > 3) {
+      setError('Możesz wybrać maksymalnie 3 tasting notes.');
+      return;
+    }
+
     setSaving(true);
     setError(null);
     setInfo(null);
@@ -106,6 +162,8 @@ export default function ProfileScreen() {
         userId,
         displayName: trimmedName,
         avatarUrl: avatarValue,
+        favoriteBrewMethodId,
+        favoriteFlavorNoteIds,
       });
 
       if (trimmedEmail !== originalEmail.toLowerCase()) {
@@ -174,6 +232,51 @@ export default function ProfileScreen() {
     }
   };
 
+  const onToggleBiometrics = async () => {
+    setError(null);
+    setInfo(null);
+    try {
+      if (biometricsEnabled) {
+        await disableBiometrics();
+        setInfo('Odblokowanie biometrią zostało wyłączone.');
+      } else {
+        await enableBiometrics();
+        setInfo('Odblokowanie biometrią zostało włączone.');
+      }
+    } catch (biometricError) {
+      setError(biometricError instanceof Error ? biometricError.message : 'Nie udało się zmienić ustawień biometrii.');
+    }
+  };
+
+  const onLockSession = async () => {
+    setError(null);
+    setInfo(null);
+    try {
+      await lockWithBiometrics();
+      router.replace('/(auth)/login');
+    } catch (lockError) {
+      setError(lockError instanceof Error ? lockError.message : 'Nie udało się zablokować sesji.');
+    }
+  };
+
+  const onLogout = async () => {
+    setLogoutLoading(true);
+    setError(null);
+    setInfo(null);
+    try {
+      await logout();
+      router.replace('/(auth)/login');
+    } catch (logoutError) {
+      setError(logoutError instanceof Error ? logoutError.message : 'Nie udało się wylogować.');
+    } finally {
+      setLogoutLoading(false);
+    }
+  };
+
+  const onGoToMyCoffeeHouse = () => {
+    router.push('/(tabs)/hub');
+  };
+
   if (loading) {
     return (
       <AppScreen>
@@ -190,9 +293,7 @@ export default function ProfileScreen() {
 
         <AppCard>
           <View style={local.headerRow}>
-            <View style={[local.avatarCircle, { backgroundColor: selectedAvatar.color }]}>
-              <Ionicons name={selectedAvatar.icon as never} size={26} color={colors.textOnPrimary} />
-            </View>
+            <AvatarPreview svg={selectedAvatarSvg} style={local.avatarCircle} />
             <View style={local.headerTextWrap}>
               <AppText variant="h3" weight="700">{displayName || 'Użytkownik'}</AppText>
               <AppText tone="secondary">{email || 'Brak email'}</AppText>
@@ -200,9 +301,8 @@ export default function ProfileScreen() {
           </View>
 
           <AppButton
-            label={editMode ? 'Zamknij edycję' : 'Edit profile settings'}
-            variant="secondary"
-            onPress={() => setEditMode((prev) => !prev)}
+            label="Go to My Coffee House"
+            onPress={onGoToMyCoffeeHouse}
           />
         </AppCard>
 
@@ -210,6 +310,26 @@ export default function ProfileScreen() {
           <AppText variant="body" weight="600">Sensory reputation</AppText>
           <AppText variant="h2" weight="700">{getReputationLevelLabel(reputationLevel)}</AppText>
           <AppText tone="secondary">Score: {demoReputationScore}</AppText>
+          <AppText tone="secondary">Fav brew method: {favoriteBrewMethodLabel}</AppText>
+          <AppText tone="secondary">Fav tasting notes: {favoriteTastingNotesLabel}</AppText>
+        </AppCard>
+
+        <AppCard>
+          <AppText variant="body" weight="600">Bezpieczeństwo sesji</AppText>
+          <AppText tone="secondary">
+            Biometria: {biometricsEnabled ? 'włączona' : 'wyłączona'}
+          </AppText>
+          <AppButton
+            label={biometricsEnabled ? 'Wyłącz odblokowanie biometrią' : 'Włącz odblokowanie biometrią'}
+            variant="secondary"
+            onPress={() => void onToggleBiometrics()}
+          />
+          <AppButton
+            label="Zablokuj sesję"
+            variant="secondary"
+            onPress={() => void onLockSession()}
+            disabled={!biometricsEnabled}
+          />
         </AppCard>
 
         {editMode ? (
@@ -233,25 +353,29 @@ export default function ProfileScreen() {
             />
 
             <AppText variant="bodySm" weight="600" style={local.subSectionLabel}>Avatar</AppText>
-            <View style={local.avatarGrid}>
-              {AVATAR_OPTIONS.map((option) => {
-                const selected = option.id === selectedAvatar.id;
-                return (
-                  <Pressable
-                    key={option.id}
-                    style={[local.avatarItem, selected && local.avatarItemSelected]}
-                    onPress={() => setAvatarValue(serializeAvatar(option))}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Avatar ${option.label}`}
-                  >
-                    <View style={[local.smallAvatarCircle, { backgroundColor: option.color }]}>
-                      <Ionicons name={option.icon as never} size={22} color={colors.textOnPrimary} />
-                    </View>
-                    <AppText variant="caption" weight="600" tone="secondary">{option.label}</AppText>
-                  </Pressable>
-                );
-              })}
-            </View>
+            <AvatarGrid
+              options={avatarOptions}
+              selectedId={selectedAvatar.id}
+              onChange={(nextId) => {
+                const selected = avatarOptions.find((item) => item.id === nextId);
+                if (selected) {
+                  setAvatarValue(serializeAvatar(selected));
+                }
+              }}
+            />
+
+            <BrewMethodPickerField
+              options={brewMethodOptions}
+              value={favoriteBrewMethodId}
+              onChange={(nextValue) => setFavoriteBrewMethodId(nextValue)}
+            />
+
+            <FlavorNotesMultiSelect
+              options={flavorNoteOptions}
+              selectedIds={favoriteFlavorNoteIds}
+              onChange={setFavoriteFlavorNoteIds}
+              maxSelected={3}
+            />
 
             <AppButton label={saving ? 'Zapisywanie…' : 'Zapisz profil'} onPress={() => void onSaveProfile()} disabled={saving} />
 
@@ -308,6 +432,19 @@ export default function ProfileScreen() {
 
         {error ? <AppText tone="danger">{error}</AppText> : null}
         {info ? <AppText tone="success">{info}</AppText> : null}
+        <AppCard>
+          <AppButton
+            label={editMode ? 'Zamknij edycję' : 'Edit profile settings'}
+            variant="secondary"
+            onPress={() => setEditMode((prev) => !prev)}
+          />
+          <AppButton
+            label={logoutLoading ? 'Wylogowywanie…' : 'Log out'}
+            variant="secondary"
+            onPress={() => void onLogout()}
+            disabled={logoutLoading}
+          />
+        </AppCard>
     </AppScrollScreen>
   );
 }
@@ -347,31 +484,5 @@ const local = StyleSheet.create({
     height: 1,
     backgroundColor: colors.borderSubtle,
     marginVertical: spacing.xs,
-  },
-  avatarGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.xs,
-  },
-  avatarItem: {
-    width: '31%',
-    borderWidth: 1,
-    borderColor: colors.borderSubtle,
-    borderRadius: radius.sm,
-    paddingVertical: spacing.xs,
-    alignItems: 'center',
-    gap: spacing.xxs + 1,
-    backgroundColor: colors.surface,
-  },
-  avatarItemSelected: {
-    borderColor: colors.accentPrimary,
-    backgroundColor: colors.surfaceMuted,
-  },
-  smallAvatarCircle: {
-    width: 38,
-    height: 38,
-    borderRadius: radius.pill,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });
