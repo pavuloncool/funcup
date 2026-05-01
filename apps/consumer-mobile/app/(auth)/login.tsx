@@ -1,8 +1,10 @@
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, StyleSheet } from 'react-native';
+import { visualSystemTokens } from '@funcup/shared';
 
 import { isProfileCompleted } from '../../src/features/profile/profileAccount';
+import { AppScreen } from '../../src/components/ui/primitives';
 import { supabase } from '../../src/services/supabaseClient';
 
 export default function LoginScreen() {
@@ -45,8 +47,12 @@ export default function LoginScreen() {
   }, [router]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#f3f4f6', alignItems: 'center', justifyContent: 'center' }}>
-      <ActivityIndicator size="large" color="#0ea5a4" />
-    </View>
+    <AppScreen style={styles.root}>
+      <ActivityIndicator size="large" color={visualSystemTokens.colors.accentPrimary} />
+    </AppScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: visualSystemTokens.colors.canvas, alignItems: 'center', justifyContent: 'center' },
+});

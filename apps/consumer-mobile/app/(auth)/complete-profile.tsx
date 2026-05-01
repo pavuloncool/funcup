@@ -6,10 +6,9 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { visualSystemTokens } from '@funcup/shared';
 
 import {
   AVATAR_OPTIONS,
@@ -21,10 +20,12 @@ import {
 } from '../../src/features/profile/profileAccount';
 import { supabase } from '../../src/services/supabaseClient';
 import { authScreenStyles as styles } from '../../src/theme/authScreenStyles';
+import { AppButton, AppInput, AppScreen, AppText } from '../../src/components/ui/primitives';
 
 function isValidEmail(email: string): boolean {
   return /.+@.+\..+/.test(email);
 }
+const { colors } = visualSystemTokens;
 
 export default function CompleteProfileScreen() {
   const router = useRouter();
@@ -122,18 +123,18 @@ export default function CompleteProfileScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <AppScreen>
         <View style={styles.screen}>
           <View style={[styles.topSection, local.center]}>
-            <Text>Ładowanie profilu…</Text>
+            <AppText>Ładowanie profilu…</AppText>
           </View>
         </View>
-      </SafeAreaView>
+      </AppScreen>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <AppScreen>
       <View style={styles.screen}>
         <ScrollView
           style={local.scroll}
@@ -149,7 +150,7 @@ export default function CompleteProfileScreen() {
           </View>
 
           <Text style={styles.fieldLabel}>Nazwa użytkownika *</Text>
-          <TextInput
+          <AppInput
             style={styles.input}
             placeholder="Np. Jan Kowalski"
             value={displayName}
@@ -158,7 +159,7 @@ export default function CompleteProfileScreen() {
           />
 
           <Text style={styles.fieldLabel}>Email</Text>
-          <TextInput
+          <AppInput
             style={styles.input}
             placeholder="name@example.com"
             value={email}
@@ -181,29 +182,26 @@ export default function CompleteProfileScreen() {
                   accessibilityLabel={`Avatar ${option.label}`}
                 >
                   <View style={[local.avatarCircle, { backgroundColor: option.color }]}>
-                    <Ionicons name={option.icon as never} size={24} color="#fff" />
+                    <Ionicons name={option.icon as never} size={24} color={colors.textOnPrimary} />
                   </View>
-                  <Text style={local.avatarLabel}>{option.label}</Text>
+                  <AppText variant="caption" weight="600" tone="secondary">{option.label}</AppText>
                 </Pressable>
               );
             })}
           </View>
 
-          {error ? <Text style={local.errorText}>{error}</Text> : null}
-          {info ? <Text style={local.infoText}>{info}</Text> : null}
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          {info ? <Text style={styles.infoText}>{info}</Text> : null}
 
-          <Pressable
-            style={[styles.loginAction, local.primaryAction, saving && local.disabledAction]}
-            accessibilityRole="button"
+          <AppButton
+            label={saving ? 'Zapisywanie…' : 'Zapisz i przejdź do profilu'}
             onPress={() => void onSave()}
             disabled={saving}
-          >
-            <Text style={styles.loginActionText}>{saving ? 'Zapisywanie…' : 'Zapisz i przejdź do profilu'}</Text>
-          </Pressable>
+          />
         </View>
         </ScrollView>
       </View>
-    </SafeAreaView>
+    </AppScreen>
   );
 }
 
@@ -229,16 +227,16 @@ const local = StyleSheet.create({
   avatarItem: {
     width: '31%',
     borderWidth: 1,
-    borderColor: '#c9ced6',
+    borderColor: visualSystemTokens.colors.borderSubtle,
     borderRadius: 12,
     paddingVertical: 10,
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#ffffff',
+    backgroundColor: visualSystemTokens.colors.surfaceElevated,
   },
   avatarItemSelected: {
-    borderColor: '#111827',
-    backgroundColor: '#ffffff',
+    borderColor: visualSystemTokens.colors.accentPrimary,
+    backgroundColor: visualSystemTokens.colors.surface,
   },
   avatarCircle: {
     width: 44,
@@ -246,26 +244,5 @@ const local = StyleSheet.create({
     borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  avatarLabel: {
-    fontSize: 12,
-    color: '#374151',
-    fontWeight: '600',
-  },
-  primaryAction: {
-    marginTop: 8,
-  },
-  disabledAction: {
-    opacity: 0.6,
-  },
-  errorText: {
-    width: '100%',
-    color: '#dc2626',
-    marginBottom: 8,
-  },
-  infoText: {
-    width: '100%',
-    color: '#059669',
-    marginBottom: 8,
   },
 });

@@ -1,11 +1,11 @@
 import * as Linking from 'expo-linking';
 import { Link } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, View } from 'react-native';
 
 import { supabase } from '../../src/services/supabaseClient';
 import { authScreenStyles as styles } from '../../src/theme/authScreenStyles';
+import { AppButton, AppInput, AppScreen } from '../../src/components/ui/primitives';
 
 function isValidEmail(email: string): boolean {
   return /.+@.+\..+/.test(email);
@@ -45,7 +45,7 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <AppScreen>
       <View style={styles.screen}>
         <View style={styles.topSection}>
           <View style={styles.separatorRow}>
@@ -55,7 +55,7 @@ export default function ForgotPasswordScreen() {
           </View>
 
           <Text style={styles.fieldLabel}>Email</Text>
-          <TextInput
+          <AppInput
             style={styles.input}
             placeholder="name@example.com"
             accessibilityLabel="Adres email"
@@ -70,12 +70,10 @@ export default function ForgotPasswordScreen() {
             onSubmitEditing={() => void onSendReset()}
           />
 
-          {error ? <Text style={{ color: '#dc2626', marginBottom: 8 }}>{error}</Text> : null}
-          {info ? <Text style={{ color: '#059669', marginBottom: 8 }}>{info}</Text> : null}
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          {info ? <Text style={styles.infoText}>{info}</Text> : null}
 
-          <Pressable style={styles.loginAction} accessibilityRole="button" onPress={() => void onSendReset()}>
-            <Text style={styles.loginActionText}>{loading ? 'Wysyłanie…' : 'Wyślij link resetujący'}</Text>
-          </Pressable>
+          <AppButton label={loading ? 'Wysyłanie…' : 'Wyślij link resetujący'} onPress={() => void onSendReset()} />
         </View>
 
         <Text style={styles.registerPrompt}>
@@ -85,6 +83,6 @@ export default function ForgotPasswordScreen() {
           </Link>
         </Text>
       </View>
-    </SafeAreaView>
+    </AppScreen>
   );
 }

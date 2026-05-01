@@ -1,11 +1,11 @@
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, View } from 'react-native';
 
 import { isProfileCompleted } from '../../src/features/profile/profileAccount';
 import { supabase } from '../../src/services/supabaseClient';
 import { authScreenStyles as styles } from '../../src/theme/authScreenStyles';
+import { AppButton, AppInput, AppScreen } from '../../src/components/ui/primitives';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -61,7 +61,7 @@ export default function RegisterScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <AppScreen>
       <View style={styles.screen}>
         <View style={styles.topSection}>
           <View style={styles.separatorRow}>
@@ -71,7 +71,7 @@ export default function RegisterScreen() {
           </View>
 
           <Text style={styles.fieldLabel}>Email</Text>
-          <TextInput
+          <AppInput
             style={styles.input}
             placeholder="name@example.com"
             accessibilityLabel="Adres email"
@@ -86,7 +86,7 @@ export default function RegisterScreen() {
           />
 
           <Text style={styles.fieldLabel}>Hasło</Text>
-          <TextInput
+          <AppInput
             style={styles.input}
             placeholder="Minimum 6 znaków"
             accessibilityLabel="Hasło"
@@ -99,10 +99,9 @@ export default function RegisterScreen() {
             autoCorrect={false}
             returnKeyType="next"
           />
-          <Text style={styles.fieldHint}>Użyj co najmniej 6 znaków.</Text>
-
+          
           <Text style={styles.fieldLabel}>Powtórz hasło</Text>
-          <TextInput
+          <AppInput
             style={styles.input}
             placeholder="Powtórz hasło"
             accessibilityLabel="Powtórz hasło"
@@ -117,12 +116,10 @@ export default function RegisterScreen() {
             onSubmitEditing={() => void onRegister()}
           />
 
-          {error ? <Text style={{ color: '#dc2626', marginBottom: 8 }}>{error}</Text> : null}
-          {info ? <Text style={{ color: '#059669', marginBottom: 8 }}>{info}</Text> : null}
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          {info ? <Text style={styles.infoText}>{info}</Text> : null}
 
-          <Pressable style={styles.loginAction} accessibilityRole="button" onPress={() => void onRegister()}>
-            <Text style={styles.loginActionText}>{loading ? 'Tworzenie…' : 'Załóż konto'}</Text>
-          </Pressable>
+          <AppButton label={loading ? 'Tworzenie…' : 'Załóż konto'} onPress={() => void onRegister()} />
         </View>
 
         <Text style={styles.registerPrompt}>
@@ -132,6 +129,6 @@ export default function RegisterScreen() {
           </Link>
         </Text>
       </View>
-    </SafeAreaView>
+    </AppScreen>
   );
 }

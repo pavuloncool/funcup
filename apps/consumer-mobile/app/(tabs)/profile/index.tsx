@@ -1,15 +1,13 @@
-import { getReputationLevel, getReputationLevelLabel } from '@funcup/shared';
+import { getReputationLevel, getReputationLevelLabel, visualSystemTokens } from '@funcup/shared';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useMemo, useState } from 'react';
 import {
   Pressable,
-  ScrollView,
   StyleSheet,
-  Text,
-  TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { AppButton, AppCard, AppInput, AppScreen, AppScrollScreen, AppText } from '../../../src/components/ui/primitives';
 
 import {
   AVATAR_OPTIONS,
@@ -25,6 +23,8 @@ import { supabase } from '../../../src/services/supabaseClient';
 function isValidEmail(email: string): boolean {
   return /.+@.+\..+/.test(email);
 }
+
+const { colors, spacing, radius } = visualSystemTokens;
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
@@ -176,52 +176,53 @@ export default function ProfileScreen() {
 
   if (loading) {
     return (
-      <SafeAreaView style={local.safeArea}>
+      <AppScreen>
         <View style={local.centered}>
-          <Text>Ładowanie profilu…</Text>
+          <AppText>Ładowanie profilu…</AppText>
         </View>
-      </SafeAreaView>
+      </AppScreen>
     );
   }
 
   return (
-    <SafeAreaView style={local.safeArea}>
-      <ScrollView contentContainerStyle={[local.content, { paddingBottom: 96 + insets.bottom }]}>
-        <Text style={local.title}>Settings</Text>
+    <AppScrollScreen contentContainerStyle={[local.content, { paddingBottom: 96 + insets.bottom }]}>
+        <AppText variant="h1" weight="700">Settings</AppText>
 
-        <View style={local.card}>
+        <AppCard>
           <View style={local.headerRow}>
             <View style={[local.avatarCircle, { backgroundColor: selectedAvatar.color }]}>
-              <Ionicons name={selectedAvatar.icon as never} size={26} color="#fff" />
+              <Ionicons name={selectedAvatar.icon as never} size={26} color={colors.textOnPrimary} />
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={local.name}>{displayName || 'Użytkownik'}</Text>
-              <Text style={local.muted}>{email || 'Brak email'}</Text>
+            <View style={local.headerTextWrap}>
+              <AppText variant="h3" weight="700">{displayName || 'Użytkownik'}</AppText>
+              <AppText tone="secondary">{email || 'Brak email'}</AppText>
             </View>
           </View>
 
-          <Pressable style={local.editButton} onPress={() => setEditMode((prev) => !prev)}>
-            <Text style={local.editButtonText}>{editMode ? 'Zamknij edycję' : 'Edit profile settings'}</Text>
-          </Pressable>
-        </View>
+          <AppButton
+            label={editMode ? 'Zamknij edycję' : 'Edit profile settings'}
+            variant="secondary"
+            onPress={() => setEditMode((prev) => !prev)}
+          />
+        </AppCard>
 
-        <View style={local.card}>
-          <Text style={local.sectionTitle}>Sensory reputation</Text>
-          <Text style={local.repLabel}>{getReputationLevelLabel(reputationLevel)}</Text>
-          <Text style={local.muted}>Score: {demoReputationScore}</Text>
-        </View>
+        <AppCard>
+          <AppText variant="body" weight="600">Sensory reputation</AppText>
+          <AppText variant="h2" weight="700">{getReputationLevelLabel(reputationLevel)}</AppText>
+          <AppText tone="secondary">Score: {demoReputationScore}</AppText>
+        </AppCard>
 
         {editMode ? (
-          <View style={local.card}>
-            <Text style={local.sectionTitle}>Edycja profilu</Text>
-            <TextInput
+          <AppCard>
+            <AppText variant="body" weight="600">Edycja profilu</AppText>
+            <AppInput
               style={local.input}
               placeholder="Nazwa użytkownika"
               value={displayName}
               onChangeText={setDisplayName}
               autoCapitalize="words"
             />
-            <TextInput
+            <AppInput
               style={local.input}
               placeholder="Email"
               value={email}
@@ -231,7 +232,7 @@ export default function ProfileScreen() {
               keyboardType="email-address"
             />
 
-            <Text style={local.subSectionLabel}>Avatar</Text>
+            <AppText variant="bodySm" weight="600" style={local.subSectionLabel}>Avatar</AppText>
             <View style={local.avatarGrid}>
               {AVATAR_OPTIONS.map((option) => {
                 const selected = option.id === selectedAvatar.id;
@@ -244,26 +245,20 @@ export default function ProfileScreen() {
                     accessibilityLabel={`Avatar ${option.label}`}
                   >
                     <View style={[local.smallAvatarCircle, { backgroundColor: option.color }]}>
-                      <Ionicons name={option.icon as never} size={22} color="#fff" />
+                      <Ionicons name={option.icon as never} size={22} color={colors.textOnPrimary} />
                     </View>
-                    <Text style={local.avatarLabel}>{option.label}</Text>
+                    <AppText variant="caption" weight="600" tone="secondary">{option.label}</AppText>
                   </Pressable>
                 );
               })}
             </View>
 
-            <Pressable
-              style={[local.primaryButton, saving && local.disabledAction]}
-              onPress={() => void onSaveProfile()}
-              disabled={saving}
-            >
-              <Text style={local.primaryButtonText}>{saving ? 'Zapisywanie…' : 'Zapisz profil'}</Text>
-            </Pressable>
+            <AppButton label={saving ? 'Zapisywanie…' : 'Zapisz profil'} onPress={() => void onSaveProfile()} disabled={saving} />
 
             <View style={local.divider} />
-            <Text style={local.sectionTitle}>Zmiana hasła</Text>
-            <Text style={local.fieldLabel}>Aktualne hasło</Text>
-            <TextInput
+            <AppText variant="body" weight="600">Zmiana hasła</AppText>
+            <AppText variant="bodySm" weight="600">Aktualne hasło</AppText>
+            <AppInput
               style={local.input}
               placeholder="Aktualne hasło"
               value={currentPassword}
@@ -275,8 +270,8 @@ export default function ProfileScreen() {
               autoCorrect={false}
               returnKeyType="next"
             />
-            <Text style={local.fieldLabel}>Nowe hasło</Text>
-            <TextInput
+            <AppText variant="bodySm" weight="600">Nowe hasło</AppText>
+            <AppInput
               style={local.input}
               placeholder="Nowe hasło"
               value={newPassword}
@@ -288,8 +283,8 @@ export default function ProfileScreen() {
               autoCorrect={false}
               returnKeyType="next"
             />
-            <Text style={local.fieldLabel}>Powtórz nowe hasło</Text>
-            <TextInput
+            <AppText variant="bodySm" weight="600">Powtórz nowe hasło</AppText>
+            <AppInput
               style={local.input}
               placeholder="Powtórz nowe hasło"
               value={confirmNewPassword}
@@ -302,54 +297,38 @@ export default function ProfileScreen() {
               returnKeyType="done"
               onSubmitEditing={() => void onChangePassword()}
             />
-            <Pressable
-              style={[local.secondaryButton, passwordSaving && local.disabledAction]}
+            <AppButton
+              label={passwordSaving ? 'Zmiana hasła…' : 'Zmień hasło'}
+              variant="secondary"
               onPress={() => void onChangePassword()}
               disabled={passwordSaving}
-            >
-              <Text style={local.secondaryButtonText}>{passwordSaving ? 'Zmiana hasła…' : 'Zmień hasło'}</Text>
-            </Pressable>
-          </View>
+            />
+          </AppCard>
         ) : null}
 
-        {error ? <Text style={local.errorText}>{error}</Text> : null}
-        {info ? <Text style={local.infoText}>{info}</Text> : null}
-      </ScrollView>
-    </SafeAreaView>
+        {error ? <AppText tone="danger">{error}</AppText> : null}
+        {info ? <AppText tone="success">{info}</AppText> : null}
+    </AppScrollScreen>
   );
 }
 
 const local = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#f3f4f6',
-  },
   centered: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   content: {
-    padding: 20,
-    gap: 12,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  card: {
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 12,
-    padding: 14,
-    gap: 8,
-    backgroundColor: '#ffffff',
+    padding: spacing.lg,
+    gap: spacing.sm,
   },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: spacing.sm,
+  },
+  headerTextWrap: {
+    flex: 1,
   },
   avatarCircle: {
     width: 56,
@@ -358,124 +337,41 @@ const local = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  name: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  muted: {
-    color: '#4b5563',
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
-  },
-  repLabel: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  editButton: {
-    marginTop: 8,
-    borderWidth: 1,
-    borderColor: '#2563eb',
-    borderRadius: 10,
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-  editButtonText: {
-    color: '#1d4ed8',
-    fontWeight: '700',
-  },
   input: {
-    height: 48,
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    backgroundColor: '#ffffff',
-  },
-  fieldLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 6,
+    marginBottom: spacing.xxs,
   },
   subSectionLabel: {
-    marginTop: 4,
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#1f2937',
+    marginTop: spacing.xxs,
   },
   divider: {
     height: 1,
-    backgroundColor: '#e5e7eb',
-    marginVertical: 10,
+    backgroundColor: colors.borderSubtle,
+    marginVertical: spacing.xs,
   },
   avatarGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
+    gap: spacing.xs,
   },
   avatarItem: {
     width: '31%',
     borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 10,
-    paddingVertical: 9,
+    borderColor: colors.borderSubtle,
+    borderRadius: radius.sm,
+    paddingVertical: spacing.xs,
     alignItems: 'center',
-    gap: 5,
-    backgroundColor: '#f9fafb',
+    gap: spacing.xxs + 1,
+    backgroundColor: colors.surface,
   },
   avatarItemSelected: {
-    borderColor: '#2563eb',
-    backgroundColor: '#eff6ff',
+    borderColor: colors.accentPrimary,
+    backgroundColor: colors.surfaceMuted,
   },
   smallAvatarCircle: {
     width: 38,
     height: 38,
-    borderRadius: 19,
+    borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  avatarLabel: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#374151',
-  },
-  primaryButton: {
-    marginTop: 8,
-    backgroundColor: '#1d4ed8',
-    borderRadius: 10,
-    alignItems: 'center',
-    paddingVertical: 12,
-  },
-  primaryButtonText: {
-    color: '#ffffff',
-    fontWeight: '700',
-  },
-  secondaryButton: {
-    borderWidth: 1,
-    borderColor: '#2563eb',
-    borderRadius: 10,
-    alignItems: 'center',
-    paddingVertical: 12,
-    marginTop: 6,
-  },
-  secondaryButtonText: {
-    color: '#1d4ed8',
-    fontWeight: '700',
-  },
-  disabledAction: {
-    opacity: 0.6,
-  },
-  errorText: {
-    color: '#dc2626',
-    fontSize: 14,
-  },
-  infoText: {
-    color: '#059669',
-    fontSize: 14,
   },
 });

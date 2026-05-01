@@ -1,10 +1,10 @@
 import { Link, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, View } from 'react-native';
 
 import { supabase } from '../../src/services/supabaseClient';
 import { authScreenStyles as styles } from '../../src/theme/authScreenStyles';
+import { AppButton, AppInput, AppScreen } from '../../src/components/ui/primitives';
 
 export default function ResetPasswordScreen() {
   const router = useRouter();
@@ -79,19 +79,19 @@ export default function ResetPasswordScreen() {
 
   if (loadingSession) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <AppScreen>
         <View style={styles.screen}>
-          <View style={[styles.topSection, { justifyContent: 'center', alignItems: 'center' }]}>
+          <View style={[styles.topSection, styles.centered]}>
             <Text>Sprawdzanie linku resetującego…</Text>
           </View>
         </View>
-      </SafeAreaView>
+      </AppScreen>
     );
   }
 
   if (!hasSession) {
     return (
-      <SafeAreaView style={styles.safeArea}>
+      <AppScreen>
         <View style={styles.screen}>
           <View style={styles.topSection}>
             <View style={styles.separatorRow}>
@@ -100,7 +100,7 @@ export default function ResetPasswordScreen() {
               <View style={styles.separatorLine} />
             </View>
 
-            <Text style={{ color: '#374151', marginBottom: 12 }}>
+            <Text style={styles.infoText}>
               Ten ekran działa z aktywnym linkiem z emaila. Otwórz ponownie wiadomość i kliknij link resetujący.
             </Text>
           </View>
@@ -111,12 +111,12 @@ export default function ResetPasswordScreen() {
             </Link>
           </Text>
         </View>
-      </SafeAreaView>
+      </AppScreen>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <AppScreen>
       <View style={styles.screen}>
         <View style={styles.topSection}>
           <View style={styles.separatorRow}>
@@ -126,7 +126,7 @@ export default function ResetPasswordScreen() {
           </View>
 
           <Text style={styles.fieldLabel}>Nowe hasło</Text>
-          <TextInput
+          <AppInput
             style={styles.input}
             placeholder="Minimum 6 znaków"
             accessibilityLabel="Nowe hasło"
@@ -141,7 +141,7 @@ export default function ResetPasswordScreen() {
           />
 
           <Text style={styles.fieldLabel}>Powtórz nowe hasło</Text>
-          <TextInput
+          <AppInput
             style={styles.input}
             placeholder="Powtórz nowe hasło"
             accessibilityLabel="Powtórz nowe hasło"
@@ -156,12 +156,10 @@ export default function ResetPasswordScreen() {
             onSubmitEditing={() => void onSetPassword()}
           />
 
-          {error ? <Text style={{ color: '#dc2626', marginBottom: 8 }}>{error}</Text> : null}
-          {info ? <Text style={{ color: '#059669', marginBottom: 8 }}>{info}</Text> : null}
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+          {info ? <Text style={styles.infoText}>{info}</Text> : null}
 
-          <Pressable style={styles.loginAction} accessibilityRole="button" onPress={() => void onSetPassword()}>
-            <Text style={styles.loginActionText}>{saving ? 'Zapisywanie…' : 'Zapisz nowe hasło'}</Text>
-          </Pressable>
+          <AppButton label={saving ? 'Zapisywanie…' : 'Zapisz nowe hasło'} onPress={() => void onSetPassword()} />
         </View>
 
         <Text style={styles.registerPrompt}>
@@ -170,6 +168,6 @@ export default function ResetPasswordScreen() {
           </Link>
         </Text>
       </View>
-    </SafeAreaView>
+    </AppScreen>
   );
 }

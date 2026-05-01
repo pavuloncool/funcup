@@ -1,9 +1,9 @@
 import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, View } from 'react-native';
 
 import { authScreenStyles as styles } from '../../src/theme/authScreenStyles';
+import { AppButton, AppInput, AppScreen } from '../../src/components/ui/primitives';
 import { isProfileCompleted } from '../../src/features/profile/profileAccount';
 import { supabase } from '../../src/services/supabaseClient';
 
@@ -40,7 +40,7 @@ export default function LoginFormScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <AppScreen>
       <View style={styles.screen}>
         <View style={styles.topSection}>
           <View style={styles.separatorRow}>
@@ -50,7 +50,7 @@ export default function LoginFormScreen() {
           </View>
 
           <Text style={styles.fieldLabel}>Email</Text>
-          <TextInput
+          <AppInput
             style={styles.input}
             placeholder="Email"
             accessibilityLabel="Email"
@@ -65,7 +65,7 @@ export default function LoginFormScreen() {
           />
 
           <Text style={styles.fieldLabel}>Hasło</Text>
-          <TextInput
+          <AppInput
             style={styles.input}
             placeholder="Hasło"
             accessibilityLabel="Hasło"
@@ -80,15 +80,13 @@ export default function LoginFormScreen() {
             onChangeText={setPassword}
           />
 
-          <Pressable style={styles.loginAction} accessibilityRole="button" onPress={() => void onLogin()}>
-            <Text style={styles.loginActionText}>{loading ? 'Logowanie…' : 'Zaloguj'}</Text>
-          </Pressable>
+          <AppButton label={loading ? 'Logowanie…' : 'Zaloguj'} onPress={() => void onLogin()} />
 
           <Link href="/(auth)/forgot-password" style={styles.registerLink}>
             Nie pamiętasz hasła?
           </Link>
 
-          {error ? <Text style={{ color: '#dc2626' }}>{error}</Text> : null}
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         </View>
 
@@ -99,6 +97,6 @@ export default function LoginFormScreen() {
           </Link>
         </Text>
       </View>
-    </SafeAreaView>
+    </AppScreen>
   );
 }
