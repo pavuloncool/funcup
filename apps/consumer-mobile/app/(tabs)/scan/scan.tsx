@@ -3,13 +3,12 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Link, router } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
-  Pressable,
   StyleSheet,
-  Text,
-  TextInput,
   View,
   ActivityIndicator,
 } from 'react-native';
+import { AppButton, AppInput, AppScreen, AppText } from '../../../src/components/ui/primitives';
+import { visualSystemTokens } from '@funcup/shared';
 
 export default function ScanScreen() {
   const [permission, requestPermission] = useCameraPermissions();
@@ -51,38 +50,36 @@ export default function ScanScreen() {
 
   if (!permission) {
     return (
-      <View style={styles.centered}>
+      <AppScreen style={styles.centered}>
         <ActivityIndicator size="large" />
-        <Text style={styles.muted}>Sprawdzanie dostępu do kamery…</Text>
-      </View>
+        <AppText tone="secondary">Sprawdzanie dostępu do kamery…</AppText>
+      </AppScreen>
     );
   }
 
   if (!permission.granted) {
     return (
-      <View style={styles.pad}>
-        <Text style={styles.title}>Dostęp do kamery</Text>
-        <Text style={styles.body}>
+      <AppScreen style={styles.pad}>
+        <AppText variant="h2" weight="700">Dostęp do kamery</AppText>
+        <AppText tone="secondary" style={styles.body}>
           Aby skanować kody QR z opakowań kawy, zezwól aplikacji na użycie aparatu.
-        </Text>
-        <Pressable style={styles.primaryBtn} onPress={() => void requestPermission()}>
-          <Text style={styles.primaryBtnText}>Zezwól na kamerę</Text>
-        </Pressable>
+        </AppText>
+        <AppButton label="Zezwól na kamerę" onPress={() => void requestPermission()} />
         <Link href="/(tabs)/hub" style={styles.link}>
           Wróć do Coffee Hub
         </Link>
-      </View>
+      </AppScreen>
     );
   }
 
   return (
-    <View style={styles.root}>
+    <AppScreen style={styles.root}>
       <View style={styles.header}>
-        <Text style={styles.title}>Skanuj kod</Text>
-        <Text style={styles.body}>
+        <AppText variant="h2" weight="700">Skanuj kod</AppText>
+        <AppText tone="secondary" style={styles.body}>
           Wskaż aparatem kod QR z etykiety. Link w kodzie musi wskazywać na stronę funcup w formacie
           /q/…
-        </Text>
+        </AppText>
         <Link href="/(tabs)/hub" style={styles.link}>
           Wróć do Coffee Hub
         </Link>
@@ -99,69 +96,36 @@ export default function ScanScreen() {
 
       {parseError ? (
         <View style={styles.errorBox}>
-          <Text style={styles.errorText}>{parseError}</Text>
-          <Pressable style={styles.primaryBtn} onPress={handleRetry}>
-            <Text style={styles.primaryBtnText}>Skanuj ponownie</Text>
-          </Pressable>
+          <AppText tone="danger">{parseError}</AppText>
+          <AppButton label="Skanuj ponownie" onPress={handleRetry} />
         </View>
       ) : null}
 
       {__DEV__ ? (
         <View style={styles.devBox}>
-          <Text style={styles.devLabel}>Dev: wklej URL lub hash</Text>
-          <TextInput
+          <AppText variant="caption" tone="muted">Dev: wklej URL lub hash</AppText>
+          <AppInput
             value={devInput}
             onChangeText={setDevInput}
             autoCapitalize="none"
             autoCorrect={false}
             placeholder="https://…/q/… lub funcup://q/…"
-            style={styles.input}
           />
-          <Pressable style={styles.secondaryBtn} onPress={submitDevInput}>
-            <Text style={styles.secondaryBtnText}>Otwórz</Text>
-          </Pressable>
+          <AppButton label="Otwórz" variant="secondary" onPress={submitDevInput} />
         </View>
       ) : null}
-    </View>
+    </AppScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#111827' },
+  root: { flex: 1 },
   header: { padding: 20, paddingBottom: 12, gap: 8 },
-  title: { fontSize: 22, fontWeight: '700', color: '#fff' },
-  body: { fontSize: 15, color: '#d1d5db', lineHeight: 22 },
-  link: { fontSize: 15, color: '#f59e0b', fontWeight: '600', marginTop: 4 },
+  body: { lineHeight: 22 },
+  link: { fontSize: 15, color: visualSystemTokens.colors.accentPrimary, fontWeight: '700', marginTop: 4 },
   cameraBox: { flex: 1, marginHorizontal: 16, marginBottom: 16, borderRadius: 16, overflow: 'hidden' },
-  errorBox: { padding: 16, gap: 12, backgroundColor: '#1f2937' },
-  errorText: { color: '#fecaca', fontSize: 14 },
-  primaryBtn: {
-    backgroundColor: '#f59e0b',
-    borderRadius: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-  },
-  primaryBtnText: { color: '#111827', fontWeight: '700', fontSize: 16 },
-  secondaryBtn: {
-    borderWidth: 1,
-    borderColor: '#6b7280',
-    borderRadius: 12,
-    paddingVertical: 12,
-    alignItems: 'center',
-  },
-  secondaryBtnText: { color: '#e5e7eb', fontWeight: '600' },
-  pad: { flex: 1, padding: 24, gap: 12, justifyContent: 'center', backgroundColor: '#111827' },
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12, backgroundColor: '#111827' },
-  muted: { color: '#9ca3af' },
-  devBox: { padding: 16, gap: 8, borderTopWidth: 1, borderTopColor: '#374151' },
-  devLabel: { fontSize: 12, color: '#9ca3af' },
-  input: {
-    borderWidth: 1,
-    borderColor: '#4b5563',
-    borderRadius: 8,
-    padding: 12,
-    color: '#f9fafb',
-    backgroundColor: '#1f2937',
-  },
+  errorBox: { padding: 16, gap: 12, backgroundColor: visualSystemTokens.colors.surfaceMuted },
+  pad: { flex: 1, padding: 24, gap: 12, justifyContent: 'center' },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
+  devBox: { padding: 16, gap: 8, borderTopWidth: 1, borderTopColor: visualSystemTokens.colors.borderSubtle },
 });

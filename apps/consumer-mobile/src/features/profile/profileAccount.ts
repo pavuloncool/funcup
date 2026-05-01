@@ -1,26 +1,15 @@
 import type { SupabaseClient, User } from '@supabase/supabase-js';
 
-export type AvatarOption = {
-  id: string;
-  icon: string;
-  color: string;
-  label: string;
-};
-
-export const AVATAR_OPTIONS: AvatarOption[] = [
-  { id: 'sprout', icon: 'leaf-outline', color: '#16a34a', label: 'Sprout' },
-  { id: 'sun', icon: 'sunny-outline', color: '#f59e0b', label: 'Sunny' },
-  { id: 'bean', icon: 'cafe-outline', color: '#b45309', label: 'Bean' },
-  { id: 'wave', icon: 'water-outline', color: '#0ea5e9', label: 'Wave' },
-  { id: 'moon', icon: 'moon-outline', color: '#7c3aed', label: 'Moon' },
-  { id: 'spark', icon: 'sparkles-outline', color: '#db2777', label: 'Spark' },
-];
-
-export const DEFAULT_AVATAR = AVATAR_OPTIONS[0];
+import {
+  DEFAULT_AVATAR_SEED,
+  resolveAvatarSeedOption,
+  serializeAvatarOption,
+} from './avatar/avatarFactory';
 
 type UserRow = {
   display_name: string | null;
   avatar_url: string | null;
+  favorite_brew_method_id?: string | null;
 };
 
 type ProfileMetadata = {
@@ -34,6 +23,8 @@ export type EditableProfile = {
   displayName: string;
   email: string;
   avatarUrl: string;
+  favoriteBrewMethodId: string | null;
+  favoriteFlavorNoteIds: string[];
   profileCompleted: boolean;
 };
 
@@ -59,19 +50,8 @@ export function isProfileCompleted(user: User | null): boolean {
   return true;
 }
 
-export function serializeAvatar(option: AvatarOption): string {
-  return `avatar:${option.id}:${option.icon}:${option.color}`;
-}
-
-export function resolveAvatarOption(avatarUrl: string | null | undefined): AvatarOption {
-  if (!avatarUrl || !avatarUrl.startsWith('avatar:')) {
-    return DEFAULT_AVATAR;
-  }
-
-  const [, id] = avatarUrl.split(':');
-  const option = AVATAR_OPTIONS.find((item) => item.id === id);
-  return option ?? DEFAULT_AVATAR;
-}
+export const serializeAvatar = serializeAvatarOption;
+export const resolveAvatarOption = resolveAvatarSeedOption;
 
 export async function loadEditableProfile(
   supabase: SupabaseClient
@@ -87,24 +67,20 @@ export async function loadEditableProfile(
 
   const metadata = getMetadata(user);
 
-  const { data: row, error: rowError } = await supabase
-    .from('users')
-    .select('display_name,avatar_url')
-    .eq('id', user.id)
-    .maybeSingle<UserRow>();
-
-  if (rowError) {
-    throw new Error(rowError.message);
-  }
+  const { row } = await loadUsersRow(supabase, user.id);
 
   const metadataDisplayName = typeof metadata.display_name === 'string' ? metadata.display_name : null;
   const metadataAvatar = typeof metadata.avatar_url === 'string' ? metadata.avatar_url : null;
+
+  const favoriteRows = await loadFavoriteFlavorNoteRows(supabase, user.id);
 
   return {
     userId: user.id,
     displayName: row?.display_name ?? metadataDisplayName ?? '',
     email: user.email ?? '',
-    avatarUrl: row?.avatar_url ?? metadataAvatar ?? serializeAvatar(DEFAULT_AVATAR),
+    avatarUrl: row?.avatar_url ?? metadataAvatar ?? serializeAvatar(DEFAULT_AVATAR_SEED),
+    favoriteBrewMethodId: row?.favorite_brew_method_id ?? null,
+    favoriteFlavorNoteIds: (favoriteRows ?? []).map((item) => item.flavor_note_id),
     profileCompleted: isProfileCompleted(user),
   };
 }
@@ -114,24 +90,26 @@ export async function saveEditableProfile(params: {
   userId: string;
   displayName: string;
   avatarUrl: string;
+  favoriteBrewMethodId?: string | null;
+  favoriteFlavorNoteIds?: string[];
   markCompleted?: boolean;
 }): Promise<void> {
   const trimmedName = params.displayName.trim();
 
-  const usersTable = params.supabase.from('users') as unknown as {
-    update: (value: { display_name: string; avatar_url: string }) => { eq: (column: string, value: string) => Promise<{ error: Error | null }> };
+  const updatePayload: {
+    display_name: string;
+    avatar_url: string;
+    favorite_brew_method_id?: string | null;
+  } = {
+    display_name: trimmedName,
+    avatar_url: params.avatarUrl,
   };
 
-  const { error: rowError } = await usersTable
-    .update({
-      display_name: trimmedName,
-      avatar_url: params.avatarUrl,
-    })
-    .eq('id', params.userId);
-
-  if (rowError) {
-    throw new Error(rowError.message);
+  if (params.favoriteBrewMethodId !== undefined) {
+    updatePayload.favorite_brew_method_id = params.favoriteBrewMethodId;
   }
+
+  await saveUsersRow(params.supabase, params.userId, updatePayload);
 
   const { error: authError } = await params.supabase.auth.updateUser({
     data: {
@@ -144,6 +122,148 @@ export async function saveEditableProfile(params: {
   if (authError) {
     throw new Error(authError.message);
   }
+
+  if (params.favoriteFlavorNoteIds !== undefined) {
+    const { error: deleteError } = await params.supabase
+      .from('user_favorite_flavor_notes')
+      .delete()
+      .eq('user_id', params.userId);
+
+    if (deleteError) {
+      if (!isMissingFavoriteNotesRelation(deleteError)) {
+        throw new Error(deleteError.message);
+      }
+      return;
+    }
+
+    if (params.favoriteFlavorNoteIds.length > 0) {
+      const { error: insertError } = await params.supabase
+        .from('user_favorite_flavor_notes')
+        .insert(
+          params.favoriteFlavorNoteIds.map((flavorNoteId) => ({
+            user_id: params.userId,
+            flavor_note_id: flavorNoteId,
+          }))
+        );
+
+      if (insertError && !isMissingFavoriteNotesRelation(insertError)) {
+        throw new Error(insertError.message);
+      }
+    }
+  }
+}
+
+type QueryErrorLike = {
+  message?: string;
+  code?: string;
+};
+
+async function loadUsersRow(supabase: SupabaseClient, userId: string): Promise<{ row: UserRow | null }> {
+  const withFavorite = await supabase
+    .from('users')
+    .select('display_name,avatar_url,favorite_brew_method_id')
+    .eq('id', userId)
+    .maybeSingle<UserRow>();
+
+  if (!withFavorite.error) {
+    return { row: withFavorite.data };
+  }
+
+  if (!isMissingFavoriteBrewMethodColumn(withFavorite.error)) {
+    throw new Error(withFavorite.error.message);
+  }
+
+  const fallback = await supabase
+    .from('users')
+    .select('display_name,avatar_url')
+    .eq('id', userId)
+    .maybeSingle<Pick<UserRow, 'display_name' | 'avatar_url'>>();
+
+  if (fallback.error) {
+    throw new Error(fallback.error.message);
+  }
+
+  return {
+    row: fallback.data
+      ? {
+          ...fallback.data,
+          favorite_brew_method_id: null,
+        }
+      : null,
+  };
+}
+
+async function loadFavoriteFlavorNoteRows(supabase: SupabaseClient, userId: string): Promise<Array<{ flavor_note_id: string }>> {
+  const { data, error } = await supabase
+    .from('user_favorite_flavor_notes')
+    .select('flavor_note_id')
+    .eq('user_id', userId)
+    .returns<Array<{ flavor_note_id: string }>>();
+
+  if (!error) {
+    return data ?? [];
+  }
+
+  if (isMissingFavoriteNotesRelation(error)) {
+    return [];
+  }
+
+  throw new Error(error.message);
+}
+
+async function saveUsersRow(
+  supabase: SupabaseClient,
+  userId: string,
+  payload: { display_name: string; avatar_url: string; favorite_brew_method_id?: string | null }
+): Promise<void> {
+  const { error } = await supabase
+    .from('users')
+    .update(payload)
+    .eq('id', userId);
+
+  if (!error) {
+    return;
+  }
+
+  if (!('favorite_brew_method_id' in payload)) {
+    throw new Error(error.message);
+  }
+
+  if (!isMissingFavoriteBrewMethodColumn(error)) {
+    throw new Error(error.message);
+  }
+
+  const fallbackPayload: { display_name: string; avatar_url: string } = {
+    display_name: payload.display_name,
+    avatar_url: payload.avatar_url,
+  };
+
+  const fallback = await supabase
+    .from('users')
+    .update(fallbackPayload)
+    .eq('id', userId);
+
+  if (fallback.error) {
+    throw new Error(fallback.error.message);
+  }
+}
+
+function isMissingFavoriteBrewMethodColumn(error: QueryErrorLike): boolean {
+  const message = String(error.message ?? '').toLowerCase();
+  const code = String(error.code ?? '').toLowerCase();
+  return (
+    (message.includes('favorite_brew_method_id') || message.includes('favourite_brew_method_id')) &&
+    (message.includes('does not exist') || code === '42703' || code === 'pgrst204')
+  );
+}
+
+function isMissingFavoriteNotesRelation(error: QueryErrorLike): boolean {
+  const message = String(error.message ?? '').toLowerCase();
+  const code = String(error.code ?? '').toLowerCase();
+  return (
+    (message.includes('user_favorite_flavor_notes') || message.includes('flavor_note_id')) &&
+    (message.includes('does not exist') || code === '42p01' || code === 'pgrst205' || code === 'pgrst204')
+  );
 }
 
 export async function requestEmailChange(params: {

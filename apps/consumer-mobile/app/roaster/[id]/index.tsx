@@ -1,10 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { useLocalSearchParams } from 'expo-router';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useFollowRoaster } from '@funcup/shared';
 
 import { useViewerUserId } from '../../../src/hooks/useViewerUserId';
 import { supabase } from '../../../src/services/supabaseClient';
+import { AppButton, AppScrollScreen, AppText } from '../../../src/components/ui/primitives';
 
 type RoasterProfileData = {
   id: string;
@@ -75,33 +76,33 @@ export default function RoasterProfileScreen() {
 
   if (!roasterId) {
     return (
-      <ScrollView contentContainerStyle={{ padding: 20 }}>
-        <Text>Missing roaster id.</Text>
-      </ScrollView>
+      <AppScrollScreen contentContainerStyle={styles.page}>
+        <AppText>Missing roaster id.</AppText>
+      </AppScrollScreen>
     );
   }
 
   if (roasterQuery.isLoading || userLoading) {
     return (
-      <ScrollView contentContainerStyle={{ padding: 20 }}>
-        <Text>Loading roaster profile...</Text>
-      </ScrollView>
+      <AppScrollScreen contentContainerStyle={styles.page}>
+        <AppText>Loading roaster profile...</AppText>
+      </AppScrollScreen>
     );
   }
 
   if (roasterQuery.isError) {
     return (
-      <ScrollView contentContainerStyle={{ padding: 20 }}>
-        <Text>Could not load roaster profile.</Text>
-      </ScrollView>
+      <AppScrollScreen contentContainerStyle={styles.page}>
+        <AppText>Could not load roaster profile.</AppText>
+      </AppScrollScreen>
     );
   }
 
   if (!roasterQuery.data) {
     return (
-      <ScrollView contentContainerStyle={{ padding: 20 }}>
-        <Text>Roaster not found.</Text>
-      </ScrollView>
+      <AppScrollScreen contentContainerStyle={styles.page}>
+        <AppText>Roaster not found.</AppText>
+      </AppScrollScreen>
     );
   }
 
@@ -111,32 +112,25 @@ export default function RoasterProfileScreen() {
     : roaster.isFollowed;
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 20, gap: 12 }}>
-      <Text style={{ fontSize: 28, fontWeight: '700' }}>{roaster.name}</Text>
-      <Text>{[roaster.city, roaster.country].filter(Boolean).join(', ') || 'Location unavailable'}</Text>
-      <Text>{roaster.description ?? 'No description yet.'}</Text>
-      <Text>{roaster.website ?? 'No website'}</Text>
+    <AppScrollScreen contentContainerStyle={styles.page}>
+      <AppText variant="h1" weight="700">{roaster.name}</AppText>
+      <AppText>{[roaster.city, roaster.country].filter(Boolean).join(', ') || 'Location unavailable'}</AppText>
+      <AppText>{roaster.description ?? 'No description yet.'}</AppText>
+      <AppText>{roaster.website ?? 'No website'}</AppText>
 
-      <View style={{ paddingTop: 8 }}>
-        <Pressable
-          onPress={() =>
-            followMutation.mutate({ roasterId: roaster.id, follow: !roaster.isFollowed })
-          }
+      <View style={styles.actionWrap}>
+        <AppButton
+          onPress={() => followMutation.mutate({ roasterId: roaster.id, follow: !roaster.isFollowed })}
           disabled={!userId || followMutation.isPending}
-          style={{
-            borderWidth: 1,
-            borderColor: '#111827',
-            borderRadius: 8,
-            paddingHorizontal: 12,
-            paddingVertical: 10,
-            backgroundColor: isFollowed ? '#111827' : '#ffffff',
-          }}
-        >
-          <Text style={{ color: isFollowed ? '#ffffff' : '#111827', fontWeight: '700' }}>
-            {isFollowed ? 'Following' : 'Follow Roaster'}
-          </Text>
-        </Pressable>
+          variant={isFollowed ? 'primary' : 'secondary'}
+          label={isFollowed ? 'Following' : 'Follow Roaster'}
+        />
       </View>
-    </ScrollView>
+    </AppScrollScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  page: { padding: 20, gap: 12 },
+  actionWrap: { paddingTop: 8 },
+});

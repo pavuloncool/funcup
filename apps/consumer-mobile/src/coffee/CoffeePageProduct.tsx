@@ -1,4 +1,5 @@
-import { Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { AppPanel, AppText } from '../components/ui/primitives';
 
 export function CoffeePageProduct(props: {
   coffeeName?: string;
@@ -8,19 +9,24 @@ export function CoffeePageProduct(props: {
   roasterName?: string | null;
 }) {
   return (
-    <View style={{ paddingVertical: 12 }}>
-      <Text style={{ fontSize: 18, fontWeight: '600' }}>Product</Text>
-      <Text style={{ fontSize: 16, fontWeight: '600' }}>{props.coffeeName ?? 'Coffee'}</Text>
-      {props.roasterName ? <Text style={{ color: '#4b5563' }}>{props.roasterName}</Text> : null}
+    <AppPanel style={styles.section}>
+      <AppText variant="h3" weight="600">Product</AppText>
+      <AppText variant="body" weight="600">{props.coffeeName ?? 'Coffee'}</AppText>
+      {props.roasterName ? <AppText tone="secondary">{props.roasterName}</AppText> : null}
       {[props.variety, props.processingMethod].filter(Boolean).length > 0 ? (
-        <Text style={{ color: '#6b7280', marginTop: 4 }}>
+        <AppText tone="muted" style={styles.meta}>
           {[props.variety, props.processingMethod].filter(Boolean).join(' · ')}
-        </Text>
+        </AppText>
       ) : null}
       {props.producerNotes ? (
-        <Text style={{ marginTop: 8, lineHeight: 22 }}>{props.producerNotes}</Text>
+        <AppText style={styles.body}>{props.producerNotes}</AppText>
       ) : null}
-    </View>
+    </AppPanel>
   );
 }
 
+const styles = StyleSheet.create({
+  section: { paddingVertical: 12 },
+  meta: { marginTop: 4 },
+  body: { marginTop: 8, lineHeight: 22 },
+});

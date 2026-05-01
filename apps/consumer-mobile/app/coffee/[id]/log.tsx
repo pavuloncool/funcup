@@ -1,6 +1,6 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import { enqueuePendingTasting, logTasting } from '@funcup/shared';
 import NetInfo from '@react-native-community/netinfo';
@@ -11,6 +11,7 @@ import { RatingInput } from '../../../src/coffee/tasting/RatingInput';
 import { offlineQueueStorage } from '../../../src/services/offlineQueueStorage';
 import { supabase } from '../../../src/services/supabaseClient';
 import { getPendingTastings } from '@funcup/shared';
+import { AppButton, AppInput, AppScreen, AppText } from '../../../src/components/ui/primitives';
 
 export default function TastingLogScreen() {
   const params = useLocalSearchParams<{ id?: string; batchId?: string }>();
@@ -77,48 +78,35 @@ export default function TastingLogScreen() {
   };
 
   return (
-    <View style={{ flex: 1, padding: 24, gap: 12 }}>
-      <Text style={{ fontSize: 24, fontWeight: '600' }}>Tasting Log</Text>
-      <Text>Batch id: {batchId ?? '(missing)'}</Text>
-      <Text style={{ color: isOnline ? '#166534' : '#b91c1c' }}>
+    <AppScreen>
+      <View style={styles.page}>
+      <AppText variant="h2" weight="700">Tasting Log</AppText>
+      <AppText>Batch id: {batchId ?? '(missing)'}</AppText>
+      <AppText tone={isOnline ? 'success' : 'danger'}>
         {isOnline ? 'Online' : 'Offline'} | Pending queue: {pendingCount}
-      </Text>
+      </AppText>
 
       <RatingInput />
       <BrewMethodPicker />
       <FlavorNoteSelector reputationScore={demoReputationScore} />
 
-      <View style={{ gap: 8 }}>
-        <Text style={{ fontSize: 16, fontWeight: '600' }}>Quick rating submit</Text>
-        <TextInput
+      <View style={styles.submit}>
+        <AppText variant="body" weight="600">Quick rating submit</AppText>
+        <AppInput
           value={ratingInput}
           onChangeText={setRatingInput}
           keyboardType="numeric"
           placeholder="1-5"
-          style={{
-            borderWidth: 1,
-            borderColor: '#d1d5db',
-            borderRadius: 8,
-            paddingHorizontal: 12,
-            paddingVertical: 10,
-          }}
         />
-        <Pressable
-          onPress={() => {
-            void onSubmit();
-          }}
-          style={{
-            backgroundColor: '#111827',
-            borderRadius: 8,
-            paddingHorizontal: 12,
-            paddingVertical: 10,
-          }}
-        >
-          <Text style={{ color: '#ffffff', fontWeight: '600' }}>Save tasting</Text>
-        </Pressable>
-        {status ? <Text style={{ color: '#374151' }}>{status}</Text> : null}
+        <AppButton onPress={() => { void onSubmit(); }} label="Save tasting" />
+        {status ? <AppText tone="secondary">{status}</AppText> : null}
       </View>
-    </View>
+      </View>
+    </AppScreen>
   );
 }
 
+const styles = StyleSheet.create({
+  page: { flex: 1, padding: 24, gap: 12 },
+  submit: { gap: 8 },
+});

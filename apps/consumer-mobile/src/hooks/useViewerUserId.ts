@@ -1,29 +1,11 @@
-import { useEffect, useState } from 'react';
-
-import { supabase } from '../services/supabaseClient';
+import { useMemo } from 'react';
+import { useAuth } from '../auth';
 
 export function useViewerUserId() {
-  const [userId, setUserId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { user, status } = useAuth();
 
-  useEffect(() => {
-    let mounted = true;
-
-    supabase.auth
-      .getUser()
-      .then(({ data }) => {
-        if (!mounted) return;
-        setUserId(data.user?.id ?? null);
-      })
-      .finally(() => {
-        if (!mounted) return;
-        setIsLoading(false);
-      });
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  return { userId, isLoading };
+  return useMemo(
+    () => ({ userId: user?.id ?? null, isLoading: status === 'bootstrapping' }),
+    [status, user?.id]
+  );
 }

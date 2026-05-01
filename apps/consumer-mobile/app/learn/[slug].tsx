@@ -1,7 +1,8 @@
 import { useLocalSearchParams } from 'expo-router';
-import { ScrollView, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { getLearnArticleBySlug } from '../../src/content/learn/articles';
+import { AppScrollScreen, AppText } from '../../src/components/ui/primitives';
 
 export default function LearnArticleScreen() {
   const params = useLocalSearchParams<{ slug?: string }>();
@@ -9,17 +10,21 @@ export default function LearnArticleScreen() {
 
   if (!article) {
     return (
-      <ScrollView contentContainerStyle={{ padding: 20, gap: 12 }}>
-        <Text style={{ fontSize: 24, fontWeight: '700' }}>Article not found</Text>
-        <Text>Try opening the article from Learn tab again.</Text>
-      </ScrollView>
+      <AppScrollScreen contentContainerStyle={styles.page}>
+        <AppText variant="h2" weight="700">Article not found</AppText>
+        <AppText>Try opening the article from Learn tab again.</AppText>
+      </AppScrollScreen>
     );
   }
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 20, gap: 12 }}>
-      <Text style={{ fontSize: 28, fontWeight: '700' }}>{article.title}</Text>
-      <Text>{article.body}</Text>
-    </ScrollView>
+    <AppScrollScreen contentContainerStyle={styles.page}>
+      <AppText variant="h1" weight="700">{article.title}</AppText>
+      <AppText>{article.body}</AppText>
+    </AppScrollScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  page: { padding: 20, gap: 12 },
+});

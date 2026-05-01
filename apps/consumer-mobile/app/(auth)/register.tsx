@@ -2,13 +2,14 @@ import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 
-import { isProfileCompleted } from '../../src/features/profile/profileAccount';
-import { supabase } from '../../src/services/supabaseClient';
 import { authScreenStyles as styles } from '../../src/theme/authScreenStyles';
 import { AppButton, AppInput, AppScreen } from '../../src/components/ui/primitives';
+import { useAuth } from '../../src/auth';
 
 export default function RegisterScreen() {
   const router = useRouter();
+  const { register } = useAuth();
+  const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -17,6 +18,11 @@ export default function RegisterScreen() {
   const [loading, setLoading] = useState(false);
 
   const onRegister = async () => {
+    if (displayName.trim().length < 3) {
+      setError('Nazwa użytkownika musi mieć min. 3 znaki.');
+      return;
+    }
+
     if (!email.trim() || !password.trim()) {
       setError('Wpisz email i hasło.');
       return;
@@ -34,30 +40,29 @@ export default function RegisterScreen() {
     setError(null);
     setInfo(null);
 
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email: email.trim(),
-      password,
-      options: {
-        data: {
-          profile_completed: false,
-        },
-      },
-    });
+    try {
+      const result = await register({
+        displayName: displayName.trim(),
+        email: email.trim(),
+        password,
+      });
+      if (result.hasSession) {
+        router.replace({
+          pathname: '/(auth)/complete-profile',
+          params: {
+            displayName: displayName.trim(),
+            email: email.trim().toLowerCase(),
+          },
+        });
+        return;
+      }
 
-    setLoading(false);
-
-    if (signUpError) {
-      setError(signUpError.message);
-      return;
+      router.replace('/(auth)/login-form');
+    } catch (signUpError) {
+      setError(signUpError instanceof Error ? signUpError.message : 'Rejestracja nie powiodła się.');
+    } finally {
+      setLoading(false);
     }
-
-    if (data.session?.access_token) {
-      const postRegisterPath = isProfileCompleted(data.user) ? '/(tabs)/hub' : '/(auth)/complete-profile';
-      router.replace(postRegisterPath);
-      return;
-    }
-
-    setInfo('Konto utworzone. Sprawdź email i potwierdź rejestrację, potem zaloguj się.');
   };
 
   return (
@@ -69,6 +74,18 @@ export default function RegisterScreen() {
             <Text style={styles.separatorText}>Rejestracja</Text>
             <View style={styles.separatorLine} />
           </View>
+
+          <Text style={styles.fieldLabel}>Nazwa użytkownika</Text>
+          <AppInput
+            style={styles.input}
+            placeholder="Min. 3 chars"
+            accessibilityLabel="Nazwa użytkownika"
+            value={displayName}
+            onChangeText={setDisplayName}
+            autoCapitalize="words"
+            autoCorrect={false}
+            returnKeyType="next"
+          />
 
           <Text style={styles.fieldLabel}>Email</Text>
           <AppInput

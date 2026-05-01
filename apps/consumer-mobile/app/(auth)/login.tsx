@@ -1,50 +1,62 @@
 import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
-import { ActivityIndicator, StyleSheet } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { visualSystemTokens } from '@funcup/shared';
 
-import { isProfileCompleted } from '../../src/features/profile/profileAccount';
-import { AppScreen } from '../../src/components/ui/primitives';
-import { supabase } from '../../src/services/supabaseClient';
+import { AppButton, AppScreen, AppText } from '../../src/components/ui/primitives';
+import { useAuth } from '../../src/auth';
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { status, profileCompleted, unlockWithBiometrics } = useAuth();
+  const [unlocking, setUnlocking] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let mounted = true;
+    if (status === 'bootstrapping') {
+      return;
+    }
 
-    const bootstrap = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (!mounted) return;
+    if (status === 'locked') {
+      return;
+    }
 
-      if (data.session?.access_token) {
-        const { data: userData } = await supabase.auth.getUser();
-        if (!mounted) return;
-        const postLoginPath = isProfileCompleted(userData.user) ? '/(tabs)/hub' : '/(auth)/complete-profile';
-        router.replace(postLoginPath);
-        return;
-      }
-
+    if (status === 'unauthenticated') {
       router.replace('/(auth)/login-form');
-    };
+      return;
+    }
 
-    void bootstrap();
+    const postLoginPath = profileCompleted ? '/(tabs)/hub' : '/(auth)/complete-profile';
+    router.replace(postLoginPath);
+  }, [profileCompleted, router, status]);
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!mounted) return;
-      if (session?.access_token) {
-        const postLoginPath = isProfileCompleted(session.user) ? '/(tabs)/hub' : '/(auth)/complete-profile';
-        router.replace(postLoginPath);
+  const onUnlock = async () => {
+    setUnlocking(true);
+    setError(null);
+    try {
+      const unlocked = await unlockWithBiometrics();
+      if (!unlocked) {
+        setError('Odblokowanie anulowane.');
       }
-    });
+    } catch (unlockError) {
+      setError(unlockError instanceof Error ? unlockError.message : 'Nie udało się odblokować sesji.');
+    } finally {
+      setUnlocking(false);
+    }
+  };
 
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, [router]);
+  if (status === 'locked') {
+    return (
+      <AppScreen style={styles.root}>
+        <View style={styles.lockedCard}>
+          <AppText variant="h3" weight="700">Sesja zablokowana</AppText>
+          <AppText tone="secondary">Odblokuj biometrią, aby kontynuować.</AppText>
+          {error ? <AppText tone="danger">{error}</AppText> : null}
+          <AppButton label={unlocking ? 'Odblokowywanie…' : 'Odblokuj biometrią'} onPress={() => void onUnlock()} />
+        </View>
+      </AppScreen>
+    );
+  }
 
   return (
     <AppScreen style={styles.root}>
@@ -55,4 +67,11 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: visualSystemTokens.colors.canvas, alignItems: 'center', justifyContent: 'center' },
+  lockedCard: {
+    width: '100%',
+    maxWidth: 320,
+    gap: 12,
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
 });

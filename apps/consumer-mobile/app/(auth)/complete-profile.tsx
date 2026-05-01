@@ -1,42 +1,53 @@
-import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import {
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import { visualSystemTokens } from '@funcup/shared';
 
 import {
-  AVATAR_OPTIONS,
   loadEditableProfile,
-  requestEmailChange,
   resolveAvatarOption,
   saveEditableProfile,
   serializeAvatar,
 } from '../../src/features/profile/profileAccount';
+import { buildAvatarOptions } from '../../src/features/profile/avatar/avatarFactory';
+import { AvatarGrid } from '../../src/features/profile/avatar/AvatarGrid';
+import {
+  loadBrewMethodOptions,
+  type BrewMethodOption,
+} from '../../src/features/profile/preferences/brewMethods';
+import {
+  loadFlavorNoteOptions,
+  type FlavorNoteOption,
+} from '../../src/features/profile/preferences/flavorNotes';
+import { BrewMethodPickerField } from '../../src/features/profile/preferences/BrewMethodPickerField';
+import { FlavorNotesMultiSelect } from '../../src/features/profile/preferences/FlavorNotesMultiSelect';
 import { supabase } from '../../src/services/supabaseClient';
 import { authScreenStyles as styles } from '../../src/theme/authScreenStyles';
-import { AppButton, AppInput, AppScreen, AppText } from '../../src/components/ui/primitives';
-
-function isValidEmail(email: string): boolean {
-  return /.+@.+\..+/.test(email);
-}
-const { colors } = visualSystemTokens;
+import { AppButton, AppScreen, AppText } from '../../src/components/ui/primitives';
 
 export default function CompleteProfileScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ displayName?: string; email?: string }>();
+  const avatarOptions = useMemo(() => buildAvatarOptions(), []);
+  const displayNameFromRoute = typeof params.displayName === 'string' ? params.displayName.trim() : '';
+  const emailFromRoute = typeof params.email === 'string' ? params.email.trim().toLowerCase() : '';
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   const [userId, setUserId] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
-  const [originalEmail, setOriginalEmail] = useState('');
-  const [avatarValue, setAvatarValue] = useState(serializeAvatar(AVATAR_OPTIONS[0]));
+  const [avatarValue, setAvatarValue] = useState(serializeAvatar(avatarOptions[0]));
+  const [favoriteBrewMethodId, setFavoriteBrewMethodId] = useState<string | null>(null);
+  const [favoriteFlavorNoteIds, setFavoriteFlavorNoteIds] = useState<string[]>([]);
+
+  const [brewMethodOptions, setBrewMethodOptions] = useState<BrewMethodOption[]>([]);
+  const [flavorNoteOptions, setFlavorNoteOptions] = useState<FlavorNoteOption[]>([]);
 
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
@@ -48,16 +59,28 @@ export default function CompleteProfileScreen() {
 
     const bootstrap = async () => {
       try {
+        const [brewMethods, flavorNotes] = await Promise.all([
+          loadBrewMethodOptions(supabase),
+          loadFlavorNoteOptions(supabase),
+        ]);
+        if (mounted) {
+          setBrewMethodOptions(brewMethods);
+          setFlavorNoteOptions(flavorNotes);
+        }
         const profile = await loadEditableProfile(supabase);
+
         if (!mounted) return;
 
         setUserId(profile.userId);
-        setDisplayName(profile.displayName);
-        setEmail(profile.email);
-        setOriginalEmail(profile.email);
+        setDisplayName(profile.displayName || displayNameFromRoute);
+        setEmail(profile.email || emailFromRoute);
         setAvatarValue(profile.avatarUrl);
+        setFavoriteBrewMethodId(profile.favoriteBrewMethodId);
+        setFavoriteFlavorNoteIds(profile.favoriteFlavorNoteIds);
       } catch (bootstrapError) {
         if (!mounted) return;
+        setDisplayName(displayNameFromRoute);
+        setEmail(emailFromRoute);
         setError(bootstrapError instanceof Error ? bootstrapError.message : 'Nie udało się załadować profilu.');
       } finally {
         if (mounted) {
@@ -71,19 +94,32 @@ export default function CompleteProfileScreen() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [displayNameFromRoute, emailFromRoute]);
 
   const onSave = async () => {
     const trimmedName = displayName.trim();
-    const trimmedEmail = email.trim().toLowerCase();
 
-    if (!trimmedName) {
-      setError('Podaj nazwę użytkownika.');
+    if (trimmedName.length < 3) {
+      setError('Nazwa użytkownika musi mieć min. 3 znaki.');
       return;
     }
 
-    if (!trimmedEmail || !isValidEmail(trimmedEmail)) {
-      setError('Podaj poprawny adres email.');
+    if (!email.trim()) {
+      setError('Brak adresu email użytkownika.');
+      return;
+    }
+
+    if (!favoriteBrewMethodId) {
+      setError('Wybierz ulubioną metodę parzenia.');
+      return;
+    }
+
+    if (favoriteFlavorNoteIds.length < 1) {
+      setError('Wybierz minimum 1 tasting note.');
+      return;
+    }
+    if (favoriteFlavorNoteIds.length > 3) {
+      setError('Możesz wybrać maksymalnie 3 tasting notes.');
       return;
     }
 
@@ -97,21 +133,10 @@ export default function CompleteProfileScreen() {
         userId,
         displayName: trimmedName,
         avatarUrl: avatarValue,
+        favoriteBrewMethodId,
+        favoriteFlavorNoteIds,
         markCompleted: true,
       });
-
-      if (trimmedEmail !== originalEmail.toLowerCase()) {
-        const result = await requestEmailChange({
-          supabase,
-          nextEmail: trimmedEmail,
-        });
-
-        if (result.simulated) {
-          setInfo('Wersja developerska: zasymulowano potwierdzenie zmiany email.');
-        } else {
-          setInfo('Wysłaliśmy link potwierdzający zmianę email na nowy adres.');
-        }
-      }
 
       router.replace('/(tabs)/profile');
     } catch (saveError) {
@@ -143,62 +168,56 @@ export default function CompleteProfileScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.topSection}>
-          <View style={styles.separatorRow}>
-            <View style={styles.separatorLine} />
-            <Text style={styles.separatorText}>Uzupełnij profil</Text>
-            <View style={styles.separatorLine} />
+            <View style={styles.separatorRow}>
+              <View style={styles.separatorLine} />
+              <Text style={styles.separatorText}>Uzupełnij profil</Text>
+              <View style={styles.separatorLine} />
+            </View>
+
+            <Text style={styles.fieldLabel}>Nazwa użytkownika *</Text>
+            <View style={local.readOnlyBox}>
+              <AppText>{displayName || '—'}</AppText>
+            </View>
+
+            <Text style={styles.fieldLabel}>Email *</Text>
+            <View style={local.readOnlyBox}>
+              <AppText>{email || '—'}</AppText>
+            </View>
+
+            <Text style={styles.fieldLabel}>Avatar *</Text>
+            <AvatarGrid
+              options={avatarOptions}
+              selectedId={selectedAvatar.id}
+              onChange={(nextId) => {
+                const selected = avatarOptions.find((item) => item.id === nextId);
+                if (selected) {
+                  setAvatarValue(serializeAvatar(selected));
+                }
+              }}
+            />
+
+            <BrewMethodPickerField
+              options={brewMethodOptions}
+              value={favoriteBrewMethodId}
+              onChange={(nextValue) => setFavoriteBrewMethodId(nextValue)}
+            />
+
+            <FlavorNotesMultiSelect
+              options={flavorNoteOptions}
+              selectedIds={favoriteFlavorNoteIds}
+              onChange={setFavoriteFlavorNoteIds}
+              maxSelected={3}
+            />
+
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
+            {info ? <Text style={styles.infoText}>{info}</Text> : null}
+
+            <AppButton
+              label={saving ? 'Zapisywanie…' : 'Zapisz i przejdź do profilu'}
+              onPress={() => void onSave()}
+              disabled={saving}
+            />
           </View>
-
-          <Text style={styles.fieldLabel}>Nazwa użytkownika *</Text>
-          <AppInput
-            style={styles.input}
-            placeholder="Np. Jan Kowalski"
-            value={displayName}
-            onChangeText={setDisplayName}
-            autoCapitalize="words"
-          />
-
-          <Text style={styles.fieldLabel}>Email</Text>
-          <AppInput
-            style={styles.input}
-            placeholder="name@example.com"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            autoCorrect={false}
-            keyboardType="email-address"
-          />
-
-          <Text style={styles.fieldLabel}>Avatar</Text>
-          <View style={local.avatarGrid}>
-            {AVATAR_OPTIONS.map((option) => {
-              const selected = option.id === selectedAvatar.id;
-              return (
-                <Pressable
-                  key={option.id}
-                  onPress={() => setAvatarValue(serializeAvatar(option))}
-                  style={[local.avatarItem, selected && local.avatarItemSelected]}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Avatar ${option.label}`}
-                >
-                  <View style={[local.avatarCircle, { backgroundColor: option.color }]}>
-                    <Ionicons name={option.icon as never} size={24} color={colors.textOnPrimary} />
-                  </View>
-                  <AppText variant="caption" weight="600" tone="secondary">{option.label}</AppText>
-                </Pressable>
-              );
-            })}
-          </View>
-
-          {error ? <Text style={styles.errorText}>{error}</Text> : null}
-          {info ? <Text style={styles.infoText}>{info}</Text> : null}
-
-          <AppButton
-            label={saving ? 'Zapisywanie…' : 'Zapisz i przejdź do profilu'}
-            onPress={() => void onSave()}
-            disabled={saving}
-          />
-        </View>
         </ScrollView>
       </View>
     </AppScreen>
@@ -217,32 +236,15 @@ const local = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  avatarGrid: {
+  readOnlyBox: {
     width: '100%',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    marginBottom: 18,
-  },
-  avatarItem: {
-    width: '31%',
-    borderWidth: 1,
-    borderColor: visualSystemTokens.colors.borderSubtle,
-    borderRadius: 12,
-    paddingVertical: 10,
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: visualSystemTokens.colors.surfaceElevated,
-  },
-  avatarItemSelected: {
-    borderColor: visualSystemTokens.colors.accentPrimary,
-    backgroundColor: visualSystemTokens.colors.surface,
-  },
-  avatarCircle: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    alignItems: 'center',
+    minHeight: 48,
+    borderWidth: 2,
+    borderColor: '#2a2a2a',
+    borderRadius: 10,
+    backgroundColor: '#f3f3f3',
+    paddingHorizontal: 12,
     justifyContent: 'center',
+    marginBottom: 14,
   },
 });

@@ -36,7 +36,7 @@ export default function TestSelectUserScreen() {
             style={authScreenStyles.socialButton}
             accessibilityRole="button"
             accessibilityLabel="Consumer"
-            onPress={() => router.push('/(tabs)/hub/scan')}
+            onPress={() => router.push('/(tabs)/scan/scan')}
           >
             <AppText weight="600" style={authScreenStyles.socialButtonText}>Consumer</AppText>
           </Pressable>

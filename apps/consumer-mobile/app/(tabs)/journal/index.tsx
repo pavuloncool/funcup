@@ -1,5 +1,5 @@
 import { Link } from 'expo-router';
-import { ScrollView, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useJournal } from '@funcup/shared';
 
 import { EmptyState } from '../../../src/components/EmptyState';
@@ -7,6 +7,8 @@ import { ScreenError } from '../../../src/components/ScreenError';
 import { DiscoverListSkeleton } from '../../../src/components/ui/Skeleton';
 import { useViewerUserId } from '../../../src/hooks/useViewerUserId';
 import { supabase } from '../../../src/services/supabaseClient';
+import { AppCard, AppScrollScreen, AppText } from '../../../src/components/ui/primitives';
+import { visualSystemTokens } from '@funcup/shared';
 
 type JournalRow = {
   id: string;
@@ -31,21 +33,17 @@ export default function JournalIndex() {
 
   if (authLoading) {
     return (
-      <ScrollView contentContainerStyle={{ padding: 20 }}>
-        <Text style={{ fontSize: 24, fontWeight: '600', marginBottom: 16 }} accessibilityRole="header">
-          Journal
-        </Text>
+      <AppScrollScreen contentContainerStyle={styles.page}>
+        <AppText variant="h2" weight="700" accessibilityRole="header" style={styles.title}>Journal</AppText>
         <DiscoverListSkeleton rows={3} />
-      </ScrollView>
+      </AppScrollScreen>
     );
   }
 
   if (!userId) {
     return (
-      <ScrollView contentContainerStyle={{ padding: 24 }}>
-        <Text style={{ fontSize: 24, fontWeight: '600', marginBottom: 12 }} accessibilityRole="header">
-          Journal
-        </Text>
+      <AppScrollScreen contentContainerStyle={styles.page}>
+        <AppText variant="h2" weight="700" accessibilityRole="header" style={styles.title}>Journal</AppText>
         <EmptyState
           title="Sign in to see your journal"
           description="Your tastings will show up here after you log a coffee."
@@ -55,29 +53,25 @@ export default function JournalIndex() {
             </Link>
           }
         />
-      </ScrollView>
+      </AppScrollScreen>
     );
   }
 
   if (journalQuery.isLoading) {
     return (
-      <ScrollView contentContainerStyle={{ padding: 20 }}>
-        <Text style={{ fontSize: 24, fontWeight: '600', marginBottom: 16 }} accessibilityRole="header">
-          Journal
-        </Text>
+      <AppScrollScreen contentContainerStyle={styles.page}>
+        <AppText variant="h2" weight="700" accessibilityRole="header" style={styles.title}>Journal</AppText>
         <DiscoverListSkeleton rows={4} />
-      </ScrollView>
+      </AppScrollScreen>
     );
   }
 
   if (journalQuery.isError) {
     return (
-      <ScrollView contentContainerStyle={{ padding: 24, gap: 12 }}>
-        <Text style={{ fontSize: 24, fontWeight: '600' }} accessibilityRole="header">
-          Journal
-        </Text>
+      <AppScrollScreen contentContainerStyle={styles.page}>
+        <AppText variant="h2" weight="700" accessibilityRole="header">Journal</AppText>
         <ScreenError message={formatError(journalQuery.error)} onRetry={() => void journalQuery.refetch()} />
-      </ScrollView>
+      </AppScrollScreen>
     );
   }
 
@@ -85,60 +79,56 @@ export default function JournalIndex() {
 
   if (rows.length === 0) {
     return (
-      <ScrollView contentContainerStyle={{ padding: 24 }}>
-        <Text style={{ fontSize: 24, fontWeight: '600', marginBottom: 12 }} accessibilityRole="header">
-          Coffee Log
-        </Text>
+      <AppScrollScreen contentContainerStyle={styles.page}>
+        <AppText variant="h2" weight="700" accessibilityRole="header" style={styles.title}>Coffee Log</AppText>
         <EmptyState
           title="Add your first tasting"
           description="Scan QR from coffee bag, log a tasting and share your experience with other coffee lovers."
           footer={
-            <Link href="/(tabs)/hub/scan" accessibilityRole="link">
+            <Link href="/(tabs)/scan/scan" accessibilityRole="link">
               Open scanner
             </Link>
           }
         />
-      </ScrollView>
+      </AppScrollScreen>
     );
   }
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 24, gap: 14 }}>
-      <Text style={{ fontSize: 24, fontWeight: '600' }} accessibilityRole="header">
-        Journal
-      </Text>
+    <AppScrollScreen contentContainerStyle={styles.page}>
+      <AppText variant="h2" weight="700" accessibilityRole="header">Journal</AppText>
       {rows.map((row) => {
         const coffee = row.roast_batches?.coffees;
         const title = coffee?.name ?? 'Coffee';
         const roaster = coffee?.roasters?.name;
         const ratingLabel = row.rating != null ? `${row.rating} / 5` : '—';
         return (
-          <View
+          <AppCard
             key={row.id}
-            style={{
-              borderWidth: 1,
-              borderColor: '#e5e7eb',
-              borderRadius: 12,
-              padding: 14,
-              gap: 6,
-              backgroundColor: '#fafafa',
-            }}
+            style={styles.rowCard}
             accessibilityLabel={`${title}, ${roaster ?? ''}, rating ${ratingLabel}`}
           >
-            <Text style={{ fontSize: 17, fontWeight: '700', color: '#111827' }}>{title}</Text>
-            {roaster ? <Text style={{ color: '#4b5563' }}>{roaster}</Text> : null}
-            <Text style={{ color: '#374151' }}>
+            <AppText variant="h3" weight="700">{title}</AppText>
+            {roaster ? <AppText tone="secondary">{roaster}</AppText> : null}
+            <AppText tone="secondary">
               {ratingLabel}
               {row.logged_at ? ` · ${new Date(row.logged_at).toLocaleString()}` : ''}
-            </Text>
+            </AppText>
             {row.free_text_notes ? (
-              <Text style={{ color: '#6b7280', marginTop: 4 }} numberOfLines={4}>
+              <AppText tone="muted" style={styles.note} numberOfLines={4}>
                 {row.free_text_notes}
-              </Text>
+              </AppText>
             ) : null}
-          </View>
+          </AppCard>
         );
       })}
-    </ScrollView>
+    </AppScrollScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  page: { padding: 24, gap: 12 },
+  title: { marginBottom: 4 },
+  rowCard: { padding: 14, backgroundColor: visualSystemTokens.colors.surface },
+  note: { marginTop: 4 },
+});

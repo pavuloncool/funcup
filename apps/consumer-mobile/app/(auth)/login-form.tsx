@@ -4,11 +4,11 @@ import { Text, View } from 'react-native';
 
 import { authScreenStyles as styles } from '../../src/theme/authScreenStyles';
 import { AppButton, AppInput, AppScreen } from '../../src/components/ui/primitives';
-import { isProfileCompleted } from '../../src/features/profile/profileAccount';
-import { supabase } from '../../src/services/supabaseClient';
+import { useAuth } from '../../src/auth';
 
 export default function LoginFormScreen() {
   const router = useRouter();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -23,20 +23,17 @@ export default function LoginFormScreen() {
     setLoading(true);
     setError(null);
 
-    const { data, error: signInError } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password,
-    });
-
-    setLoading(false);
-
-    if (signInError) {
-      setError(signInError.message);
-      return;
+    try {
+      await login({
+        email: email.trim(),
+        password,
+      });
+      router.replace('/(auth)/login');
+    } catch (signInError) {
+      setError(signInError instanceof Error ? signInError.message : 'Logowanie nie powiodło się.');
+    } finally {
+      setLoading(false);
     }
-
-    const postLoginPath = isProfileCompleted(data.user) ? '/(tabs)/hub' : '/(auth)/complete-profile';
-    router.replace(postLoginPath);
   };
 
   return (

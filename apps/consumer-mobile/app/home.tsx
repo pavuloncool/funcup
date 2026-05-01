@@ -35,7 +35,7 @@ export default function HomeScreen() {
       </AppText>
       <AppText>Expo Router scaffold for Phase 1 tasks.</AppText>
       <Link href="/(auth)/login-form">Go to login</Link>
-      <Link href="/(tabs)/hub/scan">Go to scan</Link>
+      <Link href="/(tabs)/scan/scan">Go to scan</Link>
       <Link href="/(tabs)/journal">Go to journal</Link>
       <Link href="/(tabs)/profile">Go to profile</Link>
     </AppScreen>

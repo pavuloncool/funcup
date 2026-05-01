@@ -6,7 +6,7 @@ loadDotenv({ path: path.join(__dirname, '.env') });
 loadDotenv({ path: path.join(__dirname, '.env.local'), override: true });
 
 /** Default local Supabase (CLI). Used when EXPO_PUBLIC_* are missing at bundle/config time. */
-const LOCAL_SUPABASE_URL = 'http://127.0.0.1:54321';
+const LOCAL_SUPABASE_URL = 'http://192.168.1.106:54321';
 const LOCAL_SUPABASE_ANON_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.9kEXx9GFfgcZ21LlMB1qI-LOwSGOzI8g8c92UgEHQDk';
 
@@ -21,6 +21,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   platforms: ['ios', 'android', 'web'],
   assetBundlePatterns: ['**/*'],
   plugins: [
+    'expo-secure-store',
     [
       'expo-router',
       {

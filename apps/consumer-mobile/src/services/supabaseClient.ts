@@ -1,5 +1,10 @@
-import { createBrowserSupabaseClient } from '@funcup/shared';
+import { type TypedSupabaseClient } from '@funcup/shared';
+import { createClient } from '@supabase/supabase-js';
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
+
+import type { Database } from '../../../../supabase/types/database';
+import { createSupabaseSecureStorageAdapter, ExpoSecureStorageService } from '../auth/secureStorage';
 
 type SupabaseExtra = {
   supabaseFallbackUrl?: string;
@@ -7,7 +12,7 @@ type SupabaseExtra = {
 };
 
 /** Same defaults as app.config.ts — used only if env + manifest extra are empty. */
-const LOCAL_SUPABASE_URL = 'http://127.0.0.1:54321';
+const LOCAL_SUPABASE_URL = 'http://192.168.1.106:54321';
 const LOCAL_SUPABASE_ANON_KEY =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.9kEXx9GFfgcZ21LlMB1qI-LOwSGOzI8g8c92UgEHQDk';
 
@@ -44,15 +49,21 @@ function resolveSupabaseConfig(): { url: string; key: string } {
   return { url, key };
 }
 
-let _client: ReturnType<typeof createBrowserSupabaseClient> | null = null;
+let _client: TypedSupabaseClient | null = null;
 
 /** Lazily creates the client so Constants.expoConfig.extra matches the last Metro manifest (important for Expo Go). */
-export function getSupabase(): ReturnType<typeof createBrowserSupabaseClient> {
+export function getSupabase(): TypedSupabaseClient {
   if (!_client) {
     const { url, key } = resolveSupabaseConfig();
-    _client = createBrowserSupabaseClient({
-      supabaseUrl: url,
-      supabaseAnonKey: key,
+    const secureStorage = new ExpoSecureStorageService();
+
+    _client = createClient<Database>(url, key, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: false,
+        ...(Platform.OS !== 'web' ? { storage: createSupabaseSecureStorageAdapter(secureStorage) } : {}),
+      },
     });
   }
   return _client;
@@ -62,7 +73,7 @@ export function getSupabase(): ReturnType<typeof createBrowserSupabaseClient> {
  * Shared Supabase singleton — use `getSupabase()` or this proxy (backward compatible).
  * Proxy ensures lazy init for Expo Go + LAN / .env timing.
  */
-export const supabase = new Proxy({} as ReturnType<typeof createBrowserSupabaseClient>, {
+export const supabase = new Proxy({} as TypedSupabaseClient, {
   get(_target, prop: string | symbol) {
     const c = getSupabase();
     const value = (c as unknown as Record<string | symbol, unknown>)[prop];

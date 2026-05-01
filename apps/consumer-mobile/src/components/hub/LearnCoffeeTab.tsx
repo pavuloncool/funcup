@@ -1,8 +1,9 @@
 import { Link } from 'expo-router';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 
 import { learnArticles } from '../../content/learn/articles';
 import { EmptyState } from '../EmptyState';
+import { AppText } from '../ui/primitives';
 
 import { discoverHubStyles } from './discoverHub.styles';
 
@@ -20,8 +21,8 @@ export function LearnCoffeeTab() {
     <View style={discoverHubStyles.list}>
       {learnArticles.map((article) => (
         <View key={article.slug} style={discoverHubStyles.card}>
-          <Text style={discoverHubStyles.title}>{article.title}</Text>
-          <Text>{article.excerpt}</Text>
+          <AppText variant="body" weight="600">{article.title}</AppText>
+          <AppText tone="secondary">{article.excerpt}</AppText>
           <Link href={{ pathname: '/learn/[slug]', params: { slug: article.slug } }}>Read article</Link>
         </View>
       ))}

@@ -1,52 +1,34 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { AppPanel, AppScreen, AppText } from '../../../src/components/ui/primitives';
+import { visualSystemTokens } from '@funcup/shared';
 
 export default function HubIndexScreen() {
   return (
-    <View style={styles.root}>
-      {/* <View style={styles.topBar}>
-        <Text style={styles.logo}>funcup</Text>
-        <View style={styles.actions}>
-          <View style={styles.avatarRing}>
-            <View style={styles.avatarCore} />
-          </View>
-        </View>
-      </View>*/}
-
-      <View style={styles.emptyWrap}>
-        <Text style={styles.emptyTitle}>Nie masz żadnych skanów</Text>
-        <Text style={styles.emptyText}>Utwórz nowy skan z aparatu lub zaimportowanych zdjęć.</Text>
-      </View>
-    </View>
+    <AppScreen>
+      <AppPanel style={styles.root} padded={false}>
+        <AppPanel style={styles.headerWrap} padded={false}>
+          <AppText variant="h2" weight="700" style={styles.screenTitle}>
+            My Coffee House
+          </AppText>
+        </AppPanel>
+        <AppPanel style={styles.emptyWrap}>
+          <AppText variant="hero" weight="700" tone="secondary" style={styles.emptyTitle}>
+            Fancy a fun cup?
+          </AppText>
+          <AppText variant="body" tone="secondary" style={styles.emptyText}>
+            Scan your first Coffee using the QR scanner below.
+          </AppText>
+        </AppPanel>
+      </AppPanel>
+    </AppScreen>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#ececec' },
-  topBar: {
-    height: 72,
-    backgroundColor: '#f8fafc',
-    borderBottomWidth: 1,
-    borderBottomColor: '#d4d4d4',
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  logo: { fontSize: 28, fontWeight: '700', color: '#0ea5a4' },
-  actions: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  search: { fontSize: 32, color: '#737373' },
-  avatarRing: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    borderWidth: 2,
-    borderColor: '#1d4ed8',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarCore: { width: 30, height: 30, borderRadius: 15, backgroundColor: '#22d3ee' },
+  root: { flex: 1 },
+  headerWrap: { width: '100%', paddingHorizontal: 20, paddingTop: 10 },
+  screenTitle: { alignSelf: 'flex-start' },
   emptyWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32, gap: 10 },
-  emptyIcon: { fontSize: 84, opacity: 0.4 },
-  emptyTitle: { fontSize: 42, color: '#5a5a5a', fontWeight: '600', textAlign: 'center' },
-  emptyText: { fontSize: 18, color: '#6b7280', textAlign: 'center', lineHeight: 26 },
+  emptyTitle: { textAlign: 'center' },
+  emptyText: { textAlign: 'center', lineHeight: 26, maxWidth: 360, color: visualSystemTokens.colors.textSecondary },
 });

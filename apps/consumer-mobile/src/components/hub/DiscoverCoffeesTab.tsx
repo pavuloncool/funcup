@@ -1,11 +1,12 @@
 import { Link } from 'expo-router';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 import { useDiscoverCoffees } from '@funcup/shared';
 
 import { EmptyState } from '../EmptyState';
 import { ScreenError } from '../ScreenError';
 import { DiscoverListSkeleton } from '../ui/Skeleton';
 import { supabase } from '../../services/supabaseClient';
+import { AppText } from '../ui/primitives';
 
 import { discoverHubStyles } from './discoverHub.styles';
 
@@ -48,11 +49,11 @@ export function DiscoverCoffeesTab() {
           accessibilityRole="text"
           accessibilityLabel={`${coffee.name}, ${coffee.roaster?.name ?? 'Unknown roaster'}`}
         >
-          <Text style={discoverHubStyles.title}>{coffee.name}</Text>
-          <Text>
+          <AppText variant="body" weight="600">{coffee.name}</AppText>
+          <AppText tone="secondary">
             {coffee.roaster?.name ?? 'Unknown roaster'}
             {coffee.processingMethod ? ` · ${coffee.processingMethod}` : ''}
-          </Text>
+          </AppText>
           <Link
             href={{ pathname: '/coffee/[id]', params: { id: coffee.qrHash } }}
             accessibilityRole="link"

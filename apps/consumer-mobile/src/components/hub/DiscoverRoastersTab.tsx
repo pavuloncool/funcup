@@ -1,5 +1,5 @@
 import { Link } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { useDiscoverRoasters, useFollowRoaster } from '@funcup/shared';
 
 import { EmptyState } from '../EmptyState';
@@ -7,6 +7,7 @@ import { ScreenError } from '../ScreenError';
 import { DiscoverListSkeleton } from '../ui/Skeleton';
 import { useViewerUserId } from '../../hooks/useViewerUserId';
 import { supabase } from '../../services/supabaseClient';
+import { AppText } from '../ui/primitives';
 
 import { discoverHubStyles, followLabelStyle, followPressableStyle } from './discoverHub.styles';
 
@@ -51,11 +52,11 @@ export function DiscoverRoastersTab() {
           accessibilityRole="text"
           accessibilityLabel={`${roaster.name}, ${[roaster.city, roaster.country].filter(Boolean).join(', ') || 'location unknown'}`}
         >
-          <Text style={discoverHubStyles.title}>{roaster.name}</Text>
-          <Text>
+          <AppText variant="body" weight="600">{roaster.name}</AppText>
+          <AppText tone="secondary">
             {[roaster.city, roaster.country].filter(Boolean).join(', ') || 'Location unavailable'}
-          </Text>
-          <Text>{roaster.description ?? 'No roaster story yet.'}</Text>
+          </AppText>
+          <AppText>{roaster.description ?? 'No roaster story yet.'}</AppText>
           <Pressable
             onPress={() =>
               followMutation.mutate({ roasterId: roaster.id, follow: !roaster.isFollowed })
@@ -66,9 +67,9 @@ export function DiscoverRoastersTab() {
             accessibilityState={{ disabled: !userId || followMutation.isPending }}
             accessibilityLabel={roaster.isFollowed ? `Unfollow ${roaster.name}` : `Follow ${roaster.name}`}
           >
-            <Text style={followLabelStyle(roaster.isFollowed)}>
+            <AppText style={followLabelStyle(roaster.isFollowed)}>
               {roaster.isFollowed ? 'Following' : 'Follow'}
-            </Text>
+            </AppText>
           </Pressable>
           <Link
             href={{ pathname: '/roaster/[id]', params: { id: roaster.id } }}

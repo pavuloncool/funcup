@@ -1,5 +1,6 @@
 import { hasExpertBadge } from '@funcup/shared';
-import { Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { AppPanel, AppText } from '../components/ui/primitives';
 
 export function CoffeePageCommunity(props: {
   reputationScore?: number;
@@ -11,17 +12,21 @@ export function CoffeePageCommunity(props: {
   const avg = props.avgRating ?? 0;
 
   return (
-    <View style={{ paddingVertical: 12 }}>
-      <Text style={{ fontSize: 18, fontWeight: '600' }}>Community</Text>
-      <Text style={{ color: '#374151' }}>
+    <AppPanel style={styles.section}>
+      <AppText variant="h3" weight="600">Community</AppText>
+      <AppText tone="secondary">
         {tastings > 0
           ? `${tastings} tasting${tastings === 1 ? '' : 's'} · avg ${avg.toFixed(1)} / 5`
           : 'Be the first to log a tasting for this batch.'}
-      </Text>
+      </AppText>
       {showExpertBadge ? (
-        <Text style={{ marginTop: 6, color: '#6b7280', fontSize: 12 }}>Expert taster</Text>
+        <AppText variant="caption" tone="muted" style={styles.badge}>Expert taster</AppText>
       ) : null}
-    </View>
+    </AppPanel>
   );
 }
 
+const styles = StyleSheet.create({
+  section: { paddingVertical: 12 },
+  badge: { marginTop: 6 },
+});
