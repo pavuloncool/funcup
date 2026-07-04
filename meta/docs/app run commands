@@ -1,0 +1,93 @@
+# app run commands
+
+## aktualny zakres
+Ten dokument opisuje tylko aktualne komendy uruchomienia:
+- `product/apps/web` na `http://localhost:3000`
+- `product/apps/consumer-mobile` w `Simulator.app`
+
+## komenda dla web
+
+```bash
+pnpm run dev
+```
+Efekt:
+- startuje lokalny backend Supabase
+- synchronizuje lokalne env
+- uruchamia local Edge Functions
+- robi smoke-check funkcji
+- uruchamia `apps/web` na `http://localhost:3000`
+- otwiera albo wznawia sesję `tmux` `funcup-web`
+
+## komenda dla web + simulator
+
+```bash
+pnpm run dev:sim
+```
+
+Efekt:
+- robi wszystko z `pnpm run dev`
+- uruchamia `apps/consumer-mobile` w `Simulator.app` przez Expo
+- otwiera albo wznawia sesję `tmux` `funcup-sim`
+
+## zalecana kolejność
+
+### a) tylko web
+
+```bash
+pnpm run dev
+```
+
+Potem otwórz:
+
+```txt
+http://localhost:3000
+```
+
+### b) web + consumer-mobile w Simulatorze
+
+```bash
+pnpm run dev:sim
+```
+
+Potem przejdź do `Simulator.app`.
+
+## ważne zachowanie
+- `pnpm run dev:sim` jest aktualną komendą do codziennej pracy z mobile na Simulatorze.
+- jeśli sesja `funcup-sim` już istnieje, command ją wznawia i odtwarza mobile pane, jeśli go brakuje.
+- mobile start używa skryptu `pnpm -C product/apps/consumer-mobile run start:sim`.
+
+## ponowne podpięcie do sesji
+
+```bash
+tmux attach -t funcup-web
+tmux attach -t funcup-sim
+```
+
+## zatrzymanie
+
+Jedną komendą:
+
+```bash
+tmux kill-session -t funcup-web 2>/dev/null; tmux kill-session -t funcup-sim 2>/dev/null; pnpm exec supabase stop --project-id funcup --workdir product; pnpm exec supabase stop --project-id supabase --workdir product
+```
+Poszczególnymi komendami:
+```bash
+tmux kill-session -t funcup-web
+tmux kill-session -t funcup-sim
+pnpm exec supabase stop --project-id funcup --workdir product
+pnpm exec supabase stop --project-id supabase --workdir product
+```
+## Uruchom Metro na Expo Go
+```bash
+EXPO_METRO_PORT=8081 pnpm run dev:phone
+```
+Zoom panelu z kodem QR:
+tmux resize-pane -Z -t funcup-phone:0.3
+
+Potem to w Safari na iPhone, jeśli nie widzisz kodu QR w terminalu:
+exp://[nowy-adfes-tunelu].trycloudflare.com
+
+To kill Metro na Expo Go:
+```bash
+tmux kill-session -t funcup-phone
+```
